@@ -7,7 +7,7 @@ import './index.scss'
 
 function Login() {
     return (
-        <Grid className="center">
+        <Grid container className="center">
             <Card elevation={10} className="card">
                 <Grid align='center'>
                     <Avatar><LockOutlinedIcon/></Avatar>
