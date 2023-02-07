@@ -1,10 +1,12 @@
-import React, {Component} from "react";
+import React, {lazy, Component} from "react";
 import {render} from "react-dom";
+
+const Login = lazy(() => import('./pages/Login'))
 
 function App() {
     return (
         <div>
-            TracCloud
+            <Login/>
         </div>
     )
 }
