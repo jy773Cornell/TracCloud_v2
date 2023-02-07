@@ -1,45 +1,33 @@
 import React from 'react'
-import {Grid, Paper, Avatar, TextField, Button, Typography, Link} from '@material-ui/core'
+import {Grid, Avatar, TextField, Button, Typography, Link, Card} from '@material-ui/core'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import './index.scss'
 
 function Login() {
-
-    const avatarStyle = {backgroundColor: '#1bbd7e'}
-    const btnstyle = {margin: '8px 0'}
     return (
-        <Grid>
-            <Paper elevation={10}>
+        <Grid className="center">
+            <Card elevation={10} className="card">
                 <Grid align='center'>
-                    <Avatar style={avatarStyle}><LockOutlinedIcon/></Avatar>
-                    <Typography variant="h2" component="h2">Sign In</Typography>
+                    <Avatar><LockOutlinedIcon/></Avatar>
+                    <Typography variant="h5" component="h5">Sign In</Typography>
                 </Grid>
-                <TextField label='Username' placeholder='Enter username' variant="outlined" fullWidth required/>
-                <TextField label='Password' placeholder='Enter password' type='password' variant="outlined" fullWidth
+                <TextField label='Username' placeholder='Enter username'  fullWidth required/>
+                <TextField label='Password' placeholder='Enter password' type='password'  fullWidth
                            required/>
                 <FormControlLabel
-                    control={
-                        <Checkbox
-                            name="checkedB"
-                            color="primary"
-                        />
-                    }
+                    control={<Checkbox name="remember" color="primary"/>}
                     label="Remember me"
                 />
-                <Button type='submit' color='primary' variant="contained" style={btnstyle} fullWidth>Sign in</Button>
+                <Button type='submit' color='primary' variant="contained" fullWidth>Sign in</Button>
                 <Typography>
-                    <Link href="#">
-                        Forgot password ?
-                    </Link>
+                    <Link href="#">Forgot password ?</Link>
                 </Typography>
                 <Typography> Do you have an account ?
-                    <Link href="#">
-                        Sign Up
-                    </Link>
+                    <Link href="#">Sign Up</Link>
                 </Typography>
-            </Paper>
+            </Card>
         </Grid>
     )
 }
