@@ -1,6 +1,6 @@
 import * as React from 'react';
-import {Grid, Paper, Box} from '@material-ui/core';
-import {createTheme, ThemeProvider, styled} from '@material-ui/core/styles';
+import {Grid, Paper, Box} from '@mui/material';
+import {createTheme, ThemeProvider, styled} from '@mui/material/styles';
 
 const darkTheme = createTheme({palette: {mode: 'dark'}});
 const lightTheme = createTheme({palette: {mode: 'light'}});
