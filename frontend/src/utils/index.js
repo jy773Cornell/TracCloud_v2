@@ -1,5 +1,13 @@
 import {history} from './history'
+import {
+    setToken,
+    getToken,
+    removeToken
+} from './token'
 
 export {
-    history
+    history,
+    setToken,
+    getToken,
+    removeToken,
 }

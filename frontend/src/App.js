@@ -1,20 +1,34 @@
-import React, {lazy, Component} from "react";
+import React, {lazy, Component, Suspense} from "react";
 import {render} from "react-dom";
-import {unstable_HistoryRouter as HistoryRouter, Routes, Route} from "react-router-dom";
+import {unstable_HistoryRouter as HistoryRouter, Routes, Route, Navigate} from "react-router-dom";
 import {history} from './utils'
+import AuthComponent from "./components/AuthComponent";
 
 const Login = lazy(() => import('./pages/Login'))
 const UserProfile = lazy(() => import('./pages/UserProfile'))
+const Layout = lazy(() => import('./pages/Layout'))
 
 function App() {
     return (
         <HistoryRouter history={history}>
-            <Routes>
-                <Route path="/" component={Login}>
+            <Suspense
+                fallback={
+                    <div style={{textAlign: 'center', marginTop: 200}}>
+                        loading...
+                    </div>
+                }>
+                <Routes>
+                    <Route eaxct path='/' element={<Navigate to="/profile" replace/>}/>
+                    <Route path='/' element={
+                        <AuthComponent>
+                            <Layout/>
+                        </AuthComponent>
+                    }>
+                        <Route path="profile" element={<UserProfile/>}/>
+                    </Route>
                     <Route path="login" element={<Login/>}/>
-                    <Route path="profile" element={<UserProfile/>}/>
-                </Route>
-            </Routes>
+                </Routes>
+            </Suspense>
         </HistoryRouter>
     )
 }
