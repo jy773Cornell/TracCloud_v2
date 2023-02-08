@@ -2,7 +2,6 @@ import React from 'react'
 import {Grid, Avatar, Button, Typography, Link, Card, TextField, Checkbox, FormControlLabel} from '@mui/material'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import './index.scss'
-import {useStore} from '../../store/index'
 
 function Login() {
     return (

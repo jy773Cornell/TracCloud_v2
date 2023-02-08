@@ -1,5 +1,4 @@
-import React, {lazy, Component, Suspense} from "react";
-import {render} from "react-dom";
+import React, {lazy, Suspense} from "react";
 import {unstable_HistoryRouter as HistoryRouter, Routes, Route, Navigate} from "react-router-dom";
 import {history} from './utils'
 import AuthComponent from "./components/AuthComponent";
