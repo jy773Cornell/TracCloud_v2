@@ -1,6 +1,9 @@
-import React, {useEffect} from 'react';
+import React, {lazy, useEffect} from 'react';
 import {Navigate} from 'react-router-dom'
 import {useState} from "react";
+import {getToken} from "../utils";
+
+const Loading = lazy(() => import('../pages/Loading'))
 
 function AuthComponent({children}) {
 
@@ -8,10 +11,13 @@ function AuthComponent({children}) {
 
     function AuthCheck() {
         const requestOptions = {
-            method: "GET",
+            method: "POST",
             headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                token: getToken(),
+            }),
         };
-        fetch("/api/auth", requestOptions)
+        fetch("/api/auth/", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     setAuthStatus("authorized");
@@ -27,9 +33,7 @@ function AuthComponent({children}) {
 
     if (authStatus === "loading") {
         return (
-            <div style={{textAlign: 'center', marginTop: 200}}>
-                loading...
-            </div>
+            <Loading/>
         )
     } else if (authStatus === "authorized") {
         return <>{children}</>

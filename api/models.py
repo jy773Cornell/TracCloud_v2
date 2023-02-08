@@ -1,5 +1,4 @@
 from django.db import models
-from .utils.ModelManager import MyModelManager
 
 '''
 User Entity 
@@ -33,9 +32,6 @@ class User(models.Model):
     is_active = models.BooleanField(verbose_name="Is Active", default=False)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
 
-    objects = MyModelManager()
-    objects.prefix("UID")
-
     def __str__(self):
         return "{} ({})".format(self.username, self.type)
 
@@ -45,9 +41,6 @@ class UserType(models.Model):
     name = models.CharField(verbose_name="Type Name", unique=True, max_length=128)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
-
-    objects = MyModelManager()
-    objects.prefix("UTID")
 
     def __str__(self):
         return self.name
@@ -66,9 +59,6 @@ class UserRelation(models.Model):
     is_active = models.BooleanField(verbose_name="Is Active", default=False)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
 
-    objects = MyModelManager()
-    objects.prefix("URID")
-
     def __str__(self):
         return "Relation: {}, Requester: {}, Provider: {}".format(self.relation_type, self.requester, self.provider)
 
@@ -79,9 +69,6 @@ class UserRelationType(models.Model):
     note = models.TextField(verbose_name="Note", null=True, blank=True)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
-
-    objects = MyModelManager()
-    objects.prefix("URTID")
 
     def __str__(self):
         return self.name

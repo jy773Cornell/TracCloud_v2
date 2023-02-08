@@ -1,5 +1,6 @@
 const path = require("path");
 const webpack = require("webpack");
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: "./src/index.js",
@@ -46,10 +47,11 @@ module.exports = {
     plugins: [
         new webpack.DefinePlugin({
             NODE_ENV: JSON.stringify("development"),
+        }),
+        new CopyWebpackPlugin({
+            patterns: [
+                {from: './src/images/favicon.ico'},
+            ]
         })
     ],
-    externals: {
-        'react': 'React'
-    },
-}
-;
+};

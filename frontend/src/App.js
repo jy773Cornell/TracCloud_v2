@@ -6,15 +6,14 @@ import AuthComponent from "./components/AuthComponent";
 const Login = lazy(() => import('./pages/Login'))
 const UserProfile = lazy(() => import('./pages/UserProfile'))
 const Layout = lazy(() => import('./pages/Layout'))
+const Loading = lazy(() => import('./pages/Loading'))
 
 function App() {
     return (
         <HistoryRouter history={history}>
             <Suspense
                 fallback={
-                    <div style={{textAlign: 'center', marginTop: 200}}>
-                        loading...
-                    </div>
+                    <Loading/>
                 }>
                 <Routes>
                     <Route eaxct path='/' element={<Navigate to="/profile" replace/>}/>
