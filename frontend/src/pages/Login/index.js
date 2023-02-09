@@ -12,7 +12,6 @@ function Login() {
         "status": [false, false], "message": ["", ""],
     })
 
-
     function handleUsernameChange(e) {
         setUsername(e.target.value);
     }
