@@ -9,8 +9,7 @@ function Login() {
     const [password, setPassword] = useState("")
     const [remember, setRemember] = useState(false)
     const [errors, setErrors] = useState({
-        "status": [false, false],
-        "message": ["", ""],
+        "status": [false, false], "message": ["", ""],
     })
 
 
@@ -27,17 +26,32 @@ function Login() {
     }
 
     async function SignInBtnPressed() {
-        const requestOptions = {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                username: username,
-                password: password,
-                remember: remember,
-            }),
-        };
-        await fetch("/api/login/", requestOptions)
-            .then((response) => {
+        setErrors({
+            "status": [false, false], "message": ["", ""],
+        })
+        if (username === "" && password === "") {
+            setErrors({
+                "status": [true, true], "message": ["This field is required.", "This field is required."],
+            })
+        } else if (username === "") {
+            setErrors({
+                "status": [true, false], "message": ["This field is required.", ""],
+            })
+        } else if (password === "") {
+            setErrors({
+                "status": [false, true], "message": ["", "This field is required."],
+            })
+        } else {
+            const requestOptions = {
+                method: "POST", headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                    remember: remember,
+                }),
+            };
+            await fetch("/api/login/", requestOptions)
+                .then((response) => {
                     if (response.ok) {
                         response.json().then((data) => {
                             if (data.token) {
@@ -46,71 +60,58 @@ function Login() {
                             }
                         })
                     } else {
-                        setErrors({
-                            "status": [false, false],
-                            "message": ["", ""],
-                        })
-                        if (response.statusText === "Bad Request") {
+                        if (response.statusText === "Not Found") {
                             setErrors({
-                                "status": [true, true],
-                                "message": ["This field is required.", "This field is required."],
-                            })
-                        } else if (response.statusText === "Not Found") {
-                            setErrors({
-                                "status": [true, false],
-                                "message": ["Input username doesn't exist.", ""],
+                                "status": [true, false], "message": ["Input username doesn't exist.", ""],
                             })
                         } else if (response.statusText === "Forbidden") {
                             setErrors({
-                                "status": [false, true],
-                                "message": ["", "Please input correct password."],
+                                "status": [false, true], "message": ["", "Please input correct password."],
                             })
                         }
                     }
-                }
-            )
+                })
+        }
     }
 
-    return (
-        <div className="login">
-            <Grid container className="center">
-                <Card elevation={10} className="card">
-                    <Grid align='center'>
-                        <Avatar><LockOutlinedIcon/></Avatar>
-                        <Typography variant="h4" component="h4">Sign In</Typography>
-                    </Grid>
-                    <div>
-                        <TextField label='Username' placeholder='Enter username'
-                                   variant="standard" fullWidth required
-                                   error={errors.status[0]}
-                                   helperText={errors.message[0]}
-                                   onChange={handleUsernameChange}/>
-                    </div>
-                    <div className="textField">
-                        <TextField label='Password' placeholder='Enter password'
-                                   variant="standard" type='password' fullWidth required
-                                   error={errors.status[1]}
-                                   helperText={errors.message[1]}
-                                   onChange={handlePasswordChange}/>
-                    </div>
-                    <FormControlLabel
-                        control={<Checkbox name="remember" color="primary" onChange={handleRememberChange}/>}
-                        label="Remember me"
-                    />
-                    <Button type='submit' color='primary' variant="contained" fullWidth onClick={SignInBtnPressed}>Sign
-                        in</Button>
-                    <div className="info">
-                        <Typography>
-                            <Link href="#">Forgot password?</Link>
-                        </Typography>
-                        <Typography> Do you have an account?
-                            <Link href="#"> Sign Up </Link>
-                        </Typography>
-                    </div>
-                </Card>
-            </Grid>
-        </div>
-    )
+    return (<div className="login">
+        <Grid container className="center">
+            <Card elevation={10} className="card">
+                <Grid align='center'>
+                    <Avatar><LockOutlinedIcon/></Avatar>
+                    <Typography variant="h4" component="h4">Sign In</Typography>
+                </Grid>
+                <div>
+                    <TextField label='Username' placeholder='Enter username'
+                               variant="standard" fullWidth required
+                               error={errors.status[0]}
+                               helperText={errors.message[0]}
+                               onChange={handleUsernameChange}/>
+                </div>
+                <div className="textField">
+                    <TextField label='Password' placeholder='Enter password'
+                               variant="standard" type='password' fullWidth required
+                               error={errors.status[1]}
+                               helperText={errors.message[1]}
+                               onChange={handlePasswordChange}/>
+                </div>
+                <FormControlLabel
+                    control={<Checkbox name="remember" color="primary" onChange={handleRememberChange}/>}
+                    label="Remember me"
+                />
+                <Button type='submit' color='primary' variant="contained" fullWidth onClick={SignInBtnPressed}>Sign
+                    in</Button>
+                <div className="info">
+                    <Typography>
+                        <Link href="#">Forgot password?</Link>
+                    </Typography>
+                    <Typography> Do you have an account?
+                        <Link href="#"> Sign Up </Link>
+                    </Typography>
+                </div>
+            </Card>
+        </Grid>
+    </div>)
 }
 
 export default Login
