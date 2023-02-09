@@ -10,7 +10,8 @@ from api.utils.Token import make_token
 
 class UserLoginView(APIView):
     serializer_class = UserLoginSerializer
-    expiry_sec = 60 * 60
+    normal_expiry_sec = 60 * 60 * 24
+    remember_expiry_sec = 60 * 60 * 24 * 7
 
     @csrf_exempt
     def post(self, request, format=None):
@@ -19,18 +20,21 @@ class UserLoginView(APIView):
 
         username = request.data.get("username")
         password = request.data.get("password")
+        remember = request.data.get("remember")
         if username and password:
             user = User.objects.filter(username=username).first()
             if user:
                 if password == user.password:
-                    token = make_token(username, self.expiry_sec)
+                    expiry = self.remember_expiry_sec if remember else self.normal_expiry_sec
+                    token = make_token(username, expiry)
                     request.session["token"] = token
-                    request.session.set_expiry(self.expiry_sec)
+                    request.session.set_expiry(expiry)
+
                     return Response({"Login Succeeded": "User Info Verified.", "token": token},
                                     status=status.HTTP_200_OK)
 
                 return Response({'Login Failed': 'Wrong Password.'},
-                                status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+                                status=status.HTTP_403_FORBIDDEN)
 
             return Response({'Login Failed': 'Invalid Username.'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -38,9 +42,18 @@ class UserLoginView(APIView):
                         status=status.HTTP_400_BAD_REQUEST)
 
 
+class UserLogoutView(APIView):
+    def get(self, request, format=None):
+        if self.request.session.exists(self.request.session.session_key):
+            self.request.session.delete()
+
+        return Response({'Logout Succeeded': 'Session Has Been Cleared.'}, status=status.HTTP_200_OK)
+
+
 class UserAuthCheckView(APIView):
     serializer_class = UserLoginSerializer
 
+    @csrf_exempt
     def post(self, request, format=None):
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
@@ -48,7 +61,7 @@ class UserAuthCheckView(APIView):
         if not request.data.get("token"):
             return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not request.session.get("token") and request.session.get("token") == request.data.get("token"):
+        if not request.session.get("token") or request.session.get("token") != request.data.get("token"):
             return Response({'Auth Status': 'Unauthorized.'}, status=status.HTTP_401_UNAUTHORIZED)
 
         return Response({'Auth Status': 'Authorized.'}, status=status.HTTP_200_OK)

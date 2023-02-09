@@ -7,6 +7,12 @@ import {setToken} from "../../utils";
 function Login() {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
+    const [remember, setRemember] = useState(false)
+    const [errors, setErrors] = useState({
+        "status": [false, false],
+        "message": ["", ""],
+    })
+
 
     function handleUsernameChange(e) {
         setUsername(e.target.value);
@@ -16,6 +22,10 @@ function Login() {
         setPassword(e.target.value);
     }
 
+    function handleRememberChange(e) {
+        setRemember(e.target.checked);
+    }
+
     async function SignInBtnPressed() {
         const requestOptions = {
             method: "POST",
@@ -23,20 +33,42 @@ function Login() {
             body: JSON.stringify({
                 username: username,
                 password: password,
+                remember: remember,
             }),
         };
         await fetch("/api/login/", requestOptions)
             .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        if (data.token) {
-                            setToken(data.token);
+                    if (response.ok) {
+                        response.json().then((data) => {
+                            if (data.token) {
+                                setToken(data.token);
+                                window.location.href = "/profile";
+                            }
+                        })
+                    } else {
+                        setErrors({
+                            "status": [false, false],
+                            "message": ["", ""],
+                        })
+                        if (response.statusText === "Bad Request") {
+                            setErrors({
+                                "status": [true, true],
+                                "message": ["This field is required.", "This field is required."],
+                            })
+                        } else if (response.statusText === "Not Found") {
+                            setErrors({
+                                "status": [true, false],
+                                "message": ["Input username doesn't exist.", ""],
+                            })
+                        } else if (response.statusText === "Forbidden") {
+                            setErrors({
+                                "status": [false, true],
+                                "message": ["", "Please input correct password."],
+                            })
                         }
-                    })
-                } else {
-                    console.log(response.statusText);
+                    }
                 }
-            })
+            )
     }
 
     return (
@@ -49,15 +81,20 @@ function Login() {
                     </Grid>
                     <div>
                         <TextField label='Username' placeholder='Enter username'
-                                   variant="standard" fullWidth required onChange={handleUsernameChange}/>
+                                   variant="standard" fullWidth required
+                                   error={errors.status[0]}
+                                   helperText={errors.message[0]}
+                                   onChange={handleUsernameChange}/>
                     </div>
                     <div className="textField">
                         <TextField label='Password' placeholder='Enter password'
                                    variant="standard" type='password' fullWidth required
+                                   error={errors.status[1]}
+                                   helperText={errors.message[1]}
                                    onChange={handlePasswordChange}/>
                     </div>
                     <FormControlLabel
-                        control={<Checkbox name="remember" color="primary"/>}
+                        control={<Checkbox name="remember" color="primary" onChange={handleRememberChange}/>}
                         label="Remember me"
                     />
                     <Button type='submit' color='primary' variant="contained" fullWidth onClick={SignInBtnPressed}>Sign
