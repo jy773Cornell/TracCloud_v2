@@ -3,28 +3,29 @@ import {unstable_HistoryRouter as HistoryRouter, Routes, Route, Navigate} from "
 import {history} from './utils'
 import AuthComponent from "./components/AuthComponent";
 
-const Login = lazy(() => import('./pages/Login'))
-const UserProfile = lazy(() => import('./pages/UserProfile'))
-const Layout = lazy(() => import('./pages/Layout'))
 const Loading = lazy(() => import('./pages/Loading'))
+const Login = lazy(() => import('./pages/Login'))
+const Layout = lazy(() => import('./pages/Layout'))
+const HomePage = lazy(() => import('./pages/HomePage'))
+const UserProfile = lazy(() => import('./pages/UserProfile'))
 
 function App() {
     return (
         <HistoryRouter history={history}>
             <Suspense
-                fallback={
-                    <Loading/>
-                }>
+                fallback={<Loading/>}>
                 <Routes>
-                    <Route eaxct path='/' element={<Navigate to="/profile" replace/>}/>
+                    <Route eaxct path='/' element={<Navigate to="home" replace/>}/>
                     <Route path='/' element={
                         <AuthComponent>
                             <Layout/>
                         </AuthComponent>
                     }>
+                        <Route path="home" element={<HomePage/>}/>
                         <Route path="profile" element={<UserProfile/>}/>
                     </Route>
                     <Route path="login" element={<Login/>}/>
+                    <Route path='*' element={<Navigate to="home" replace/>}/>
                 </Routes>
             </Suspense>
         </HistoryRouter>

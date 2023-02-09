@@ -2,10 +2,10 @@ import React from 'react'
 import {Outlet} from "react-router-dom";
 import './index.scss'
 
-function Layout() {
+function HomePage() {
     return (
-        <div className="layout">
-
+        <div>
+            HomePage
             <Outlet/>
         </div>
     )
