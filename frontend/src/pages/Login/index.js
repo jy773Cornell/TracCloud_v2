@@ -55,7 +55,7 @@ function Login() {
                         response.json().then((data) => {
                             if (data.token) {
                                 setToken(data.token);
-                                window.location.href = "/profile";
+                                window.location.href = "/home";
                             }
                         })
                     } else {

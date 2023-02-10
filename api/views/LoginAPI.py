@@ -28,6 +28,7 @@ class UserLoginView(APIView):
                     expiry = self.remember_expiry_sec if remember else self.normal_expiry_sec
                     token = make_token(username, expiry)
                     request.session["token"] = token
+                    request.session["uid"] = user.uid
                     request.session.set_expiry(expiry)
 
                     return Response({"Login Succeeded": "User Info Verified.", "token": token},
@@ -51,8 +52,6 @@ class UserLogoutView(APIView):
 
 
 class UserAuthCheckView(APIView):
-    serializer_class = UserLoginSerializer
-
     @csrf_exempt
     def post(self, request, format=None):
         if not self.request.session.exists(self.request.session.session_key):
@@ -64,4 +63,4 @@ class UserAuthCheckView(APIView):
         if not request.session.get("token") or request.session.get("token") != request.data.get("token"):
             return Response({'Auth Status': 'Unauthorized.'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        return Response({'Auth Status': 'Authorized.'}, status=status.HTTP_200_OK)
+        return Response({'Auth Status': 'Authorized.', "uid": request.session.get("uid")}, status=status.HTTP_200_OK)

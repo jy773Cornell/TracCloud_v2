@@ -4,10 +4,11 @@ import {useState} from "react";
 import {getToken} from "../utils";
 
 const Loading = lazy(() => import('../pages/Loading'))
+const Layout = lazy(() => import('../pages/Layout'))
 
-function AuthComponent({children}) {
-
+function AuthComponent() {
     const [authStatus, setAuthStatus] = useState("loading")
+    const [uid, setUID] = useState("")
 
     function AuthCheck() {
         const requestOptions = {
@@ -20,7 +21,10 @@ function AuthComponent({children}) {
         fetch("/api/auth/", requestOptions)
             .then((response) => {
                 if (response.ok) {
-                    setAuthStatus("authorized");
+                    response.json().then((data) => {
+                        setUID(data.uid)
+                        setAuthStatus("authorized");
+                    })
                 } else {
                     setAuthStatus("unauthorized");
                 }
@@ -32,11 +36,9 @@ function AuthComponent({children}) {
     }, [])
 
     if (authStatus === "loading") {
-        return (
-            <Loading/>
-        )
+        return <Loading/>
     } else if (authStatus === "authorized") {
-        return <>{children}</>
+        return <Layout uid={uid}/>
     } else if (authStatus === "unauthorized") {
         return <Navigate to="/login" replace/>
     }

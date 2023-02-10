@@ -1,9 +1,6 @@
-from django.urls import path, re_path
-
-
+from django.urls import re_path
 from frontend.views import index
 
 urlpatterns = [
-    path("", index),
-    re_path(r'^[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]$', index),
+    re_path(r'^(?!api)(?!admin).*$', index),
 ]

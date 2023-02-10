@@ -5,7 +5,6 @@ import AuthComponent from "./components/AuthComponent";
 
 const Loading = lazy(() => import('./pages/Loading'))
 const Login = lazy(() => import('./pages/Login'))
-const Layout = lazy(() => import('./pages/Layout'))
 const HomePage = lazy(() => import('./pages/HomePage'))
 const UserProfile = lazy(() => import('./pages/UserProfile'))
 
@@ -15,16 +14,12 @@ function App() {
             <Suspense
                 fallback={<Loading/>}>
                 <Routes>
+                    <Route path="login" element={<Login/>}/>
                     <Route eaxct path='/' element={<Navigate to="home" replace/>}/>
-                    <Route path='/' element={
-                        <AuthComponent>
-                            <Layout/>
-                        </AuthComponent>
-                    }>
+                    <Route path='/' element={<AuthComponent/>}>
                         <Route path="home" element={<HomePage/>}/>
                         <Route path="profile" element={<UserProfile/>}/>
                     </Route>
-                    <Route path="login" element={<Login/>}/>
                     <Route path='*' element={<Navigate to="home" replace/>}/>
                 </Routes>
             </Suspense>
