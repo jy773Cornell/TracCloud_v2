@@ -21,6 +21,7 @@ import ScienceIcon from '@mui/icons-material/Science';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import ConstructionIcon from '@mui/icons-material/Construction';
+import HomeIcon from '@mui/icons-material/Home';
 
 function Layout(props) {
     const [username, setUsername] = useState("")
@@ -66,6 +67,15 @@ function Layout(props) {
 
     const GrowerList = () => (
         <List>
+            <ListItem disablePadding>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/home')}
+                                selected={location.pathname === "/home"}>
+                    <ListItemIcon>
+                        <HomeIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="Home"/>
+                </ListItemButton>
+            </ListItem>
             <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/profile')}
                                 selected={location.pathname === "/profile"}>
@@ -134,6 +144,15 @@ function Layout(props) {
     const ApplicatorList = () => (
         <List>
             <ListItem disablePadding>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/home')}
+                                selected={location.pathname === "/home"}>
+                    <ListItemIcon>
+                        <HomeIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="Home"/>
+                </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/profile')}
                                 selected={location.pathname === "/profile"}>
                     <ListItemIcon>
@@ -183,6 +202,15 @@ function Layout(props) {
     const FoodProcessorList = () => (
         <List>
             <ListItem disablePadding>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/home')}
+                                selected={location.pathname === "/home"}>
+                    <ListItemIcon>
+                        <HomeIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="Home"/>
+                </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/profile')}
                                 selected={location.pathname === "/profile"}>
                     <ListItemIcon>
@@ -223,6 +251,15 @@ function Layout(props) {
     const FoodDistributorList = () => (
         <List>
             <ListItem disablePadding>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/home')}
+                                selected={location.pathname === "/home"}>
+                    <ListItemIcon>
+                        <HomeIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="Home"/>
+                </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/profile')}
                                 selected={location.pathname === "/profile"}>
                     <ListItemIcon>
@@ -262,6 +299,15 @@ function Layout(props) {
     )
     const FoodRetailerList = () => (
         <List>
+            <ListItem disablePadding>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/home')}
+                                selected={location.pathname === "/home"}>
+                    <ListItemIcon>
+                        <HomeIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="Home"/>
+                </ListItemButton>
+            </ListItem>
             <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/profile')}
                                 selected={location.pathname === "/profile"}>
@@ -317,7 +363,7 @@ function Layout(props) {
     return (<div className="layout">
         <StyledAppBar position="fixed">
             <StyledToolbar>
-                <Typography variant="h6" color="black" padding="10px">
+                <Typography variant="h7" color="black" padding="10px">
                     Hello, {username}
                 </Typography>
                 <StyledNotificationsIcon/>
