@@ -31,13 +31,13 @@ class UserLoginView(APIView):
                     request.session["uid"] = user.uid
                     request.session.set_expiry(expiry)
 
-                    return Response({"Login Succeeded": "User Info Verified.", "token": token},
+                    return Response({"Succeeded": "User Info Verified.", "token": token},
                                     status=status.HTTP_200_OK)
 
-                return Response({'Login Failed': 'Wrong Password.'},
+                return Response({'Failed': 'Wrong Password.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            return Response({'Login Failed': 'Invalid Username.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'Failed': 'Invalid Username.'}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({'Bad Request': 'Invalid post data'},
                         status=status.HTTP_400_BAD_REQUEST)
@@ -48,7 +48,7 @@ class UserLogoutView(APIView):
         if self.request.session.exists(self.request.session.session_key):
             self.request.session.delete()
 
-        return Response({'Logout Succeeded': 'Session Has Been Cleared.'}, status=status.HTTP_200_OK)
+        return Response({'Succeeded': 'Session Has Been Cleared.'}, status=status.HTTP_200_OK)
 
 
 class UserAuthCheckView(APIView):
@@ -61,6 +61,6 @@ class UserAuthCheckView(APIView):
             return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
 
         if not request.session.get("token") or request.session.get("token") != request.data.get("token"):
-            return Response({'Auth Status': 'Unauthorized.'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'Failed': 'Unauthorized.'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        return Response({'Auth Status': 'Authorized.', "uid": request.session.get("uid")}, status=status.HTTP_200_OK)
+        return Response({'Succeeded': 'Authorized.', "uid": request.session.get("uid")}, status=status.HTTP_200_OK)

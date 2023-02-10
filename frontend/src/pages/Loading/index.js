@@ -1,14 +1,12 @@
 import React from 'react';
-import {Typography} from "@mui/material";
 import './index.scss'
+import {StyledTypography} from "./styles";
 
 function Loading() {
     return (
-        <div className="loading">
-            <Typography varient="h4" component="h4">
-                Loading...
-            </Typography>
-        </div>
+        <StyledTypography varient="h4" component="h4">
+            Loading...
+        </StyledTypography>
     )
 }
 

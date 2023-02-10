@@ -1,7 +1,8 @@
 import React, {useState} from 'react'
-import {Grid, Avatar, Button, Typography, Link, Card, TextField, Checkbox, FormControlLabel} from '@mui/material'
+import {Grid, Avatar, Button, Typography, Link, TextField, Checkbox, FormControlLabel} from '@mui/material'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import './index.scss'
+import {StyledCard, StyledGrid, StyledTypography} from "./styles";
 import {setToken} from "../../utils";
 
 function Login() {
@@ -73,43 +74,38 @@ function Login() {
         }
     }
 
-    return (<div className="login">
-            <Grid container className="center">
-                <Card elevation={10} className="card">
+    return (
+        <div className="login">
+            <StyledGrid container>
+                <StyledCard elevation={10}>
                     <Grid align='center'>
                         <Avatar sx={{backgroundColor: '#1bbd7e'}}> < LockOutlinedIcon/> < /Avatar>
                         <Typography variant="h4" component="h4">Sign In</Typography>
                     </Grid>
-                    <div>
-                        <TextField label='Username' placeholder='Enter username'
-                                   variant="standard" fullWidth required
-                                   error={errors.status[0]}
-                                   helperText={errors.message[0]}
-                                   onChange={handleUsernameChange}/>
-                    </div>
-                    <div className="textField">
-                        <TextField label='Password' placeholder='Enter password'
-                                   variant="standard" type='password' fullWidth required
-                                   error={errors.status[1]}
-                                   helperText={errors.message[1]}
-                                   onChange={handlePasswordChange}/>
-                    </div>
+                    <TextField label='Username' placeholder='Enter username'
+                               variant="standard" fullWidth required
+                               error={errors.status[0]}
+                               helperText={errors.message[0]}
+                               onChange={handleUsernameChange}/>
+                    <TextField label='Password' placeholder='Enter password'
+                               variant="standard" type='password' fullWidth required
+                               error={errors.status[1]}
+                               helperText={errors.message[1]}
+                               onChange={handlePasswordChange}/>
                     <FormControlLabel
                         control={<Checkbox name="remember" color="primary" onChange={handleRememberChange}/>}
                         label="Remember me"
                     />
                     <Button type='submit' color='primary' variant="contained" fullWidth onClick={SignInBtnPressed}>Sign
                         in</Button>
-                    <div className="info">
-                        <Typography>
-                            <Link href="#">Forgot password?</Link>
-                        </Typography>
-                        <Typography> Do you have an account?
-                            <Link href="#"> Sign Up </Link>
-                        </Typography>
-                    </div>
-                </Card>
-            </Grid>
+                    <StyledTypography>
+                        <Link href="#">Forgot password?</Link>
+                    </StyledTypography>
+                    <Typography> Do you have an account?
+                        <Link href="#"> Sign Up </Link>
+                    </Typography>
+                </StyledCard>
+            </StyledGrid>
         </div>
     )
 }

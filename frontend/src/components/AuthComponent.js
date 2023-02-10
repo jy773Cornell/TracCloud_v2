@@ -22,7 +22,7 @@ function AuthComponent() {
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        setUID(data.uid)
+                        setUID(data.uid);
                         setAuthStatus("authorized");
                     })
                 } else {

@@ -1,8 +1,8 @@
 import {styled} from "@mui/system";
 import {AppBar, Card, CardContent, Drawer, Toolbar, Typography} from "@mui/material";
+import NotificationsIcon from '@mui/icons-material/Notifications';
 
-
-export const drawerWidth = 220;
+export const drawerWidth = 200;
 
 export const StyledAppBar = styled(AppBar)({
     width: `calc(100% - ${drawerWidth}px)`,
@@ -35,4 +35,10 @@ export const StyledCardContent = styled(CardContent)({
 export const StyledToolbar = styled(Toolbar)({
     display: 'flex',
     justifyContent: 'flex-end',
+})
+
+export const StyledNotificationsIcon= styled(NotificationsIcon)({
+    paddingRight: 10,
+    fontSize: 30,
+    color: 'gray',
 })

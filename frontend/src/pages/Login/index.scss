@@ -6,24 +6,3 @@
   top: 0;
   background-image: url("../../images/background.png");
 }
-
-.center {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.card {
-  padding: 20px;
-  width: 380px;
-  margin: 20px auto;
-}
-
-.textField {
-  padding-top: 10px;
-}
-
-.info {
-  padding-top: 10px;
-}
