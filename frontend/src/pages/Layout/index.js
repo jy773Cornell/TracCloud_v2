@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {Outlet} from "react-router-dom";
+import {Outlet, useNavigate, useLocation} from "react-router-dom";
 import {Button, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography} from "@mui/material";
 import './index.scss'
 import {
@@ -23,9 +23,14 @@ import SummarizeIcon from '@mui/icons-material/Summarize';
 import ConstructionIcon from '@mui/icons-material/Construction';
 
 function Layout(props) {
-
     const [username, setUsername] = useState("")
     const [userType, setUserType] = useState("")
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const handleMenuButtonPressed = (url) => {
+        navigate(url);
+    }
 
     async function UserInfoGet(props) {
         const requestOptions = {
@@ -62,7 +67,8 @@ function Layout(props) {
     const GrowerList = () => (
         <List>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/profile')}
+                                selected={location.pathname === "/profile"}>
                     <ListItemIcon>
                         <AccountBoxIcon/>
                     </ListItemIcon>
@@ -70,7 +76,8 @@ function Layout(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/network')}
+                                selected={location.pathname === "/network"}>
                     <ListItemIcon>
                         <PeopleIcon/>
                     </ListItemIcon>
@@ -78,7 +85,8 @@ function Layout(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/crop')}
+                                selected={location.pathname === "/crop"}>
                     <ListItemIcon>
                         <GrassIcon/>
                     </ListItemIcon>
@@ -86,7 +94,8 @@ function Layout(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/site')}
+                                selected={location.pathname === "/site"}>
                     <ListItemIcon>
                         <HolidayVillageIcon/>
                     </ListItemIcon>
@@ -94,7 +103,8 @@ function Layout(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/chemical')}
+                                selected={location.pathname === "/chemical"}>
                     <ListItemIcon>
                         <ScienceIcon/>
                     </ListItemIcon>
@@ -102,7 +112,8 @@ function Layout(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/record')}
+                                selected={location.pathname === "/record"}>
                     <ListItemIcon>
                         <PostAddIcon/>
                     </ListItemIcon>
@@ -110,7 +121,8 @@ function Layout(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/report')}
+                                selected={location.pathname === "/report"}>
                     <ListItemIcon>
                         <SummarizeIcon/>
                     </ListItemIcon>
@@ -122,7 +134,8 @@ function Layout(props) {
     const ApplicatorList = () => (
         <List>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/profile')}
+                                selected={location.pathname === "/profile"}>
                     <ListItemIcon>
                         <AccountBoxIcon/>
                     </ListItemIcon>
@@ -130,7 +143,8 @@ function Layout(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/network')}
+                                selected={location.pathname === "/network"}>
                     <ListItemIcon>
                         <PeopleIcon/>
                     </ListItemIcon>
@@ -138,7 +152,8 @@ function Layout(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/equipment')}
+                                selected={location.pathname === "/equipment"}>
                     <ListItemIcon>
                         <ConstructionIcon/>
                     </ListItemIcon>
@@ -146,7 +161,8 @@ function Layout(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/record')}
+                                selected={location.pathname === "/record"}>
                     <ListItemIcon>
                         <PostAddIcon/>
                     </ListItemIcon>
@@ -154,7 +170,8 @@ function Layout(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/report')}
+                                selected={location.pathname === "/report"}>
                     <ListItemIcon>
                         <SummarizeIcon/>
                     </ListItemIcon>
@@ -166,7 +183,8 @@ function Layout(props) {
     const FoodProcessorList = () => (
         <List>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/profile')}
+                                selected={location.pathname === "/profile"}>
                     <ListItemIcon>
                         <AccountBoxIcon/>
                     </ListItemIcon>
@@ -174,7 +192,8 @@ function Layout(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/network')}
+                                selected={location.pathname === "/network"}>
                     <ListItemIcon>
                         <PeopleIcon/>
                     </ListItemIcon>
@@ -182,7 +201,8 @@ function Layout(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/record')}
+                                selected={location.pathname === "/record"}>
                     <ListItemIcon>
                         <PostAddIcon/>
                     </ListItemIcon>
@@ -190,7 +210,8 @@ function Layout(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/report')}
+                                selected={location.pathname === "/report"}>
                     <ListItemIcon>
                         <SummarizeIcon/>
                     </ListItemIcon>
@@ -202,7 +223,8 @@ function Layout(props) {
     const FoodDistributorList = () => (
         <List>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/profile')}
+                                selected={location.pathname === "/profile"}>
                     <ListItemIcon>
                         <AccountBoxIcon/>
                     </ListItemIcon>
@@ -210,7 +232,8 @@ function Layout(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/network')}
+                                selected={location.pathname === "/network"}>
                     <ListItemIcon>
                         <PeopleIcon/>
                     </ListItemIcon>
@@ -218,7 +241,8 @@ function Layout(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/record')}
+                                selected={location.pathname === "/record"}>
                     <ListItemIcon>
                         <PostAddIcon/>
                     </ListItemIcon>
@@ -226,7 +250,8 @@ function Layout(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/report')}
+                                selected={location.pathname === "/report"}>
                     <ListItemIcon>
                         <SummarizeIcon/>
                     </ListItemIcon>
@@ -238,7 +263,8 @@ function Layout(props) {
     const FoodRetailerList = () => (
         <List>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/profile')}
+                                selected={location.pathname === "/profile"}>
                     <ListItemIcon>
                         <AccountBoxIcon/>
                     </ListItemIcon>
@@ -246,7 +272,8 @@ function Layout(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/network')}
+                                selected={location.pathname === "/network"}>
                     <ListItemIcon>
                         <PeopleIcon/>
                     </ListItemIcon>
@@ -254,7 +281,8 @@ function Layout(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/record')}
+                                selected={location.pathname === "/record"}>
                     <ListItemIcon>
                         <PostAddIcon/>
                     </ListItemIcon>
@@ -262,7 +290,8 @@ function Layout(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/report')}
+                                selected={location.pathname === "/report"}>
                     <ListItemIcon>
                         <SummarizeIcon/>
                     </ListItemIcon>

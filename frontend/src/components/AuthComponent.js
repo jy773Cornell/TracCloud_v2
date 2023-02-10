@@ -10,7 +10,7 @@ function AuthComponent() {
     const [authStatus, setAuthStatus] = useState("loading")
     const [uid, setUID] = useState("")
 
-    function AuthCheck() {
+    async function AuthCheck() {
         const requestOptions = {
             method: "POST",
             headers: {"Content-Type": "application/json"},
@@ -18,7 +18,7 @@ function AuthComponent() {
                 token: getToken(),
             }),
         };
-        fetch("/api/auth/", requestOptions)
+        await fetch("/api/auth/", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
