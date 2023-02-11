@@ -1,6 +1,16 @@
 import React, {useEffect, useState} from 'react'
 import {Outlet, useNavigate, useLocation} from "react-router-dom";
-import {Button, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography} from "@mui/material";
+import {
+    Badge,
+    Button, Grid,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    Typography
+} from "@mui/material";
 import './index.scss'
 import {
     StyledAppBar,
@@ -360,29 +370,34 @@ function Layout(props) {
         {userType === "Food Retailer" ? FoodRetailerList() : null}
     </Box>);
 
-    return (<div className="layout">
-        <StyledAppBar position="fixed">
-            <StyledToolbar>
-                <Typography variant="h7" color="black" padding="10px">
-                    Hello, {username}
-                </Typography>
-                <StyledNotificationsIcon/>
-                <Button
-                    onClick={handleLogout}
-                    variant="outlined"
-                    color="error"
-                    underline="hover"
-                    padding="5px"
-                >
-                    Logout
-                </Button>
-            </StyledToolbar>
-        </StyledAppBar>
-        <StyledDrawer variant="permanent" anchor="left" PaperProps={{style: {width: drawerWidth}}}>
-            {MenuList()}
-        </StyledDrawer>
-        <Outlet/>
-    </div>)
+    return (
+        <div className="layout">
+            <StyledAppBar position="fixed">
+                <StyledToolbar>
+                    <Typography variant="h7" color="black" padding="10px">
+                        Hello, {username}
+                    </Typography>
+                    <Badge badgeContent={17} color="error">
+                        <StyledNotificationsIcon/>
+                    </Badge>
+                    <Button
+                        onClick={handleLogout}
+                        variant="outlined"
+                        color="error"
+                        underline="hover"
+                        padding="5px"
+                    >
+                        Logout
+                    </Button>
+                </StyledToolbar>
+            </StyledAppBar>
+             <StyledDrawer variant="permanent" anchor="left" PaperProps={{style: {width: drawerWidth}}}>
+                    {MenuList()}
+                </StyledDrawer>
+            <div className="content">
+                <Outlet/>
+            </div>
+        </div>)
 }
 
 export default Layout
