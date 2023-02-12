@@ -1,5 +1,5 @@
 import {styled} from "@mui/system";
-import {Card, Grid, TextField, Typography} from "@mui/material";
+import {Card, Grid, Typography} from "@mui/material";
 
 export const StyledGrid = styled(Grid)({
     height: '100vh',

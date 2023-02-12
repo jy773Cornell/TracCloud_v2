@@ -1,11 +1,10 @@
 import React, {useState} from 'react'
 import {Grid, Avatar, Button, Typography, Link, TextField, Checkbox, FormControlLabel} from '@mui/material'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import './index.scss'
 import {StyledCard, StyledGrid, StyledTypography} from "./styles";
 import {setToken} from "../../utils";
 
-function Login() {
+export default function Login() {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [remember, setRemember] = useState(false)
@@ -75,39 +74,35 @@ function Login() {
     }
 
     return (
-        <div className="login">
-            <StyledGrid container>
-                <StyledCard elevation={10}>
-                    <Grid align='center'>
-                        <Avatar sx={{backgroundColor: '#1bbd7e'}}> < LockOutlinedIcon/> < /Avatar>
-                        <Typography variant="h4" component="h4">Sign In</Typography>
-                    </Grid>
-                    <TextField label='Username' placeholder='Enter username'
-                               variant="standard" fullWidth required
-                               error={errors.status[0]}
-                               helperText={errors.message[0]}
-                               onChange={handleUsernameChange}/>
-                    <TextField label='Password' placeholder='Enter password'
-                               variant="standard" type='password' fullWidth required
-                               error={errors.status[1]}
-                               helperText={errors.message[1]}
-                               onChange={handlePasswordChange}/>
-                    <FormControlLabel
-                        control={<Checkbox name="remember" color="primary" onChange={handleRememberChange}/>}
-                        label="Remember me"
-                    />
-                    <Button type='submit' color='primary' variant="contained" fullWidth onClick={SignInBtnPressed}>Sign
-                        in</Button>
-                    <StyledTypography>
-                        <Link href="#">Forgot password?</Link>
-                    </StyledTypography>
-                    <Typography> Do you have an account?
-                        <Link href="#"> Sign Up </Link>
-                    </Typography>
-                </StyledCard>
-            </StyledGrid>
-        </div>
+        <StyledGrid container>
+            <StyledCard elevation={10}>
+                <Grid align='center'>
+                    <Avatar sx={{backgroundColor: '#1bbd7e'}}> < LockOutlinedIcon/> < /Avatar>
+                    <Typography variant="h4" component="h4">Sign In</Typography>
+                </Grid>
+                <TextField label='Username' placeholder='Enter username'
+                           variant="standard" fullWidth required
+                           error={errors.status[0]}
+                           helperText={errors.message[0]}
+                           onChange={handleUsernameChange}/>
+                <TextField label='Password' placeholder='Enter password'
+                           variant="standard" type='password' fullWidth required
+                           error={errors.status[1]}
+                           helperText={errors.message[1]}
+                           onChange={handlePasswordChange}/>
+                <FormControlLabel
+                    control={<Checkbox name="remember" color="primary" onChange={handleRememberChange}/>}
+                    label="Remember me"
+                />
+                <Button type='submit' color='primary' variant="contained" fullWidth onClick={SignInBtnPressed}>Sign
+                    in</Button>
+                <StyledTypography>
+                    <Link href="#">Forgot password?</Link>
+                </StyledTypography>
+                <Typography> Do you have an account?
+                    <Link href="#"> Sign Up </Link>
+                </Typography>
+            </StyledCard>
+        </StyledGrid>
     )
 }
-
-export default Login

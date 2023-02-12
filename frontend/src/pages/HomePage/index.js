@@ -1,12 +1,9 @@
 import React from 'react'
-import './index.scss'
 
-function HomePage() {
+export default function HomePage() {
     return (
         <div>
             HomePage
         </div>
     )
 }
-
-export default HomePage

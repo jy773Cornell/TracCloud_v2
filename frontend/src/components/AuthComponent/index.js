@@ -1,12 +1,12 @@
 import React, {lazy, useEffect} from 'react';
 import {Navigate} from 'react-router-dom'
 import {useState} from "react";
-import {getToken} from "../utils";
+import {getToken} from "../../utils";
 
-const Loading = lazy(() => import('../pages/Loading'))
-const Layout = lazy(() => import('../pages/Layout'))
+const Loading = lazy(() => import('../../pages/Loading'))
+const Layout = lazy(() => import('../../pages/Layout'))
 
-function AuthComponent() {
+export default function Index() {
     const [authStatus, setAuthStatus] = useState("loading")
     const [uid, setUID] = useState("")
 
@@ -43,5 +43,3 @@ function AuthComponent() {
         return <Navigate to="/login" replace/>
     }
 }
-
-export default AuthComponent
