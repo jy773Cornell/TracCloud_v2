@@ -3,6 +3,7 @@ import {Grid, Avatar, Button, Typography, Link, TextField, Checkbox, FormControl
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {StyledCard, StyledGrid, StyledTypography} from "./styles";
 import {setToken} from "../../utils";
+import {useNavigate} from "react-router-dom";
 
 export default function Login() {
     const [username, setUsername] = useState("")
@@ -11,6 +12,8 @@ export default function Login() {
     const [errors, setErrors] = useState({
         "status": [false, false], "message": ["", ""],
     })
+
+     const navigate = useNavigate();
 
     function handleUsernameChange(e) {
         setUsername(e.target.value);
@@ -55,7 +58,7 @@ export default function Login() {
                         response.json().then((data) => {
                             if (data.token) {
                                 setToken(data.token);
-                                window.location.href = "/home";
+                                navigate("/home");
                             }
                         })
                     } else {

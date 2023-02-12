@@ -1,5 +1,5 @@
 import React, {lazy, useEffect, useState} from 'react'
-import {Outlet} from "react-router-dom";
+import {Outlet, useNavigate} from "react-router-dom";
 import {StyledContainer, StyledRoot} from './styles'
 import {removeToken} from "../../utils";
 
@@ -10,6 +10,8 @@ export default function Layout(props) {
     const [username, setUsername] = useState("")
     const [userType, setUserType] = useState("")
     const [menuOpen, setMenuOpen] = useState(true)
+
+    const navigate = useNavigate();
 
     function toggleMenuOpen() {
         menuOpen ? setMenuOpen(false) : setMenuOpen(true);
@@ -23,7 +25,7 @@ export default function Layout(props) {
             .then((response) => {
                 if (response.ok) {
                     removeToken();
-                    window.location.href = "/login";
+                    navigate("/login");
                 }
             })
     }

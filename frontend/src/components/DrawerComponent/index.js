@@ -10,10 +10,8 @@ import ScienceIcon from "@mui/icons-material/Science";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import SummarizeIcon from "@mui/icons-material/Summarize";
 import ConstructionIcon from "@mui/icons-material/Construction";
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import {Box} from "@mui/system";
 import {useLocation, useNavigate} from "react-router-dom";
-import IconButton from "@mui/material/IconButton";
 
 export default function LayoutDrawer(props) {
     const navigate = useNavigate();
@@ -308,9 +306,7 @@ export default function LayoutDrawer(props) {
     const MenuList = () => (
         <Box sx={{width: 'auto'}} role="presentation">
             <DrawerHeader>
-                <IconButton onClick={props.toggleMenuOpen}>
-                    <ChevronLeftIcon/>
-                </IconButton>
+                Trac Cloud
             </DrawerHeader>
             <Divider/>
             {props.userType === "Grower" ? GrowerList() : null}

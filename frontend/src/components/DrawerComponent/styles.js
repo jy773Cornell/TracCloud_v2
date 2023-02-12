@@ -1,5 +1,5 @@
 import {styled} from "@mui/system";
-import {Card, CardContent, Drawer, List} from "@mui/material";
+import {Drawer} from "@mui/material";
 
 export const drawerWidth = 180;
 
@@ -12,7 +12,9 @@ export const StyledDrawer = styled(Drawer)({
 
 
 export const DrawerHeader = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'flex-end',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 64,
+    fontSize: 25,
 });
