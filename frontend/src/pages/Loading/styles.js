@@ -1,7 +1,9 @@
 import {styled} from "@mui/system";
-import {Typography} from "@mui/material";
+import {Grid} from "@mui/material";
 
-export const StyledTypography = styled(Typography)({
-    margin: 200,
-    textAlign: "center",
+export const StyledGrid = styled(Grid)({
+    height: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
 });
