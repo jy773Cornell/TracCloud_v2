@@ -67,7 +67,6 @@ class UserRelationDeleteSerializer(serializers.ModelSerializer):
 class DummyUserCreateSerializer(serializers.ModelSerializer):
     relation_type = serializers.PrimaryKeyRelatedField(queryset=UserRelationType.objects.all(), required=True,
                                                        allow_null=False)
-
     class Meta:
         model = User
         exclude = ("uid", "password", "self_activated", "is_active")
