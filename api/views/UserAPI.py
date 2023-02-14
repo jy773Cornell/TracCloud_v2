@@ -1,9 +1,10 @@
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework import generics, status
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from api.serializers.UserSerializer import *
 from api.models import *
+from api.utils.ModelManager import model_delete
 from api.utils.UUIDGen import gen_uuid
 
 
@@ -41,6 +42,23 @@ class UserGetView(APIView):
                 data = UserGetSerializer(user).data
                 data["type"] = UserType.objects.filter(utid=data["type"]).first().name
                 return Response({'Succeeded': 'User Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserDeleteView(APIView):
+    serializer_class = UserDeleteSerializer
+
+    @csrf_exempt
+    def put(self, request, format=None):
+        uid = request.data.get("uid")
+        if uid:
+            user = User.objects.filter(uid=uid, is_active=True)
+            if user:
+                model_delete(user)
+                return Response({'Succeeded': 'User has been deleted.'}, status=status.HTTP_200_OK)
 
             return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -115,6 +133,23 @@ class UserRelationGetView(APIView):
                 data = UserRelationGetSerializer(relation).data
                 data["type"] = UserRelationType.objects.filter(urtid=data["type"]).first().name
                 return Response({'Succeeded': 'User relation Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid urid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserRelationDeleteView(APIView):
+    serializer_class = UserRelationDeleteSerializer
+
+    @csrf_exempt
+    def put(self, request, format=None):
+        urid = request.data.get("urid")
+        if urid:
+            relation = UserRelation.objects.filter(urid=urid, is_resolved=True, is_active=True)
+            if relation:
+                model_delete(relation)
+                return Response({'Succeeded': 'Relation has been deleted.'}, status=status.HTTP_200_OK)
 
             return Response({'Failed': 'Invalid urid'}, status=status.HTTP_404_NOT_FOUND)
 

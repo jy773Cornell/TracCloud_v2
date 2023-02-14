@@ -20,6 +20,18 @@ class UserGetSerializer(serializers.ModelSerializer):
         exclude = ("password",)
 
 
+class UserProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        exclude = ("uid", "username", "password", "type", "added_by", "self_activated", "is_active", "create_time",)
+
+
+class UserDeleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("uid",)
+
+
 class UserRelationCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRelation
@@ -30,3 +42,9 @@ class UserRelationGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRelation
         fields = "__all__"
+
+
+class UserRelationDeleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserRelation
+        fields = ("urid",)

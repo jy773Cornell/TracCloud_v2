@@ -44,6 +44,7 @@ class UserLoginView(APIView):
 
 
 class UserLogoutView(APIView):
+    @csrf_exempt
     def delete(self, request, format=None):
         if self.request.session.exists(self.request.session.session_key):
             self.request.session.delete()
