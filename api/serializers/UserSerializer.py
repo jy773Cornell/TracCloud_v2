@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from api.models import User
+from api.models import User, UserRelation
 
 
 class UserLoginSerializer(serializers.ModelSerializer):
@@ -14,7 +14,19 @@ class UserCreateSerializer(serializers.ModelSerializer):
         fields = ("username", "password", "type", "email",)
 
 
-class UserGetInfoSerializer(serializers.ModelSerializer):
+class UserGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("username", "type",)
+        exclude = ("password",)
+
+
+class UserRelationCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserRelation
+        fields = ("urid", "requester", "provider", "type", "is_active",)
+
+
+class UserRelationGetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserRelation
+        fields = "__all__"

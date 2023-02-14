@@ -52,15 +52,16 @@ class UserRelation(models.Model):
                                   null=True, blank=True, on_delete=models.SET_NULL)
     provider = models.ForeignKey(verbose_name="Provider", to="User", to_field="uid", related_name="provider_user",
                                  null=True, blank=True, on_delete=models.SET_NULL)
-    relation_type = models.ForeignKey(verbose_name="Relation Type", to="UserRelationType", to_field="urtid",
-                                      related_name="relationtype", null=True, blank=True, on_delete=models.SET_NULL)
+    type = models.ForeignKey(verbose_name="Relation Type", to="UserRelationType", to_field="urtid",
+                             related_name="relationtype", null=True, blank=True, on_delete=models.SET_NULL)
     added_by = models.ForeignKey(verbose_name="Added By", to="User", to_field="uid", related_name="relation_added_by",
                                  null=True, blank=True, on_delete=models.SET_NULL)
+    is_resolved = models.BooleanField(verbose_name="Is Resolved", default=False)
     is_active = models.BooleanField(verbose_name="Is Active", default=False)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
 
     def __str__(self):
-        return "Relation: {}, Requester: {}, Provider: {}".format(self.relation_type, self.requester, self.provider)
+        return "Relation: {}, Requester: {}, Provider: {}".format(self.type, self.requester, self.provider)
 
 
 class UserRelationType(models.Model):

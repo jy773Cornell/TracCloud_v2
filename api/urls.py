@@ -1,6 +1,6 @@
 from django.urls import path
-from api.views.LoginAPI import UserLoginView, UserLogoutView, UserAuthCheckView
-from api.views.UserAPI import UserCreateView, UserGetInfoView
+from api.views.LoginAPI import *
+from api.views.UserAPI import *
 
 urlpatterns = [
 
@@ -13,6 +13,9 @@ urlpatterns = [
     # UserAPI
 
     path('user/create/', UserCreateView.as_view()),
-    path('user/get/info/', UserGetInfoView.as_view()),
+    path('user/get/', UserGetView.as_view()),
+    path('user/relation/create/request/', UserRelationCreateRequestView.as_view()),
+    path('user/relation/create/response/', UserRelationCreateResponseView.as_view()),
+    path('user/relation/get/', UserRelationGetView.as_view()),
 
 ]

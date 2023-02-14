@@ -19,7 +19,7 @@ export default function Layout(props) {
 
     async function handleLogout() {
         const requestOptions = {
-            method: "GET", headers: {"Content-Type": "application/json"},
+            method: "DELETE", headers: {"Content-Type": "application/json"},
         };
         await fetch("/api/logout/", requestOptions)
             .then((response) => {
@@ -34,7 +34,7 @@ export default function Layout(props) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/user/get/info" + "?uid=" + props.uid, requestOptions)
+        await fetch("/api/user/get/" + "?uid=" + props.uid, requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {

@@ -44,7 +44,7 @@ class UserLoginView(APIView):
 
 
 class UserLogoutView(APIView):
-    def get(self, request, format=None):
+    def delete(self, request, format=None):
         if self.request.session.exists(self.request.session.session_key):
             self.request.session.delete()
 
