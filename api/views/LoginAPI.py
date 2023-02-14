@@ -1,4 +1,5 @@
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.hashers import check_password
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -22,9 +23,9 @@ class UserLoginView(APIView):
         password = request.data.get("password")
         remember = request.data.get("remember")
         if username and password:
-            user = User.objects.filter(username=username).first()
+            user = User.objects.filter(username=username, self_activated=True, is_active=True).first()
             if user:
-                if password == user.password:
+                if check_password(password, user.password):
                     expiry = self.remember_expiry_sec if remember else self.normal_expiry_sec
                     token = make_token(username, expiry)
                     request.session["token"] = token

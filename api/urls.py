@@ -14,9 +14,16 @@ urlpatterns = [
 
     path('user/create/', UserCreateView.as_view()),
     path('user/get/', UserGetView.as_view()),
+    path('user/profile/update/', UserProfileUpdateView.as_view()),
+    path('user/password/change/', UserPasswordChangeView.as_view()),
     path('user/delete/', UserDeleteView.as_view()),
+
     path('user/relation/create/request/', UserRelationCreateRequestView.as_view()),
     path('user/relation/create/response/', UserRelationCreateResponseView.as_view()),
     path('user/relation/get/', UserRelationGetView.as_view()),
+    path('user/relation/update/', UserRelationUpdateView.as_view()),
     path('user/relation/delete/', UserRelationDeleteView.as_view()),
+
+    path('user/dummy/create/', DummyUserCreate.as_view()),
+
 ]

@@ -1,4 +1,5 @@
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.hashers import make_password, check_password
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -6,6 +7,11 @@ from api.serializers.UserSerializer import *
 from api.models import *
 from api.utils.ModelManager import model_delete
 from api.utils.UUIDGen import gen_uuid
+from api.utils.RandomPassword import generate_random_string
+
+'''
+    User
+'''
 
 
 class UserCreateView(APIView):
@@ -23,7 +29,7 @@ class UserCreateView(APIView):
                                 status=status.HTTP_406_NOT_ACCEPTABLE)
 
             uid = gen_uuid("UID")
-            User(uid=uid, username=username, password=password, type_id=user_type, email=email).save()
+            User(uid=uid, username=username, password=make_password(password), type_id=user_type, email=email).save()
             User.objects.filter(uid=uid).update(added_by=uid)
             return Response({'Succeeded': 'User account created.'}, status=status.HTTP_201_CREATED)
 
@@ -48,6 +54,51 @@ class UserGetView(APIView):
         return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class UserProfileUpdateView(APIView):
+    serializer_class = UserProfileUpdateSerializer
+
+    @csrf_exempt
+    def put(self, request, format=None):
+        data = dict(request.data.copy())
+        for key, value in data.items():
+            data[key] = value[0]
+        for key, value in data.items():
+            data[key] = value if value != "" else None
+
+        uid = data.pop("uid")
+        if uid:
+            user = User.objects.filter(uid=uid, is_active=True)
+            if user:
+                user.update(**data)
+                return Response({'Succeeded': 'User profile has been updated.'}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserPasswordChangeView(APIView):
+    serializer_class = UserPasswordChangeSerializer
+
+    @csrf_exempt
+    def put(self, request, format=None):
+        uid = request.data.get("uid")
+        password = request.data.get("password")
+        original_password = request.data.get("original_password")
+        if uid and password and original_password:
+            user = User.objects.filter(uid=uid, is_active=True)
+            if user:
+                if not check_password(original_password, user.first().password):
+                    return Response({'Failed': 'Wrong original password.'}, status=status.HTTP_403_FORBIDDEN)
+
+                user.update(password=make_password(password))
+                return Response({'Succeeded': 'User password has been updated.'}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class UserDeleteView(APIView):
     serializer_class = UserDeleteSerializer
 
@@ -63,6 +114,11 @@ class UserDeleteView(APIView):
             return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+'''
+    User Relation
+'''
 
 
 class UserRelationCreateRequestView(APIView):
@@ -139,6 +195,24 @@ class UserRelationGetView(APIView):
         return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class UserRelationUpdateView(APIView):
+    serializer_class = UserRelationUpdateSerializer
+
+    @csrf_exempt
+    def put(self, request, format=None):
+        urid = request.data.get("urid")
+        relation_type = request.data.get("type")
+        if urid and relation_type:
+            relation = UserRelation.objects.filter(urid=urid, is_resolved=True, is_active=True)
+            if relation:
+                relation.update(type_id=relation_type)
+                return Response({'Succeeded': 'User relation has been updated.'}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid urid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class UserRelationDeleteView(APIView):
     serializer_class = UserRelationDeleteSerializer
 
@@ -152,5 +226,47 @@ class UserRelationDeleteView(APIView):
                 return Response({'Succeeded': 'Relation has been deleted.'}, status=status.HTTP_200_OK)
 
             return Response({'Failed': 'Invalid urid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+'''
+    Dummy User
+'''
+
+
+class DummyUserCreate(APIView):
+    serializer_class = DummyUserCreateSerializer
+
+    @csrf_exempt
+    def post(self, request, format=None):
+        data = dict(request.data.copy())
+        for key, value in data.items():
+            data[key] = value[0]
+        for key, value in data.items():
+            data[key] = value if value != "" else None
+
+        data.pop("csrfmiddlewaretoken")
+        username = data.get("username")
+        user_type = data.pop("type")
+        added_by = data.pop("added_by")
+        relation_type = data.pop("relation_type")
+        if username and user_type and added_by and relation_type:
+            if User.objects.filter(username=username):
+                return Response({'Failed': 'Username already exists.'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+            uid = gen_uuid("UID")
+            data["uid"] = uid
+            data["password"] = make_password(generate_random_string())
+            data["type_id"] = user_type
+            data["added_by_id"] = added_by
+            data["is_active"] = True
+            User(**data).save()
+
+            urid = gen_uuid("URID")
+            UserRelation(urid=urid, requester_id=added_by, provider_id=uid, type_id=relation_type,
+                         added_by_id=added_by, is_resolved=True, is_active=True).save()
+
+            return Response({'Succeeded': 'Dummy user account created.'}, status=status.HTTP_201_CREATED)
 
         return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)

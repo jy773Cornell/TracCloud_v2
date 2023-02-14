@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from api.models import User, UserRelation
+from api.models import User, UserRelation, UserRelationType
 
 
 class UserLoginSerializer(serializers.ModelSerializer):
@@ -23,7 +23,15 @@ class UserGetSerializer(serializers.ModelSerializer):
 class UserProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        exclude = ("uid", "username", "password", "type", "added_by", "self_activated", "is_active", "create_time",)
+        exclude = ("username", "password", "type", "added_by", "self_activated", "is_active", "create_time",)
+
+
+class UserPasswordChangeSerializer(serializers.ModelSerializer):
+    original_password = serializers.CharField(label="Original Password", required=True, allow_null=False)
+
+    class Meta:
+        model = User
+        fields = ("uid", "password", "original_password",)
 
 
 class UserDeleteSerializer(serializers.ModelSerializer):
@@ -44,7 +52,22 @@ class UserRelationGetSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class UserRelationUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserRelation
+        fields = ("urid", "type",)
+
+
 class UserRelationDeleteSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRelation
         fields = ("urid",)
+
+
+class DummyUserCreateSerializer(serializers.ModelSerializer):
+    relation_type = serializers.PrimaryKeyRelatedField(queryset=UserRelationType.objects.all(), required=True,
+                                                       allow_null=False)
+
+    class Meta:
+        model = User
+        exclude = ("uid", "password", "self_activated", "is_active")

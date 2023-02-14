@@ -8,7 +8,7 @@ User Entity
 class User(models.Model):
     uid = models.CharField(verbose_name="UID", primary_key=True, max_length=48)
     username = models.CharField(verbose_name="Username", unique=True, max_length=64)
-    password = models.CharField(verbose_name="Password", max_length=64)
+    password = models.CharField(verbose_name="Password", max_length=128)
     type = models.ForeignKey(verbose_name="User Type", to="UserType", to_field="utid", related_name="user_type",
                              null=True, blank=True, on_delete=models.SET_NULL)
 
