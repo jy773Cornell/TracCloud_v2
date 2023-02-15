@@ -1,4 +1,3 @@
-from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.views import APIView
@@ -59,3 +58,39 @@ class EquipmentListGetView(APIView):
             return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EquipmentUpdateView(APIView):
+    serializer_class = EquipmentUpdateSerializer
+
+    @csrf_exempt
+    def put(self, request, format=None):
+        data = request_data_transform(request.data)
+        eid = data.pop("eid")
+        if eid:
+            equipment = Equipment.objects.filter(eid=eid, is_active=True)
+            if equipment:
+                equipment.update(**data)
+                return Response({'Succeeded': 'Equipment info has been updated.'}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid eid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EquipmentDeleteView(APIView):
+    serializer_class = EquipmentDeleteSerializer
+
+    @csrf_exempt
+    def put(self, request, format=None):
+        eid = request.data.get("eid")
+        user = request.data.get("user")
+        if eid and user:
+            equipment = Equipment.objects.filter(eid=eid, user_id=user, is_active=True)
+            if equipment:
+                model_delete(equipment)
+                return Response({'Succeeded': 'Equipment has been deleted.'}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid eid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)

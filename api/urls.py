@@ -32,5 +32,7 @@ urlpatterns = [
     path('equipment/create/', EquipmentCreateView.as_view()),
     path('equipment/get/', EquipmentGetView.as_view()),
     path('equipment/list/get/', EquipmentListGetView.as_view()),
+    path('equipment/update/', EquipmentUpdateView.as_view()),
+    path('equipment/delete/', EquipmentDeleteView.as_view()),
 
 ]
