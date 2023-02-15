@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from api.models import User, UserRelation, UserRelationType
+from api.models import User, UserType, UserRelation, UserRelationType
 
 
 class UserLoginSerializer(serializers.ModelSerializer):
@@ -15,6 +15,8 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
 
 class UserGetSerializer(serializers.ModelSerializer):
+    type = serializers.StringRelatedField()
+
     class Meta:
         model = User
         exclude = ("password",)
@@ -34,12 +36,6 @@ class UserPasswordChangeSerializer(serializers.ModelSerializer):
         fields = ("uid", "password", "original_password",)
 
 
-class UserDeleteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ("uid",)
-
-
 class UserRelationCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRelation
@@ -47,6 +43,8 @@ class UserRelationCreateSerializer(serializers.ModelSerializer):
 
 
 class UserRelationGetSerializer(serializers.ModelSerializer):
+    type = serializers.StringRelatedField()
+
     class Meta:
         model = UserRelation
         fields = "__all__"
@@ -65,8 +63,22 @@ class UserRelationDeleteSerializer(serializers.ModelSerializer):
 
 
 class DummyUserCreateSerializer(serializers.ModelSerializer):
-    relation_type = serializers.PrimaryKeyRelatedField(queryset=UserRelationType.objects.all(), required=True,
-                                                       allow_null=False)
+    relation_type = serializers.PrimaryKeyRelatedField(queryset=UserRelationType.objects.filter(is_active=True))
+    type_id = serializers.PrimaryKeyRelatedField(source='type', queryset=UserType.objects.filter(is_active=True))
+    added_by_id = serializers.PrimaryKeyRelatedField(source='added_by', queryset=User.objects.filter(is_active=True))
+
     class Meta:
         model = User
-        exclude = ("uid", "password", "self_activated", "is_active")
+        exclude = ("uid", "type", "password", "self_activated", "added_by", "is_active", "create_time",)
+
+
+class DummyUserActivateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("uid", "username", "password",)
+
+
+class DummyUserDeleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("uid", "added_by",)

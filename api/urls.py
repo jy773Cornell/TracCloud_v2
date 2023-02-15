@@ -1,6 +1,7 @@
 from django.urls import path
 from api.views.LoginAPI import *
 from api.views.UserAPI import *
+from api.views.EquipmentAPI import *
 
 urlpatterns = [
 
@@ -16,7 +17,6 @@ urlpatterns = [
     path('user/get/', UserGetView.as_view()),
     path('user/profile/update/', UserProfileUpdateView.as_view()),
     path('user/password/change/', UserPasswordChangeView.as_view()),
-    path('user/delete/', UserDeleteView.as_view()),
 
     path('user/relation/create/request/', UserRelationCreateRequestView.as_view()),
     path('user/relation/create/response/', UserRelationCreateResponseView.as_view()),
@@ -25,5 +25,12 @@ urlpatterns = [
     path('user/relation/delete/', UserRelationDeleteView.as_view()),
 
     path('user/dummy/create/', DummyUserCreate.as_view()),
+    path('user/dummy/activate/', DummyUserActivate.as_view()),
+    path('user/dummy/delete/', DummyUserDeleteView.as_view()),
+
+    # EquipmentAPI
+    path('equipment/create/', EquipmentCreateView.as_view()),
+    path('equipment/get/', EquipmentGetView.as_view()),
+    path('equipment/list/get/', EquipmentListGetView.as_view()),
 
 ]
