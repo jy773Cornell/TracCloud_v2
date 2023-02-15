@@ -16,6 +16,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
 class UserGetSerializer(serializers.ModelSerializer):
     type = serializers.StringRelatedField()
+    added_by = serializers.StringRelatedField()
 
     class Meta:
         model = User
@@ -44,6 +45,9 @@ class UserRelationCreateSerializer(serializers.ModelSerializer):
 
 class UserRelationGetSerializer(serializers.ModelSerializer):
     type = serializers.StringRelatedField()
+    requester = serializers.StringRelatedField()
+    provider = serializers.StringRelatedField()
+    added_by = serializers.StringRelatedField()
 
     class Meta:
         model = UserRelation
@@ -59,7 +63,7 @@ class UserRelationUpdateSerializer(serializers.ModelSerializer):
 class UserRelationDeleteSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRelation
-        fields = ("urid",)
+        fields = ("urid", "requester", "provider",)
 
 
 class DummyUserCreateSerializer(serializers.ModelSerializer):

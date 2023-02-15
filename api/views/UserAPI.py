@@ -195,8 +195,11 @@ class UserRelationDeleteView(APIView):
     @csrf_exempt
     def put(self, request, format=None):
         urid = request.data.get("urid")
-        if urid:
-            relation = UserRelation.objects.filter(urid=urid, is_resolved=True, is_active=True)
+        requester = request.data.get("requester")
+        provider = request.data.get("provider")
+        if urid and requester and provider:
+            relation = UserRelation.objects.filter(
+                urid=urid, requester_id=requester, provider_id=provider, is_resolved=True, is_active=True)
             if relation:
                 model_delete(relation)
                 return Response({'Succeeded': 'Relation has been deleted.'}, status=status.HTTP_200_OK)
