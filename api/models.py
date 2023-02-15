@@ -106,3 +106,79 @@ class EquipmentType(models.Model):
 
     def __str__(self):
         return self.name
+
+
+'''
+Crop Entity
+'''
+
+
+class Crop(models.Model):
+    cid = models.CharField(verbose_name="CID", primary_key=True, max_length=48)
+    user = models.ForeignKey(verbose_name="User", to="User", to_field="uid", related_name="crop_user",
+                             null=True, blank=True, on_delete=models.SET_NULL)
+    crop = models.ForeignKey(verbose_name="Crop Name", to="CropCategory", to_field="ccid",
+                             related_name="crop_category", null=True, blank=True, on_delete=models.SET_NULL)
+    variety = models.ForeignKey(verbose_name="Variety", to="CropVariety", to_field="cvid",
+                                related_name="crop_variety", null=True, blank=True, on_delete=models.SET_NULL)
+    lifecycle = models.ForeignKey(verbose_name="Lifecycle", to="CropLifecycle", to_field="clcid",
+                                  related_name="crop_lifecycle", null=True, blank=True, on_delete=models.SET_NULL)
+    growth_stage = models.ForeignKey(verbose_name="Grow Stage", to="CropGrowthStage", to_field="cgsid",
+                                     related_name="crop_growth_stage", null=True, blank=True, on_delete=models.SET_NULL)
+
+    is_active = models.BooleanField(verbose_name="Is Active", default=True)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
+
+    def __str__(self):
+        return "{}: {}".format(self.crop, self.variety)
+
+
+class CropCategory(models.Model):
+    ccid = models.CharField(verbose_name="CCID", primary_key=True, max_length=48)
+    name = models.CharField(verbose_name="Crop Name", max_length=128)
+    category = models.CharField(verbose_name="Category Name", max_length=128)
+    note = models.TextField(verbose_name="Note", null=True, blank=True)
+    is_active = models.BooleanField(verbose_name="Is Active", default=True)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+
+class CropVariety(models.Model):
+    cvid = models.CharField(verbose_name="CVID", primary_key=True, max_length=48)
+    name = models.CharField(verbose_name="Crop Variety", max_length=128)
+    crop = models.ForeignKey(verbose_name="Category", to="CropCategory", to_field="ccid",
+                             related_name="variety_category", null=True, blank=True, on_delete=models.SET_NULL)
+    note = models.TextField(verbose_name="Note", null=True, blank=True)
+    is_active = models.BooleanField(verbose_name="Is Active", default=True)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+
+class CropLifecycle(models.Model):
+    clcid = models.CharField(verbose_name="CLCID", primary_key=True, max_length=48)
+    name = models.CharField(verbose_name="Lifecycle Name", max_length=128)
+    crop = models.ForeignKey(verbose_name="Crop Name", to="CropCategory", to_field="ccid",
+                             related_name="lifecycle_category", null=True, blank=True, on_delete=models.SET_NULL)
+    note = models.TextField(verbose_name="Note", null=True, blank=True)
+    is_active = models.BooleanField(verbose_name="Is Active", default=True)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+
+class CropGrowthStage(models.Model):
+    cgsid = models.CharField(verbose_name="CGSID", primary_key=True, max_length=48)
+    name = models.CharField(verbose_name="Stage Name", max_length=128)
+    crop = models.ForeignKey(verbose_name="Crop Name", to="CropCategory", to_field="ccid",
+                             related_name="growth_stage_category", null=True, blank=True, on_delete=models.SET_NULL)
+    note = models.TextField(verbose_name="Note", null=True, blank=True)
+    is_active = models.BooleanField(verbose_name="Is Active", default=True)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
+
+    def __str__(self):
+        return self.name
