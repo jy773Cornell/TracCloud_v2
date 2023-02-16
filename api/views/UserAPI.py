@@ -171,6 +171,28 @@ class UserRelationGetView(APIView):
         return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class UserRelationListGetView(APIView):
+    serializer_class = UserRelationGetSerializer
+    lookup_url_kwarg = "uid"
+
+    def get(self, request, format=None):
+        uid = request.GET.get(self.lookup_url_kwarg)
+        if uid:
+            user = User.objects.filter(uid=uid, is_active=True)
+            if user:
+                relation_list = UserRelation.objects.filter(
+                    Q(requester_id=uid, is_resolved=True, is_active=True)
+                    | Q(provider_id=uid, is_resolved=True, is_active=True))
+                data = []
+                for relation in relation_list:
+                    data.append(UserRelationGetSerializer(relation).data)
+                return Response({'Succeeded': 'Relation Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class UserRelationUpdateView(APIView):
     serializer_class = UserRelationUpdateSerializer
 

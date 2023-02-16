@@ -14,7 +14,7 @@ class EquipmentCreateView(APIView):
     @csrf_exempt
     def post(self, request, format=None):
         data = request_data_transform(request.data)
-        if data["user_id"] and data["name"] and data["type_id"]:
+        if data.get("user_id") and data.get("name") and data.get("type_id"):
             eid = gen_uuid("EID")
             data["eid"] = eid
             Equipment(**data).save()
