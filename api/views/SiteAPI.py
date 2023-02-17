@@ -130,10 +130,11 @@ class SiteParentDeleteView(APIView):
         if sid and user:
             parent_site = Site.objects.filter(sid=sid, user_id=user, is_active=True)
             if parent_site:
-                child_site = Site.objects.filter(user_id=user, parent_id=sid, is_active=True)
+                child_site = Site.objects.filter(parent_id=sid, user_id=user, is_active=True)
                 model_delete(parent_site)
                 model_delete(child_site)
-                return Response({'Succeeded': 'Parent site and its child sites have been deleted.'}, status=status.HTTP_200_OK)
+                return Response({'Succeeded': 'Parent site and its child sites have been deleted.'},
+                                status=status.HTTP_200_OK)
 
             return Response({'Failed': 'Invalid sid'}, status=status.HTTP_404_NOT_FOUND)
 

@@ -220,6 +220,38 @@ class SiteType(models.Model):
 
 
 '''
+Chemical Entity
+'''
+
+
+class Chemical(models.Model):
+    chemid = models.CharField(verbose_name="ChemID", primary_key=True, max_length=48)
+    user = models.ForeignKey(verbose_name="User", to="User", to_field="uid", related_name="chem_user",
+                             null=True, blank=True, on_delete=models.SET_NULL)
+    type = models.CharField(verbose_name="Product Type", max_length=128)
+    trade_name = models.CharField(verbose_name="Trade Name", max_length=128)
+    company = models.CharField(verbose_name="Company", max_length=128)
+    epa_reg_no = models.CharField(verbose_name="EPA Registration No.", max_length=32)
+    active_ingredient = models.CharField(verbose_name="Active Ingredient", max_length=128)
+    percent_ai = models.CharField(verbose_name="Active Ingredient Percent", max_length=128)
+    unit = models.ForeignKey(verbose_name="Application Unit", to="Unit", to_field="unitid",
+                             related_name="chem_unit", null=True, blank=True, on_delete=models.SET_NULL)
+    rei = models.CharField(verbose_name="REI", max_length=32)
+    phi = models.CharField(verbose_name="PHI", max_length=32)
+    labeled_crops = models.CharField(verbose_name="Labeled Crops", null=True, blank=True, max_length=256)
+    restricted_use = models.BooleanField(verbose_name="Restricted Use", default=False)
+    label_image = models.CharField(verbose_name="Labeled Image", null=True, blank=True, max_length=128)
+    imported_from = models.CharField(verbose_name="Imported From", null=True, blank=True, max_length=32)
+    validated_by = models.CharField(verbose_name="Validated By", null=True, blank=True, max_length=32)
+    entered_year = models.IntegerField(verbose_name="Entered Year", null=True, blank=True)
+    is_active = models.BooleanField(verbose_name="Is Active", default=True)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
+
+    def __str__(self):
+        return "{} (EPA NO. {})".format(self.trade_name, self.epa_reg_no)
+
+
+'''
 Unit Entity
 '''
 

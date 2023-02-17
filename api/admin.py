@@ -210,6 +210,23 @@ class SiteTypeAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
+class ChemicalAdmin(admin.ModelAdmin):
+    list_display = ('chemid', 'user', 'trade_name', 'epa_reg_no', 'type', 'is_active', 'create_time',)
+
+    list_filter = ('type', 'is_active',)
+
+    list_per_page = 10
+
+    list_editable = ('is_active',)
+
+    exclude = ["chemid"]
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.chemid = gen_uuid("ChemID")
+        super().save_model(request, obj, form, change)
+
+
 class UnitAdmin(admin.ModelAdmin):
     list_display = ('unitid', 'unit', 'usage', 'is_active', 'create_time',)
 
@@ -242,5 +259,7 @@ admin.site.register(CropGrowthStage, CropGrowthStageAdmin)
 
 admin.site.register(Site, SiteAdmin)
 admin.site.register(SiteType, SiteTypeAdmin)
+
+admin.site.register(Chemical, ChemicalAdmin)
 
 admin.site.register(Unit, UnitAdmin)

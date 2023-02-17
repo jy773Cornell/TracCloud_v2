@@ -54,7 +54,7 @@ class CropListGetView(APIView):
                 data = []
                 for crop in crop_list:
                     data.append(CropGetSerializer(crop).data)
-                return Response({'Succeeded': 'Crop Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
+                return Response({'Succeeded': 'Crop List Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
 
             return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
 

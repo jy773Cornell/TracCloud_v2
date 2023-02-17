@@ -186,7 +186,7 @@ class UserRelationListGetView(APIView):
                 data = []
                 for relation in relation_list:
                     data.append(UserRelationGetSerializer(relation).data)
-                return Response({'Succeeded': 'Relation Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
+                return Response({'Succeeded': 'Relation List Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
 
             return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
 

@@ -4,6 +4,7 @@ from api.views.UserAPI import *
 from api.views.EquipmentAPI import *
 from api.views.CropAPI import *
 from api.views.SiteAPI import *
+from api.views.ChemicalAPI import *
 
 urlpatterns = [
 
@@ -55,4 +56,14 @@ urlpatterns = [
     path('site/parent/list/get/', SiteParentListGetView.as_view()),
     path('site/child/list/get/', SiteChildListGetView.as_view()),
     path('site/update/', SiteUpdateView.as_view()),
+    path('site/parent/delete/', SiteParentDeleteView.as_view()),
+    path('site/child/delete/', SiteChildDeleteView.as_view()),
+
+    # ChemicalAPI
+
+    path('chemical/create/', ChemicalCreateView.as_view()),
+    path('chemical/get/', ChemicalGetView.as_view()),
+    path('chemical/list/get/', ChemicalListGetView.as_view()),
+    path('chemical/update/', ChemicalUpdateView.as_view()),
+    path('chemical/delete/', ChemicalDeleteView.as_view()),
 ]

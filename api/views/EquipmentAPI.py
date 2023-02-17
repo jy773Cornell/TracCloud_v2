@@ -53,7 +53,7 @@ class EquipmentListGetView(APIView):
                 data = []
                 for equipment in equipment_list:
                     data.append(EquipmentGetSerializer(equipment).data)
-                return Response({'Succeeded': 'Equipment Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
+                return Response({'Succeeded': 'Equipment List Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
 
             return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
 
