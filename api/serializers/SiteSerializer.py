@@ -27,3 +27,15 @@ class SiteGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Site
         fields = "__all__"
+
+
+class SiteUpdateSerializer(serializers.ModelSerializer):
+    type_id = serializers.PrimaryKeyRelatedField(source='type', queryset=SiteType.objects.filter(is_active=True))
+    crop_id = serializers.PrimaryKeyRelatedField(source='crop', queryset=Crop.objects.filter(is_active=True),
+                                                 allow_null=True)
+    size_unit_id = serializers.PrimaryKeyRelatedField(source='size_unit',
+                                                      queryset=Unit.objects.filter(usage=1, is_active=True))
+
+    class Meta:
+        model = Site
+        exclude = ("user", "type", "crop", "size_unit", "parent", "is_active", "create_time",)

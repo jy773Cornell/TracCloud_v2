@@ -100,3 +100,21 @@ class SiteChildListGetView(APIView):
             return Response({'Failed': 'Invalid uid or parent_sid'}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SiteUpdateView(APIView):
+    serializer_class = SiteUpdateSerializer
+
+    @csrf_exempt
+    def put(self, request, format=None):
+        data = request_data_transform(request.data)
+        sid = data.pop("sid")
+        if sid:
+            site = Site.objects.filter(sid=sid, is_active=True)
+            if site:
+                site.update(**data)
+                return Response({'Succeeded': 'Site info has been updated.'}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid sid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
