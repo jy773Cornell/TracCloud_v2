@@ -39,3 +39,9 @@ class SiteUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Site
         exclude = ("user", "type", "crop", "size_unit", "parent", "is_active", "create_time",)
+
+
+class SiteDeleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Site
+        fields = ("sid", "user",)

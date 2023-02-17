@@ -118,3 +118,41 @@ class SiteUpdateView(APIView):
             return Response({'Failed': 'Invalid sid'}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SiteParentDeleteView(APIView):
+    serializer_class = SiteDeleteSerializer
+
+    @csrf_exempt
+    def put(self, request, format=None):
+        sid = request.data.get("sid")
+        user = request.data.get("user")
+        if sid and user:
+            parent_site = Site.objects.filter(sid=sid, user_id=user, is_active=True)
+            if parent_site:
+                child_site = Site.objects.filter(user_id=user, parent_id=sid, is_active=True)
+                model_delete(parent_site)
+                model_delete(child_site)
+                return Response({'Succeeded': 'Parent site and its child sites have been deleted.'}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid sid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SiteChildDeleteView(APIView):
+    serializer_class = SiteDeleteSerializer
+
+    @csrf_exempt
+    def put(self, request, format=None):
+        sid = request.data.get("sid")
+        user = request.data.get("user")
+        if sid and user:
+            child_site = Site.objects.filter(sid=sid, user_id=user, is_active=True)
+            if child_site:
+                model_delete(child_site)
+                return Response({'Succeeded': 'Child site has been deleted.'}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid sid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
