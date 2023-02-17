@@ -15,10 +15,83 @@ class CropCreateView(APIView):
     def post(self, request, format=None):
         data = request_data_transform(request.data)
         if data.get("user_id") and data.get("crop_id") and data.get("variety_id") \
-                and data.get("lifecycle_id") and data.get("growth_stage_id"):
+                and data.get("growth_stage_id"):
             cid = gen_uuid("CID")
             data["cid"] = cid
             Crop(**data).save()
             return Response({'Succeeded': 'Crop record created.'}, status=status.HTTP_201_CREATED)
+
+        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CropGetView(APIView):
+    serializer_class = CropGetSerializer
+    lookup_url_kwarg = "cid"
+
+    def get(self, request, format=None):
+        cid = request.GET.get(self.lookup_url_kwarg)
+        if cid:
+            crop = Crop.objects.filter(cid=cid, is_active=True).first()
+            if crop:
+                data = CropGetSerializer(crop).data
+                return Response({'Succeeded': 'Crop Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid cid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CropListGetView(APIView):
+    serializer_class = CropGetSerializer
+    lookup_url_kwarg = "uid"
+
+    def get(self, request, format=None):
+        uid = request.GET.get(self.lookup_url_kwarg)
+        if uid:
+            user = User.objects.filter(uid=uid, is_active=True)
+            if user:
+                crop_list = Crop.objects.filter(user_id=uid, is_active=True)
+                data = []
+                for crop in crop_list:
+                    data.append(CropGetSerializer(crop).data)
+                return Response({'Succeeded': 'Crop Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CropUpdateView(APIView):
+    serializer_class = CropUpdateSerializer
+
+    @csrf_exempt
+    def put(self, request, format=None):
+        data = request_data_transform(request.data)
+        cid = data.pop("cid")
+        if cid:
+            crop = Crop.objects.filter(cid=cid, is_active=True)
+            if crop:
+                crop.update(**data)
+                return Response({'Succeeded': 'Crop info has been updated.'}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid cid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CropDeleteView(APIView):
+    serializer_class = CropDeleteSerializer
+
+    @csrf_exempt
+    def put(self, request, format=None):
+        cid = request.data.get("cid")
+        user = request.data.get("user")
+        if cid and user:
+            crop = Crop.objects.filter(cid=cid, user_id=user, is_active=True)
+            if crop:
+                model_delete(crop)
+                return Response({'Succeeded': 'Crop has been deleted.'}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid cid'}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)

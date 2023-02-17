@@ -108,7 +108,7 @@ class EquipmentTypeAdmin(admin.ModelAdmin):
 
 
 class CropAdmin(admin.ModelAdmin):
-    list_display = ('cid', 'user', 'crop', 'variety', 'lifecycle', 'growth_stage',
+    list_display = ('cid', 'user', 'crop', 'variety', 'growth_stage',
                     'is_active', 'create_time',)
 
     list_filter = ('crop', 'is_active',)
@@ -126,7 +126,7 @@ class CropAdmin(admin.ModelAdmin):
 
 
 class CropCategoryAdmin(admin.ModelAdmin):
-    list_display = ('ccid', 'name', 'category', 'is_active', 'create_time',)
+    list_display = ('ccid', 'name', 'crop_code', 'category', 'is_active', 'create_time',)
 
     list_filter = ('is_active',)
 
@@ -159,23 +159,6 @@ class CropVarietyAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-class CropLifecycleAdmin(admin.ModelAdmin):
-    list_display = ('clcid', 'name', 'crop', 'is_active', 'create_time',)
-
-    list_filter = ('is_active',)
-
-    list_per_page = 10
-
-    list_editable = ('name', 'is_active',)
-
-    exclude = ["clcid"]
-
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.clcid = gen_uuid("CLCID")
-        super().save_model(request, obj, form, change)
-
-
 class CropGrowthStageAdmin(admin.ModelAdmin):
     list_display = ('cgsid', 'name', 'crop', 'is_active', 'create_time',)
 
@@ -193,6 +176,57 @@ class CropGrowthStageAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
+class SiteAdmin(admin.ModelAdmin):
+    list_display = ('sid', 'user', 'name', 'type', 'crop', 'size', 'size_unit', 'parent', 'is_active', 'create_time',)
+
+    list_filter = ('type', 'crop', 'parent', 'is_active',)
+
+    list_per_page = 10
+
+    list_editable = ('is_active',)
+
+    exclude = ["sid"]
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.sid = gen_uuid("SID")
+        super().save_model(request, obj, form, change)
+
+
+class SiteTypeAdmin(admin.ModelAdmin):
+    list_display = ('stid', 'name', 'level', 'is_active', 'create_time',)
+
+    list_filter = ('level', 'is_active',)
+
+    list_per_page = 10
+
+    list_editable = ('name', 'is_active',)
+
+    exclude = ["stid"]
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.stid = gen_uuid("STID")
+        super().save_model(request, obj, form, change)
+
+
+class UnitAdmin(admin.ModelAdmin):
+    list_display = ('unitid', 'unit', 'usage', 'is_active', 'create_time',)
+
+    list_filter = ('is_active',)
+
+    list_per_page = 10
+
+    list_editable = ('unit', 'is_active',)
+
+    exclude = ["unitid"]
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.unitid = gen_uuid("UnitID")
+        super().save_model(request, obj, form, change)
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(UserType, UserTypeAdmin)
 admin.site.register(UserRelation, UserRelationAdmin)
@@ -204,5 +238,9 @@ admin.site.register(EquipmentType, EquipmentTypeAdmin)
 admin.site.register(Crop, CropAdmin)
 admin.site.register(CropCategory, CropCategoryAdmin)
 admin.site.register(CropVariety, CropVarietyAdmin)
-admin.site.register(CropLifecycle, CropLifecycleAdmin)
 admin.site.register(CropGrowthStage, CropGrowthStageAdmin)
+
+admin.site.register(Site, SiteAdmin)
+admin.site.register(SiteType, SiteTypeAdmin)
+
+admin.site.register(Unit, UnitAdmin)

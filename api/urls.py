@@ -3,6 +3,7 @@ from api.views.LoginAPI import *
 from api.views.UserAPI import *
 from api.views.EquipmentAPI import *
 from api.views.CropAPI import *
+from api.views.SiteAPI import *
 
 urlpatterns = [
 
@@ -41,5 +42,16 @@ urlpatterns = [
     # CropAPI
 
     path('crop/create/', CropCreateView.as_view()),
+    path('crop/get/', CropGetView.as_view()),
+    path('crop/list/get/', CropListGetView.as_view()),
+    path('crop/update/', CropUpdateView.as_view()),
+    path('crop/delete/', CropDeleteView.as_view()),
 
+    # SiteAPI
+
+    path('site/parent/create/', SiteParentCreateView.as_view()),
+    path('site/child/create/', SiteChildCreateView.as_view()),
+    path('site/get/', SiteGetView.as_view()),
+    path('site/parent/list/get/', SiteParentListGetView.as_view()),
+    path('site/child/list/get/', SiteChildListGetView.as_view()),
 ]
