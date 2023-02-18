@@ -5,6 +5,7 @@ from api.views.EquipmentAPI import *
 from api.views.CropAPI import *
 from api.views.SiteAPI import *
 from api.views.ChemicalAPI import *
+from api.views.OperationAPI import *
 
 urlpatterns = [
 
@@ -66,4 +67,8 @@ urlpatterns = [
     path('chemical/list/get/', ChemicalListGetView.as_view()),
     path('chemical/update/', ChemicalUpdateView.as_view()),
     path('chemical/delete/', ChemicalDeleteView.as_view()),
+
+    # OperationAPI
+
+    path('operation/purchase/create/', PurchaseCreateView.as_view()),
 ]

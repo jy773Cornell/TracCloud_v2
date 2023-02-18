@@ -227,6 +227,57 @@ class ChemicalAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
+class OperationAdmin(admin.ModelAdmin):
+    list_display = ('opid', 'user', 'type', 'datetime', 'multiple_site', 'is_active', 'create_time',)
+
+    list_filter = ('type', 'is_active',)
+
+    list_per_page = 10
+
+    list_editable = ('is_active',)
+
+    exclude = ["opid"]
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.opid = gen_uuid("OPID")
+        super().save_model(request, obj, form, change)
+
+
+class OperationTypeAdmin(admin.ModelAdmin):
+    list_display = ('optid', 'name', 'is_active', 'create_time',)
+
+    list_filter = ('is_active',)
+
+    list_per_page = 10
+
+    list_editable = ('name', 'is_active',)
+
+    exclude = ["optid"]
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.optid = gen_uuid("OPTID")
+        super().save_model(request, obj, form, change)
+
+
+class PurchaseRecordTypeAdmin(admin.ModelAdmin):
+    list_display = ('prid', 'user', 'pur_datetime', 'chemical', 'is_active', 'create_time',)
+
+    list_filter = ('is_active',)
+
+    list_per_page = 10
+
+    list_editable = ('is_active',)
+
+    exclude = ["prid"]
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.prid = gen_uuid("PRID")
+        super().save_model(request, obj, form, change)
+
+
 class UnitAdmin(admin.ModelAdmin):
     list_display = ('unitid', 'unit', 'usage', 'is_active', 'create_time',)
 
@@ -261,5 +312,9 @@ admin.site.register(Site, SiteAdmin)
 admin.site.register(SiteType, SiteTypeAdmin)
 
 admin.site.register(Chemical, ChemicalAdmin)
+
+admin.site.register(Operation, OperationAdmin)
+admin.site.register(OperationType, OperationTypeAdmin)
+admin.site.register(PurchaseRecord, PurchaseRecordTypeAdmin)
 
 admin.site.register(Unit, UnitAdmin)
