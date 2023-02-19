@@ -278,6 +278,23 @@ class PurchaseRecordTypeAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
+class HarvestRecordAdmin(admin.ModelAdmin):
+    list_display = ('hrid', 'user', 'har_datetime', 'site', 'is_active', 'create_time',)
+
+    list_filter = ('is_active',)
+
+    list_per_page = 10
+
+    list_editable = ('is_active',)
+
+    exclude = ["hrid"]
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.hrid = gen_uuid("HRID")
+        super().save_model(request, obj, form, change)
+
+
 class UnitAdmin(admin.ModelAdmin):
     list_display = ('unitid', 'unit', 'usage', 'is_active', 'create_time',)
 
@@ -316,5 +333,6 @@ admin.site.register(Chemical, ChemicalAdmin)
 admin.site.register(Operation, OperationAdmin)
 admin.site.register(OperationType, OperationTypeAdmin)
 admin.site.register(PurchaseRecord, PurchaseRecordTypeAdmin)
+admin.site.register(HarvestRecord, HarvestRecordAdmin)
 
 admin.site.register(Unit, UnitAdmin)

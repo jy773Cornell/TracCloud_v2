@@ -269,7 +269,7 @@ class Operation(models.Model):
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
 
     def __str__(self):
-        return self.opid
+        return "{} Record, {}".format(self.type, self.datetime)
 
 
 class OperationType(models.Model):

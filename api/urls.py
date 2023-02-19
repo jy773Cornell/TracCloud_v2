@@ -71,4 +71,12 @@ urlpatterns = [
     # OperationAPI
 
     path('operation/purchase/create/', PurchaseCreateView.as_view()),
+    path('operation/purchase/get/', PurchaseGetView.as_view()),
+    path('operation/purchase/list/get/', PurchaseListGetView.as_view()),
+    path('operation/purchase/update/', PurchaseUpdateView.as_view()),
+    path('operation/purchase/delete/', PurchaseDeleteView.as_view()),
+
+    path('operation/harvest/create/', HarvestCreateView.as_view()),
+    path('operation/harvest/get/', HarvestGetView.as_view()),
+    path('operation/harvest/list/get/', HarvestListGetView.as_view()),
 ]
