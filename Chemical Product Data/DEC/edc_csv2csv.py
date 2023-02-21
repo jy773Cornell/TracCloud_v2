@@ -21,6 +21,12 @@ def remove_parentheses(name):
     return name
 
 
+def epa_no_format(no):
+    if "SLN" in no:
+        no = no.replace("SLN", "").replace("-", "").replace(" ", "")
+    return no
+
+
 def refresh_dec_data():
     pd.options.mode.chained_assignment = None
 
@@ -72,6 +78,7 @@ def refresh_dec_data():
     info_product = info_product[info_product["REGISTRATION STATUS"] != "EXPIRED"]
     info_product['EPA REGISTRATION NUMBER'] = info_product['EPA REGISTRATION NUMBER'].str.replace('=', '')
     info_product['EPA REGISTRATION NUMBER'] = info_product['EPA REGISTRATION NUMBER'].str.replace('"', '')
+    info_product['EPA REGISTRATION NUMBER'] = info_product['EPA REGISTRATION NUMBER'].apply(lambda no: no.upper())
     info_product['PRODUCT NAME'] = info_product['PRODUCT NAME'].apply(remove_parentheses)
 
     info_ai = df_ai[['PRODUCT ID', 'PC NAME', 'ACTIVE INGREDIENT PERCENTAGE']]
@@ -97,6 +104,8 @@ def refresh_dec_data():
 
     mapping = info_company.set_index('Company Code')['Company Name']
     info_product['Company Name'] = info_product['Company Code'].map(mapping)
+
+    info_product['EPA REGISTRATION NUMBER'] = info_product['EPA REGISTRATION NUMBER'].apply(epa_no_format)
 
     group_list = info_product.columns.tolist()
     chemical_data = pd.merge(info_product, info_ai, on='PRODUCT ID', how='left')
