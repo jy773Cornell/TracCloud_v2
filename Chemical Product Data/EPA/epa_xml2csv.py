@@ -13,8 +13,17 @@ def reg_no_trans(reg_no):
     return reg_no
 
 
+def title_product_name(name):
+    words = name.split()
+    for i in range(len(words)):
+        if not all(char in "IVXLCDM" for char in words[i]):
+            words[i] = words[i].title()
+    name = " ".join(words)
+    return name
+
+
 def pc_trans(pc):
-    return f"{float(pc) / 1000000:.6f}".rstrip('0').rstrip('.')
+    return f"{float(pc) / 10000:.4f}".rstrip('0').rstrip('.')
 
 
 def xml2csv_write_row(csv_writer, xml_root):
@@ -35,7 +44,6 @@ def xml2csv_write_row(csv_writer, xml_root):
 
 
 def refresh_epa_data():
-
     # File Paths
 
     csv_file = 'Trac Cloud EPA Product Data.csv'
@@ -68,6 +76,9 @@ def refresh_epa_data():
 
     df_product = pd.read_csv(csv_file)
     df_product = df_product.astype(str)
+    df_product['PRODUCT NAME'] = df_product['PRODUCT NAME'].apply(title_product_name)
+    df_product['RESTRICTED USE'] = df_product['RESTRICTED USE'].str.replace('T', 'Y')
+    df_product['RESTRICTED USE'] = df_product['RESTRICTED USE'].str.replace('F', 'N')
 
     df_chemname = pd.read_fwf(chemname_file, encoding='ISO-8859-1', dtype=str, header=None, widths=[6, 20, 270, 1],
                               names=["PC_CODE", "CNAME_TYPE", "PC_NAME", "DISPLAY_IND"])

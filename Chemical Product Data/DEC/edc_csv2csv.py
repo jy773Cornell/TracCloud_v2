@@ -1,5 +1,24 @@
 import glob
+import re
+
 import pandas as pd
+
+
+def remove_parentheses(name):
+    pattern = r'\s*\(([^()]*)\)\s*|\s*\[(.*?)\]\s*'
+    while re.search(pattern, name):
+        name = re.sub(pattern, '', name)
+    pattern = r'\s*\(([^()]*)\s*$|\s*\[(.*?)\s*$'
+    name = re.sub(pattern, '', name)
+
+    words = name.split()
+
+    for i in range(len(words)):
+        if not all(char in "IVXLCDM" for char in words[i]):
+            words[i] = words[i].title()
+    name = " ".join(words)
+
+    return name
 
 
 def refresh_dec_data():
@@ -50,10 +69,13 @@ def refresh_dec_data():
 
     info_product = df_product[
         ['PRODUCT ID', 'EPA REGISTRATION NUMBER', 'PRODUCT NAME', 'RESTRICTED USe', 'REGISTRATION STATUS', ]]
+    info_product = info_product[info_product["REGISTRATION STATUS"] != "EXPIRED"]
     info_product['EPA REGISTRATION NUMBER'] = info_product['EPA REGISTRATION NUMBER'].str.replace('=', '')
     info_product['EPA REGISTRATION NUMBER'] = info_product['EPA REGISTRATION NUMBER'].str.replace('"', '')
+    info_product['PRODUCT NAME'] = info_product['PRODUCT NAME'].apply(remove_parentheses)
 
     info_ai = df_ai[['PRODUCT ID', 'PC NAME', 'ACTIVE INGREDIENT PERCENTAGE']]
+    info_ai['PC NAME'] = info_ai['PC NAME'].fillna('').str.title()
 
     info_type = df_type[['PRODUCT ID', 'PRODUCT TYPE']]
 
