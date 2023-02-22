@@ -66,7 +66,7 @@ def refresh_epa_data():
     with open(csv_file, 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile, quoting=csv.QUOTE_NONNUMERIC)
         writer.writerow(
-            ['EPA REGISTRATION NUMBER', 'PRODUCT NAME', 'RESTRICTED USE', 'Company Code', 'Company Name',
+            ['EPA REGISTRATION NUMBER', 'PRODUCT NAME', 'RESTRICTED USE', 'COMPANY CODE', 'COMPANY NAME',
              'PRODUCT TYPE'])
 
         xml2csv_write_row(writer, sec3_root)
@@ -102,7 +102,7 @@ def refresh_epa_data():
     chemical_data['PC_PCT'] = grouped['PC_PCT'].apply(lambda x: ', '.join(x.astype(str))).reset_index()['PC_PCT']
     chemical_data = chemical_data.drop("REG_NR", axis=1)
 
-    chemical_data.to_csv('Trac Cloud EPA Product Data.csv', index=False)
+    chemical_data.to_csv(csv_file, index=False)
 
     return ()
 
