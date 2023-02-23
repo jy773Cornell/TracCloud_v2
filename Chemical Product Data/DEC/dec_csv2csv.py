@@ -27,21 +27,21 @@ def epa_no_format(no):
     return no
 
 
-def refresh_dec_data():
+def refresh_dec_data(root_path):
     pd.options.mode.chained_assignment = None
 
     # csv file paths
 
-    csv_file = 'Trac Cloud DEC Product Data.csv'
+    csv_file = root_path + 'Trac Cloud DEC Product Data.csv'
 
-    product_file = glob.glob('product-open-data/*ProductData-*.csv')[0]
-    ai_file = glob.glob('product-open-data/*ProductData_ActiveIngredients-*.csv')[0]
-    type_file = glob.glob('product-open-data/*ProductData_ProductType-*.csv')[0]
-    use_file = glob.glob('product-open-data/*ProductData_ProductUse-*.csv')[0]
-    route_file = glob.glob('product-open-data/*ProductData_RouteOfExposure-*.csv')[0]
-    toxicity_file = glob.glob('product-open-data/*ProductData_Toxicity-*.csv')[0]
-    company_code_file = glob.glob('product-open-data/current_products.csv')[0]
-    company_file = glob.glob('product-open-data/nyscompany.txt')[0]
+    product_file = glob.glob(root_path + 'product-open-data/*ProductData-*.csv')[0]
+    ai_file = glob.glob(root_path + 'product-open-data/*ProductData_ActiveIngredients-*.csv')[0]
+    type_file = glob.glob(root_path + 'product-open-data/*ProductData_ProductType-*.csv')[0]
+    use_file = glob.glob(root_path + 'product-open-data/*ProductData_ProductUse-*.csv')[0]
+    route_file = glob.glob(root_path + 'product-open-data/*ProductData_RouteOfExposure-*.csv')[0]
+    toxicity_file = glob.glob(root_path + 'product-open-data/*ProductData_Toxicity-*.csv')[0]
+    company_code_file = glob.glob(root_path + 'product-open-data/current_products.csv')[0]
+    company_file = glob.glob(root_path + 'product-open-data/nyscompany.txt')[0]
 
     # read csv files
 
@@ -75,7 +75,7 @@ def refresh_dec_data():
 
     info_product = df_product[
         ['PRODUCT ID', 'EPA REGISTRATION NUMBER', 'PRODUCT NAME', 'RESTRICTED USe', 'REGISTRATION STATUS', ]]
-    info_product = info_product[info_product["REGISTRATION STATUS"] != "EXPIRED"]
+    # info_product = info_product[info_product["REGISTRATION STATUS"] != "EXPIRED"]
     info_product['EPA REGISTRATION NUMBER'] = info_product['EPA REGISTRATION NUMBER'].str.replace('=', '')
     info_product['EPA REGISTRATION NUMBER'] = info_product['EPA REGISTRATION NUMBER'].str.replace('"', '')
     info_product['EPA REGISTRATION NUMBER'] = info_product['EPA REGISTRATION NUMBER'].apply(lambda no: no.upper())
@@ -108,36 +108,38 @@ def refresh_dec_data():
     info_product['EPA REGISTRATION NUMBER'] = info_product['EPA REGISTRATION NUMBER'].apply(epa_no_format)
 
     group_list = info_product.columns.tolist()
-    chemical_data = pd.merge(info_product, info_ai, on='PRODUCT ID', how='left')
-    grouped = chemical_data.groupby(group_list)
-    chemical_data = grouped['PC NAME'].apply(lambda x: ' / '.join(x.astype(str))).reset_index()
-    chemical_data['ACTIVE INGREDIENT PERCENTAGE'] = \
+    dec_data = pd.merge(info_product, info_ai, on='PRODUCT ID', how='left')
+    grouped = dec_data.groupby(group_list)
+    dec_data = grouped['PC NAME'].apply(lambda x: ' / '.join(x.astype(str))).reset_index()
+    dec_data['ACTIVE INGREDIENT PERCENTAGE'] = \
         grouped['ACTIVE INGREDIENT PERCENTAGE'].apply(lambda x: ', '.join(x.astype(str))).reset_index()[
             'ACTIVE INGREDIENT PERCENTAGE']
 
-    group_list = chemical_data.columns.tolist()
-    chemical_data = pd.merge(chemical_data, info_type, on='PRODUCT ID', how='left')
-    grouped = chemical_data.groupby(group_list)
-    chemical_data = grouped['PRODUCT TYPE'].apply(lambda x: ', '.join(x.astype(str))).reset_index()
+    group_list = dec_data.columns.tolist()
+    dec_data = pd.merge(dec_data, info_type, on='PRODUCT ID', how='left')
+    grouped = dec_data.groupby(group_list)
+    dec_data = grouped['PRODUCT TYPE'].apply(lambda x: ', '.join(x.astype(str))).reset_index()
 
-    group_list = chemical_data.columns.tolist()
-    chemical_data = pd.merge(chemical_data, info_use, on='PRODUCT ID', how='left')
-    grouped = chemical_data.groupby(group_list)
-    chemical_data = grouped['PRODUCT USE'].apply(lambda x: ', '.join(x.astype(str))).reset_index()
+    group_list = dec_data.columns.tolist()
+    dec_data = pd.merge(dec_data, info_use, on='PRODUCT ID', how='left')
+    grouped = dec_data.groupby(group_list)
+    dec_data = grouped['PRODUCT USE'].apply(lambda x: ', '.join(x.astype(str))).reset_index()
 
-    # group_list = chemical_data.columns.tolist()
-    # chemical_data = pd.merge(chemical_data, info_route, on='PRODUCT ID', how='left')
-    # grouped = chemical_data.groupby(group_list)
-    # chemical_data = grouped['ROUTE OF EXPOSURE'].apply(lambda x: ', '.join(x.astype(str))).reset_index()
+    # group_list = dec_data.columns.tolist()
+    # dec_data = pd.merge(dec_data, info_route, on='PRODUCT ID', how='left')
+    # grouped = dec_data.groupby(group_list)
+    # dec_data = grouped['ROUTE OF EXPOSURE'].apply(lambda x: ', '.join(x.astype(str))).reset_index()
 
-    # group_list = chemical_data.columns.tolist()
-    # chemical_data = pd.merge(chemical_data, info_toxicity, on='PRODUCT ID', how='left')
-    # grouped = chemical_data.groupby(group_list)
-    # chemical_data = grouped['TOXICITY'].apply(lambda x: ', '.join(x.astype(str))).reset_index()
+    # group_list = dec_data.columns.tolist()
+    # dec_data = pd.merge(dec_data, info_toxicity, on='PRODUCT ID', how='left')
+    # grouped = dec_data.groupby(group_list)
+    # dec_data = grouped['TOXICITY'].apply(lambda x: ', '.join(x.astype(str))).reset_index()
 
-    chemical_data.to_csv(csv_file, index=False)
+    dec_data = dec_data.rename(columns={"PRODUCT ID": "PRODUCT ID_DEC", "RESTRICTED USe": "RESTRICTED USE",
+                                        "REGISTRATION STATUS": "PRODUCT STATUS", "Company Code": "COMPANY CODE",
+                                        "Company Name": "COMPANY NAME", "PC NAME": "PC_NAME",
+                                        "ACTIVE INGREDIENT PERCENTAGE": "PC_PCT", "PRODUCT USE": "PRODUCT USE_DEC"})
+
+    dec_data.to_csv(csv_file, index=False)
 
     return ()
-
-
-refresh_dec_data()
