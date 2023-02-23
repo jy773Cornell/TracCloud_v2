@@ -5,16 +5,16 @@ import pandas as pd
 
 
 def remove_parentheses(name):
-    pattern = r'\s*\(([^()]*)\)\s*|\s*\[(.*?)\]\s*'
-    while re.search(pattern, name):
-        name = re.sub(pattern, '', name)
-    pattern = r'\s*\(([^()]*)\s*$|\s*\[(.*?)\s*$'
+    for i in range(5):
+        pattern = r'\([^)]*2EE[^)]*\)|\s*\([^()]*?\)\s*|\s*\[(.*?)\]\s*'
+        name = re.sub(pattern, lambda match: match.group(0) if "2EE" in match.group(0) else "", name)
+    pattern = r'\s*\([^()]*?\s*$|\s*\[(.*?)\s*$'
     name = re.sub(pattern, '', name)
 
     words = name.split()
 
     for i in range(len(words)):
-        if not all(char in "IVXLCDM" for char in words[i]):
+        if (not all(char in "IVXLCDM" for char in words[i])) and ("2EE" not in words[i]):
             words[i] = words[i].title()
     name = " ".join(words)
 
