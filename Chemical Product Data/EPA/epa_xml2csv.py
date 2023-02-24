@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 import pandas as pd
+from datetime import datetime
 import glob
 import csv
 
@@ -71,7 +72,7 @@ def xml2csv_write_row(csv_writer, xml_data, product_status):
 def refresh_epa_data(root_path):
     # File Paths
 
-    csv_file = root_path + 'Trac Cloud EPA Product Data.csv'
+    csv_file = root_path + 'Trac Cloud EPA Product Data {}.csv'.format(datetime.now().strftime("%Y-%m-%d"))
 
     chemname_file = root_path + 'PPIS-XML/chemname.txt'
 

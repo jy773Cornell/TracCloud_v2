@@ -1,4 +1,5 @@
 import pandas as pd
+from datetime import datetime
 from DEC.dec_csv2csv import refresh_dec_data
 from EPA.epa_xml2csv import refresh_epa_data
 
@@ -25,11 +26,11 @@ def match_previous_reg_no(unmatch_data, df_dec, df_epa):
 
 # File Paths
 
-trac_cloud_chemical_file = 'Trac Cloud Chemical Product Data.csv'
-unmatch_dec_epa_file = 'NO EPA Matched DEC Data.csv'
+trac_cloud_chemical_file = 'Trac Cloud Chemical Product Data {}.csv'.format(datetime.now().strftime("%Y-%m-%d"))
+unmatch_dec_epa_file = 'NO EPA Matched DEC Data {}.csv'.format(datetime.now().strftime("%Y-%m-%d"))
 
-dec_file = "./DEC/Trac Cloud DEC Product Data.csv"
-epa_file = "./EPA/Trac Cloud EPA Product Data.csv"
+dec_file = "./DEC/Trac Cloud DEC Product Data {}.csv".format(datetime.now().strftime("%Y-%m-%d"))
+epa_file = "./EPA/Trac Cloud EPA Product Data {}.csv".format(datetime.now().strftime("%Y-%m-%d"))
 
 # Refresh DEC and EPA data
 

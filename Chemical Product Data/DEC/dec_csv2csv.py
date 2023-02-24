@@ -1,6 +1,6 @@
 import glob
 import re
-
+from datetime import datetime
 import pandas as pd
 
 
@@ -32,7 +32,7 @@ def refresh_dec_data(root_path):
 
     # csv file paths
 
-    csv_file = root_path + 'Trac Cloud DEC Product Data.csv'
+    csv_file = root_path + 'Trac Cloud DEC Product Data {}.csv'.format(datetime.now().strftime("%Y-%m-%d"))
 
     product_file = glob.glob(root_path + 'product-open-data/*ProductData-*.csv')[0]
     ai_file = glob.glob(root_path + 'product-open-data/*ProductData_ActiveIngredients-*.csv')[0]
