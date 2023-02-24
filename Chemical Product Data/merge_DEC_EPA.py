@@ -26,6 +26,7 @@ def match_previous_reg_no(unmatch_data, df_dec, df_epa):
 # File Paths
 
 trac_cloud_chemical_file = 'Trac Cloud Chemical Product Data.csv'
+unmatch_dec_epa_file = 'NO EPA Matched DEC Data.csv'
 
 dec_file = "./DEC/Trac Cloud DEC Product Data.csv"
 epa_file = "./EPA/Trac Cloud EPA Product Data.csv"
@@ -63,5 +64,8 @@ merge_data = merge_data.drop("REG_NR", axis=1)
 
 merge_data.to_csv(trac_cloud_chemical_file, index=False)
 print(trac_cloud_chemical_file + " has been generated.")
+
+unmatch_data = merge_data[merge_data['EPA REGISTRATION NUMBER_EPA'].isnull()]
+unmatch_data.to_csv(unmatch_dec_epa_file, index=False)
 unmatch_count = merge_data['EPA REGISTRATION NUMBER_EPA'].isnull().sum()
 print("Unmatched DEC-EPA: {} / {}".format(unmatch_count, merge_data.shape[0]))
