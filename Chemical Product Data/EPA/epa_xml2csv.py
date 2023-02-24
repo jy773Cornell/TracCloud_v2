@@ -42,8 +42,29 @@ def xml2csv_write_row(csv_writer, xml_data, product_status):
             type_list.append(list(product_type)[1].text)
         type_list = ", ".join(type_list)
 
-        row = [eparegistration_number, product_name, restricted_use, product_status, company_number,
-               company_name, type_list]
+        previous_reg_no = []
+        if product.find('TRANSFERLIST/TRANSFER'):
+            for previous_reg in product.findall('TRANSFERLIST/TRANSFER'):
+                previous_reg_no.append(list(previous_reg)[0].text)
+            previous_reg_no = ", ".join(previous_reg_no)
+        else:
+            previous_reg_no = ""
+
+        distributor_reg_no = []
+        distributor_product_name = []
+        if product.find('DISTRIBUTORLIST/DISTRIBUTOR'):
+            for distributor in product.findall('DISTRIBUTORLIST/DISTRIBUTOR'):
+                distributor_reg_no.append(list(distributor)[0].text)
+                distributor_product_name.append(
+                    list(distributor)[2].text if len(list(distributor)) == 3 else list(distributor)[3].text)
+            distributor_reg_no = ", ".join(distributor_reg_no)
+            distributor_product_name = ", ".join(distributor_product_name)
+        else:
+            distributor_reg_no = ""
+            distributor_product_name = ""
+
+        row = [eparegistration_number, product_name, previous_reg_no, distributor_reg_no, distributor_product_name,
+               restricted_use, product_status, company_number, company_name, type_list]
         csv_writer.writerow(row)
 
 
@@ -67,8 +88,9 @@ def refresh_epa_data(root_path):
     with open(csv_file, 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile, quoting=csv.QUOTE_NONNUMERIC)
         writer.writerow(
-            ['EPA REGISTRATION NUMBER', 'PRODUCT NAME', 'RESTRICTED USE', 'PRODUCT STATUS', 'COMPANY CODE',
-             'COMPANY NAME', 'PRODUCT TYPE'])
+            ['EPA REGISTRATION NUMBER', 'PRODUCT NAME', 'PREVIOUS REG NUMBER_EPA', 'DISTRIBUTOR REG NUMBER_EPA',
+             'DISTRIBUTOR PRODUCT NAME_EPA', 'RESTRICTED USE', 'PRODUCT STATUS', 'COMPANY CODE', 'COMPANY NAME',
+             'PRODUCT TYPE'])
 
         xml2csv_write_row(writer, sec3_active_xml_data, "ACTIVE")
         xml2csv_write_row(writer, sec3_cancelled_xml_data, "CANCELLED")
@@ -80,6 +102,7 @@ def refresh_epa_data(root_path):
     df_product = pd.read_csv(csv_file)
     df_product = df_product.astype(str)
     df_product['PRODUCT NAME'] = df_product['PRODUCT NAME'].apply(title_product_name)
+    df_product['DISTRIBUTOR PRODUCT NAME_EPA'] = df_product['DISTRIBUTOR PRODUCT NAME_EPA'].apply(title_product_name)
     df_product['RESTRICTED USE'] = df_product['RESTRICTED USE'].str.replace('T', 'Y')
     df_product['RESTRICTED USE'] = df_product['RESTRICTED USE'].str.replace('F', 'N')
 
@@ -106,6 +129,7 @@ def refresh_epa_data(root_path):
     epa_data = epa_data.drop("REG_NR", axis=1)
 
     epa_data = epa_data[list(epa_data.columns.drop('PRODUCT TYPE')) + ['PRODUCT TYPE']]
+    epa_data = epa_data.astype(str)
+    epa_data.replace('Nan', '', inplace=True)
+    epa_data.replace('nan', '', inplace=True)
     epa_data.to_csv(csv_file, index=False)
-
-    return ()

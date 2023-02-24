@@ -135,11 +135,10 @@ def refresh_dec_data(root_path):
     # grouped = dec_data.groupby(group_list)
     # dec_data = grouped['TOXICITY'].apply(lambda x: ', '.join(x.astype(str))).reset_index()
 
+    dec_data = dec_data.astype(str)
+    dec_data.replace('nan', '', inplace=True)
     dec_data = dec_data.rename(columns={"PRODUCT ID": "PRODUCT ID_DEC", "RESTRICTED USe": "RESTRICTED USE",
                                         "REGISTRATION STATUS": "PRODUCT STATUS", "Company Code": "COMPANY CODE",
                                         "Company Name": "COMPANY NAME", "PC NAME": "PC_NAME",
                                         "ACTIVE INGREDIENT PERCENTAGE": "PC_PCT", "PRODUCT USE": "PRODUCT USE_DEC"})
-
     dec_data.to_csv(csv_file, index=False)
-
-    return ()
