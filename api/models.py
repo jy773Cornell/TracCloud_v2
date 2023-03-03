@@ -263,18 +263,18 @@ class Operation(models.Model):
     type = models.ForeignKey(verbose_name="Operation Type", to="OperationType", to_field="optid",
                              related_name="op_type", null=True, blank=True, on_delete=models.SET_NULL)
     datetime = models.DateTimeField(verbose_name="Operation Datetime", auto_now=True)
-    multiple_site = models.BooleanField(verbose_name="Multiple Site", default=False)
 
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
 
     def __str__(self):
-        return "{} Record, {}".format(self.type, self.datetime)
+        return "{} Record ({})".format(self.type, self.datetime)
 
 
 class OperationType(models.Model):
     optid = models.CharField(verbose_name="OPTID", primary_key=True, max_length=48)
     name = models.CharField(verbose_name="Type Name", max_length=128)
+    multiple_records = models.BooleanField(verbose_name="Multiple Records", default=False)
     note = models.TextField(verbose_name="Note", null=True, blank=True)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
@@ -340,7 +340,7 @@ class ApplicationRecord(models.Model):
                              null=True, blank=True, on_delete=models.SET_NULL)
     opid = models.ForeignKey(verbose_name="OPID", to="Operation", to_field="opid", related_name="ar_op",
                              null=True, blank=True, on_delete=models.SET_NULL)
-    app_datetime = models.DateTimeField(verbose_name="Harvest Datetime", null=True, blank=True)
+    app_datetime = models.DateTimeField(verbose_name="Application Datetime", null=True, blank=True)
     operator = models.ForeignKey(verbose_name="Operator", to="User", to_field="uid", related_name="ar_op_user",
                                  null=True, blank=True, on_delete=models.SET_NULL)
     type = models.ForeignKey(verbose_name="Application Type", to="ApplicationType", to_field="atid",
@@ -349,7 +349,7 @@ class ApplicationRecord(models.Model):
                                related_name="ar_pd", null=True, blank=True, on_delete=models.SET_NULL)
     chemical = models.ForeignKey(verbose_name="Chemical", to="Chemical", to_field="chemid",
                                  related_name="ar_chem", null=True, blank=True, on_delete=models.SET_NULL)
-    water_use = models.BooleanField(verbose_name="Water Use")
+    water_use = models.BooleanField(verbose_name="Water Use", default=False)
     water_unit = models.ForeignKey(verbose_name="Water Unit", to="Unit", to_field="unitid",
                                    related_name="ar_water_unit", null=True, blank=True, on_delete=models.SET_NULL)
     application_rate = models.CharField(verbose_name="Application Rate", max_length=32)

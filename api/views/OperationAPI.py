@@ -21,7 +21,7 @@ class PurchaseCreateView(APIView):
         if all(field in list(data.keys()) for field in fields):
             opid = gen_uuid("OPID")
             operation_type = serializer.get_operation_type()
-            Operation(opid=opid, user_id=data.get("user_id"), type_id=operation_type, multiple_site=False).save()
+            Operation(opid=opid, user_id=data.get("user_id"), type_id=operation_type).save()
 
             prid = gen_uuid("PRID")
             data["prid"] = prid
@@ -76,14 +76,14 @@ class PurchaseUpdateView(APIView):
     @csrf_exempt
     def put(self, request, format=None):
         data = request_data_transform(request.data)
-        opid = data.pop("opid")
-        if opid:
-            purchase = PurchaseRecord.objects.filter(opid=opid, is_active=True)
+        prid = data.pop("prid")
+        if prid:
+            purchase = PurchaseRecord.objects.filter(prid=prid, is_active=True)
             if purchase:
                 purchase.update(**data)
                 return Response({'Succeeded': 'Purchase record info has been updated.'}, status=status.HTTP_200_OK)
 
-            return Response({'Failed': 'Invalid opid'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'Failed': 'Invalid prid'}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -109,33 +109,40 @@ class PurchaseDeleteView(APIView):
 
 
 # HarvestRecord
+class HarvestOperationCreateView(APIView):
+    serializer_class = OperationCreateSerializer
+
+    @csrf_exempt
+    def post(self, request, format=None):
+        uid = request.data.get("user")
+        operation_type = OperationType.objects.filter(name="Harvest", is_active=True).first()
+        if uid:
+            user = User.objects.filter(uid=uid, is_active=True)
+            if user:
+                opid = gen_uuid("OPID")
+                Operation(opid=opid, user_id=uid, type=operation_type).save()
+                return Response({'Succeeded': 'Harvest operation created.'}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid POST parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class HarvestCreateView(APIView):
     serializer_class = HarvestCreateSerializer
 
     @csrf_exempt
     def post(self, request, format=None):
-        harvest_list = request.data
-        if type(harvest_list) == list:
-            serializer = HarvestCreateSerializer()
-            fields = [field for field in serializer.fields if field not in ["operation_type", "tracing_no", "note", ]]
-            for harvest in harvest_list:
-                if not all(field in list(harvest.keys()) for field in fields):
-                    return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+        data = request_data_transform(request.data)
+        serializer = HarvestCreateSerializer()
+        fields = [field for field in serializer.fields if field not in ["rows", "tracing_no", "note", ]]
+        if all(field in list(data.keys()) for field in fields):
+            hrid = gen_uuid("HRID")
+            data["hrid"] = hrid
+            HarvestRecord(**data).save()
+            return Response({'Succeeded': 'Harvest record create.'}, status=status.HTTP_201_CREATED)
 
-            opid = gen_uuid("OPID")
-            operation_type = serializer.get_operation_type()
-            Operation(opid=opid, user_id=harvest_list[0].get("user_id"), type_id=operation_type,
-                      multiple_site=(len(harvest_list) > 1)).save()
-
-            for harvest in harvest_list:
-                hrid = gen_uuid("HRID")
-                harvest["hrid"] = hrid
-                harvest["opid_id"] = opid
-                HarvestRecord(**harvest).save()
-            return Response({'Succeeded': 'Harvest records created.'}, status=status.HTTP_201_CREATED)
-
-        return Response({'Bad Request': 'Invalid post data, should be a list data'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class HarvestGetView(APIView):
@@ -168,7 +175,7 @@ class HarvestListGetView(APIView):
             if user:
                 op_harvest_list = Operation.objects.filter(
                     user_id=uid,
-                    type_id=OperationType.objects.filter(name="Harvest", is_active=True).first().optid,
+                    type=OperationType.objects.filter(name="Harvest", is_active=True).first(),
                     is_active=True)
                 data = {}
 
@@ -185,3 +192,202 @@ class HarvestListGetView(APIView):
             return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class HarvestUpdateView(APIView):
+    serializer_class = HarvestUpdateSerializer
+
+    @csrf_exempt
+    def put(self, request, format=None):
+        data = request_data_transform(request.data)
+        hrid = data.pop("hrid")
+        if hrid:
+            harvest = HarvestRecord.objects.filter(hrid=hrid, is_active=True)
+            if harvest:
+                harvest.update(**data)
+                return Response({'Succeeded': 'Harvest record info has been updated.'}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid hrid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class HarvestOperationDeleteView(APIView):
+    serializer_class = OperationDeleteSerializer
+
+    @csrf_exempt
+    def put(self, request, format=None):
+        opid = request.data.get("opid")
+        uid = request.data.get("user")
+        operation_type = OperationType.objects.filter(name="Harvest", is_active=True).first()
+
+        if opid and uid:
+            operation = Operation.objects.filter(opid=opid, user_id=uid, type=operation_type, is_active=True)
+            harvest = HarvestRecord.objects.filter(opid_id=opid, user_id=uid, is_active=True)
+            if operation:
+                model_delete(operation)
+                if harvest:
+                    model_delete(harvest)
+                return Response({'Succeeded': 'Harvest operation have been deleted.'}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid opid'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class HarvestDeleteView(APIView):
+    serializer_class = HarvestDeleteSerializer
+
+    @csrf_exempt
+    def put(self, request, format=None):
+        uid = request.data.get("user")
+        hrid = request.data.get("hrid")
+
+        if uid and hrid:
+            harvest = HarvestRecord.objects.filter(hrid=hrid, user_id=uid, is_active=True)
+            if harvest:
+                model_delete(harvest)
+                return Response({'Succeeded': 'Harvest record have been deleted.'}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid hrid'}, status=status.HTTP_404_NOT_FOUND)
+
+
+# ApplicationRecord
+class ApplicationOperationCreateView(APIView):
+    serializer_class = OperationCreateSerializer
+
+    @csrf_exempt
+    def post(self, request, format=None):
+        uid = request.data.get("user")
+        operation_type = OperationType.objects.filter(name="Application", is_active=True).first()
+        if uid:
+            user = User.objects.filter(uid=uid, is_active=True)
+            if user:
+                opid = gen_uuid("OPID")
+                Operation(opid=opid, user_id=uid, type=operation_type).save()
+                return Response({'Succeeded': 'Application operation created.'}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid POST parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ApplicationCreateView(APIView):
+    serializer_class = ApplicationCreateSerializer
+
+    @csrf_exempt
+    def post(self, request, format=None):
+        data = request_data_transform(request.data)
+        fields = ["user_id", "opid_id", "operator_id", "type_id", "crop_id", "site_id", "app_datetime", "applied_area",
+                  "area_unit_id"]
+        if all(field in list(data.keys()) for field in fields):
+            arid = gen_uuid("ARID")
+            data["arid"] = arid
+            ApplicationRecord(**data).save()
+            return Response({'Succeeded': 'Application record create.'}, status=status.HTTP_201_CREATED)
+
+        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ApplicationGetView(APIView):
+    serializer_class = ApplicationGetSerializer
+    lookup_url_kwarg = "opid"
+
+    def get(self, request, format=None):
+        opid = request.GET.get(self.lookup_url_kwarg)
+        if opid:
+            application_list = ApplicationRecord.objects.filter(opid=opid, is_active=True)
+            if application_list:
+                data = []
+                for application in application_list:
+                    data.append(ApplicationGetSerializer(application).data)
+                return Response({'Succeeded': 'Application Records Info Fetched.', 'data': data},
+                                status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid opid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ApplicationListGetView(APIView):
+    serializer_class = ApplicationGetSerializer
+    lookup_url_kwarg = "uid"
+
+    def get(self, request, format=None):
+        uid = request.GET.get(self.lookup_url_kwarg)
+        if uid:
+            user = User.objects.filter(uid=uid, is_active=True)
+            if user:
+                op_application_list = Operation.objects.filter(
+                    user_id=uid,
+                    type=OperationType.objects.filter(name="Application", is_active=True).first(),
+                    is_active=True)
+
+                data = {}
+                for op_application in op_application_list:
+                    opid = op_application.opid
+                    op_str = op_application.__str__()
+                    data[op_str] = []
+                    application_list = ApplicationRecord.objects.filter(opid=opid, is_active=True)
+                    for application in application_list:
+                        data[op_str].append(ApplicationGetSerializer(application).data)
+                return Response({'Succeeded': 'Application Record List Info Fetched.', 'data': data},
+                                status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ApplicationUpdateView(APIView):
+    serializer_class = ApplicationUpdateSerializer
+
+    @csrf_exempt
+    def put(self, request, format=None):
+        data = request_data_transform(request.data)
+        arid = data.pop("arid")
+        if arid:
+            application = ApplicationRecord.objects.filter(arid=arid, is_active=True)
+            if application:
+                application.update(**data)
+                return Response({'Succeeded': 'Application record info has been updated.'}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid arid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ApplicationOperationDeleteView(APIView):
+    serializer_class = OperationDeleteSerializer
+
+    @csrf_exempt
+    def put(self, request, format=None):
+        opid = request.data.get("opid")
+        uid = request.data.get("user")
+        operation_type = OperationType.objects.filter(name="Application", is_active=True).first()
+
+        if opid and uid:
+            operation = Operation.objects.filter(opid=opid, user_id=uid, type=operation_type, is_active=True)
+            application = ApplicationRecord.objects.filter(opid_id=opid, user_id=uid, is_active=True)
+            if operation:
+                model_delete(operation)
+                if application:
+                    model_delete(application)
+                return Response({'Succeeded': 'Application operation have been deleted.'}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid opid'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class ApplicationDeleteView(APIView):
+    serializer_class = ApplicationDeleteSerializer
+
+    @csrf_exempt
+    def put(self, request, format=None):
+        uid = request.data.get("user")
+        arid = request.data.get("arid")
+
+        if uid and arid:
+            application = ApplicationRecord.objects.filter(arid=arid, user_id=uid, is_active=True)
+            if application:
+                model_delete(application)
+                return Response({'Succeeded': 'Application record have been deleted.'}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid arid'}, status=status.HTTP_404_NOT_FOUND)

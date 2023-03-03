@@ -76,7 +76,19 @@ urlpatterns = [
     path('operation/purchase/update/', PurchaseUpdateView.as_view()),
     path('operation/purchase/delete/', PurchaseDeleteView.as_view()),
 
+    path('operation/harvest/operation/create/', HarvestOperationCreateView.as_view()),
     path('operation/harvest/create/', HarvestCreateView.as_view()),
     path('operation/harvest/get/', HarvestGetView.as_view()),
     path('operation/harvest/list/get/', HarvestListGetView.as_view()),
+    path('operation/harvest/update/', HarvestUpdateView.as_view()),
+    path('operation/harvest/operation/delete/', HarvestOperationDeleteView.as_view()),
+    path('operation/harvest/delete/', HarvestDeleteView.as_view()),
+
+    path('operation/application/operation/create/', ApplicationOperationCreateView.as_view()),
+    path('operation/application/create/', ApplicationCreateView.as_view()),
+    path('operation/application/get/', ApplicationGetView.as_view()),
+    path('operation/application/list/get/', ApplicationListGetView.as_view()),
+    path('operation/application/update/', ApplicationUpdateView.as_view()),
+    path('operation/application/operation/delete/', ApplicationOperationDeleteView.as_view()),
+    path('operation/application/delete/', ApplicationDeleteView.as_view()),
 ]

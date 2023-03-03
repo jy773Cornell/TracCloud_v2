@@ -228,7 +228,7 @@ class ChemicalAdmin(admin.ModelAdmin):
 
 
 class OperationAdmin(admin.ModelAdmin):
-    list_display = ('opid', 'user', 'type', 'datetime', 'multiple_site', 'is_active', 'create_time',)
+    list_display = ('opid', 'user', 'type', 'datetime', 'is_active', 'create_time',)
 
     list_filter = ('type', 'is_active',)
 
@@ -245,7 +245,7 @@ class OperationAdmin(admin.ModelAdmin):
 
 
 class OperationTypeAdmin(admin.ModelAdmin):
-    list_display = ('optid', 'name', 'is_active', 'create_time',)
+    list_display = ('optid', 'name', 'multiple_records', 'is_active', 'create_time',)
 
     list_filter = ('is_active',)
 
@@ -261,7 +261,7 @@ class OperationTypeAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-class PurchaseRecordTypeAdmin(admin.ModelAdmin):
+class PurchaseRecordAdmin(admin.ModelAdmin):
     list_display = ('prid', 'user', 'pur_datetime', 'chemical', 'is_active', 'create_time',)
 
     list_filter = ('is_active',)
@@ -279,7 +279,7 @@ class PurchaseRecordTypeAdmin(admin.ModelAdmin):
 
 
 class HarvestRecordAdmin(admin.ModelAdmin):
-    list_display = ('hrid', 'user', 'har_datetime', 'site', 'is_active', 'create_time',)
+    list_display = ('hrid', 'user', 'har_datetime', 'crop', 'site', 'is_active', 'create_time',)
 
     list_filter = ('is_active',)
 
@@ -292,6 +292,74 @@ class HarvestRecordAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.hrid = gen_uuid("HRID")
+        super().save_model(request, obj, form, change)
+
+
+class ApplicationRecordAdmin(admin.ModelAdmin):
+    list_display = ('arid', 'user', 'type', 'app_datetime', 'crop', 'site', 'is_active', 'create_time',)
+
+    list_filter = ('is_active',)
+
+    list_per_page = 10
+
+    list_editable = ('is_active',)
+
+    exclude = ["arid"]
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.arid = gen_uuid("ARID")
+        super().save_model(request, obj, form, change)
+
+
+class ApplicationTypeAdmin(admin.ModelAdmin):
+    list_display = ('atid', 'name', 'is_active', 'create_time',)
+
+    list_filter = ('is_active',)
+
+    list_per_page = 10
+
+    list_editable = ('name', 'is_active',)
+
+    exclude = ["atid"]
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.atid = gen_uuid("ATID")
+        super().save_model(request, obj, form, change)
+
+
+class DecisionSupportAdmin(admin.ModelAdmin):
+    list_display = ('dsid', 'name', 'is_active', 'create_time',)
+
+    list_filter = ('is_active',)
+
+    list_per_page = 10
+
+    list_editable = ('name', 'is_active',)
+
+    exclude = ["DSID"]
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.dsid = gen_uuid("DSID")
+        super().save_model(request, obj, form, change)
+
+
+class PestsDiseasesAdmin(admin.ModelAdmin):
+    list_display = ('pdid', 'name', 'is_active', 'create_time',)
+
+    list_filter = ('is_active',)
+
+    list_per_page = 10
+
+    list_editable = ('name', 'is_active',)
+
+    exclude = ["pdid"]
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.pdid = gen_uuid("PDID")
         super().save_model(request, obj, form, change)
 
 
@@ -332,7 +400,11 @@ admin.site.register(Chemical, ChemicalAdmin)
 
 admin.site.register(Operation, OperationAdmin)
 admin.site.register(OperationType, OperationTypeAdmin)
-admin.site.register(PurchaseRecord, PurchaseRecordTypeAdmin)
+admin.site.register(PurchaseRecord, PurchaseRecordAdmin)
 admin.site.register(HarvestRecord, HarvestRecordAdmin)
+admin.site.register(ApplicationRecord, ApplicationRecordAdmin)
+admin.site.register(ApplicationType, ApplicationTypeAdmin)
+admin.site.register(DecisionSupport, DecisionSupportAdmin)
+admin.site.register(PestsDiseases, PestsDiseasesAdmin)
 
 admin.site.register(Unit, UnitAdmin)
