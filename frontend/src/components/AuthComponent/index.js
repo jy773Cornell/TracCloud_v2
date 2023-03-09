@@ -6,7 +6,7 @@ import {getToken} from "../../utils";
 const Loading = lazy(() => import('../../pages/Loading'))
 const Layout = lazy(() => import('../../pages/Layout'))
 
-export default function Index() {
+export default function AuthComponent({onUIDReceived}) {
     const [authStatus, setAuthStatus] = useState("loading")
     const [uid, setUID] = useState("")
 
@@ -23,6 +23,7 @@ export default function Index() {
                 if (response.ok) {
                     response.json().then((data) => {
                         setUID(data.uid);
+                        onUIDReceived(data.uid);
                         setAuthStatus("authorized");
                     })
                 } else {

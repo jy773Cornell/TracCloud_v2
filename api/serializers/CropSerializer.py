@@ -20,10 +20,20 @@ class CropGetSerializer(serializers.ModelSerializer):
     crop = serializers.StringRelatedField()
     variety = serializers.StringRelatedField()
     growth_stage = serializers.StringRelatedField()
+    update_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+
+    crop_code = serializers.SerializerMethodField()
+    category = serializers.SerializerMethodField()
 
     class Meta:
         model = Crop
         fields = "__all__"
+
+    def get_crop_code(self, obj):
+        return CropCategory.objects.filter(name=obj.crop, is_active=True).first().crop_code
+
+    def get_category(self, obj):
+        return CropCategory.objects.filter(name=obj.crop, is_active=True).first().category
 
 
 class CropUpdateSerializer(serializers.ModelSerializer):

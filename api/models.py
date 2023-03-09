@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 '''
 User Entity 
@@ -14,8 +15,9 @@ class User(models.Model):
 
     name = models.CharField(verbose_name="Actual Name", null=True, blank=True, max_length=64)
     business_name = models.CharField(verbose_name="Business Name", null=True, blank=True, max_length=256)
-    registration_no = models.CharField(verbose_name="Registration No.", null=True, blank=True, max_length=128)
-    reg_expire_date = models.DateField(verbose_name="Registration Expire Date", null=True, blank=True)
+    registration_license_no = models.CharField(verbose_name="Registration No/PesticideLicense No", null=True,
+                                               blank=True, max_length=256)
+    license_expire_date = models.DateField(verbose_name="License Expire Date", null=True, blank=True)
     address = models.CharField(verbose_name="Address", null=True, blank=True, max_length=256)
     city = models.CharField(verbose_name="City", null=True, blank=True, max_length=64)
     county = models.CharField(verbose_name="County", null=True, blank=True, max_length=64)
@@ -126,6 +128,7 @@ class Crop(models.Model):
                                      related_name="crop_growth_stage", null=True, blank=True, on_delete=models.SET_NULL)
 
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
+    update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
 
     def __str__(self):
@@ -143,6 +146,10 @@ class CropCategory(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        self.updated_at = timezone.now()
+        super().save(*args, **kwargs)
 
 
 class CropVariety(models.Model):
