@@ -15,6 +15,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CancelIcon from '@mui/icons-material/Cancel';
 import {Autocomplete, Button, TextField} from "@mui/material";
 import {AddButton, CancelButton} from "./styles";
+import OperationSnackbars from "../../components/Snackbars";
 
 const columns = [
     {id: 'crop', label: 'Crop', minWidth: 100},
@@ -40,7 +41,7 @@ function createRowData(record) {
     };
 }
 
-function AddCropRow({uid, setShowAddRow}) {
+function AddCropRow({uid, setShowAddRow, setIsSave}) {
     const [formData, setFormData] = useState({});
     const [fieldValues, setFieldValues] = useState({});
     const [cropCategory, setCropCategory] = useState([]);
@@ -92,41 +93,43 @@ function AddCropRow({uid, setShowAddRow}) {
             })
     }
 
-    useEffect(() => {
-        CropCategoryGet();
-        CropVarietyGet();
-        CropGrowthStageGet();
-        setFormData({"user_id": uid});
-    }, []);
+    async function CropRecordSave() {
+        const requestOptions = {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(formData),
+        };
+        await fetch("/api/crop/create/", requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    setIsSave(true);
+                    setShowAddRow(false);
+                }
+            })
+    }
 
-    function CropCategoryOptionsFresh() {
+    const CropCategoryOptionsFresh = () => {
         setCropCategoryOptions(cropCategory.map(item => ({
             label: item.name,
             id: item.ccid,
             crop_code: item.crop_code,
             category: item.category,
-        })))
-    }
+        })));
+    };
 
-    useEffect(() => {
-        CropCategoryOptionsFresh();
-    }, [cropCategory]);
-
-
-    function CropVarietyOptionsFresh(crop_id) {
+    const CropVarietyOptionsFresh = (crop_id) => {
         setCropVarietyOptions(cropVariety.filter(item => item.crop === crop_id).map(item => ({
             label: item.name,
             id: item.cvid
         })))
-    }
+    };
 
-    function CropGrowthStageOptionsFresh(crop_id) {
+    const CropGrowthStageOptionsFresh = (crop_id) => {
         setCropGrowthStageOptions(cropGrowthStage.filter(item => item.crop === crop_id).map(item => ({
             label: item.name,
             id: item.cgsid
         })))
-    }
-
+    };
 
     const handleInputChange = (event, value, field) => {
         console.log(value)
@@ -134,10 +137,10 @@ function AddCropRow({uid, setShowAddRow}) {
             setFieldValues({
                 ...fieldValues,
                 [field]: value.label,
-                [field_names[1]]: null,
+                [field_names[1]]: "",
                 [field_names[2]]: value.crop_code,
                 [field_names[3]]: value.category,
-                [field_names[4]]: null,
+                [field_names[4]]: "",
             });
             setFormData({
                     ...formData,
@@ -153,14 +156,30 @@ function AddCropRow({uid, setShowAddRow}) {
         }
     };
 
+    const handleSaveButtonPressed = () => {
+        console.log(formData)
+        CropRecordSave();
+    };
+
+    useEffect(() => {
+        CropCategoryGet();
+        CropVarietyGet();
+        CropGrowthStageGet();
+        setFormData({"user_id": uid});
+        setFieldValues(Object.fromEntries(field_names.map(item => [item, ""])));
+    }, []);
+
+    useEffect(() => {
+        CropCategoryOptionsFresh();
+    }, [cropCategory]);
+
     return (
         <TableRow>
             <TableCell>
                 <Autocomplete
                     options={CropCategoryOptions}
-                    value={fieldValues[field_names[0]]}
                     renderInput={(params) => (
-                        <TextField {...params} variant="outlined" sx={{width: 150}}/>
+                        <TextField {...params} variant="standard" sx={{width: 150}}/>
                     )}
                     onChange={(event, value) => {
                         handleInputChange(event, value, field_names[0])
@@ -170,9 +189,8 @@ function AddCropRow({uid, setShowAddRow}) {
             <TableCell>
                 <Autocomplete
                     options={cropVarietyOptions}
-                    value={fieldValues[field_names[1]]}
                     renderInput={(params) => (
-                        <TextField {...params} variant="outlined" sx={{}}/>
+                        <TextField {...params} variant="standard" sx={{}}/>
                     )}
                     onChange={(event, value) => {
                         handleInputChange(event, value, field_names[1])
@@ -183,7 +201,7 @@ function AddCropRow({uid, setShowAddRow}) {
                 <TextField
                     disabled
                     value={fieldValues[field_names[2]]}
-                    variant="outlined"
+                    variant="standard"
                     sx={{width: 100}}
                 />
             </TableCell>
@@ -191,16 +209,15 @@ function AddCropRow({uid, setShowAddRow}) {
                 <TextField
                     disabled
                     value={fieldValues[field_names[3]]}
-                    variant="outlined"
+                    variant="standard"
                     sx={{width: 150}}
                 />
             </TableCell>
             <TableCell>
                 <Autocomplete
                     options={CropGrowthStageOptions}
-                    value={fieldValues[field_names[4]]}
                     renderInput={(params) => (
-                        <TextField {...params} variant="outlined" sx={{}}/>
+                        <TextField {...params} variant="standard" sx={{}}/>
                     )}
                     onChange={(event, value) => {
                         handleInputChange(event, value, field_names[4])
@@ -211,7 +228,7 @@ function AddCropRow({uid, setShowAddRow}) {
 
             </TableCell>
             <TableCell>
-                <Button variant="contained" color="success" onClick={() => setShowAddRow(false)}>
+                <Button variant="contained" color="success" onClick={() => handleSaveButtonPressed()}>
                     Save
                 </Button>
             </TableCell>
@@ -224,6 +241,7 @@ export default function Crop(props) {
     const [showAddRow, setShowAddRow] = useState(false);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [isSave, setIsSave] = useState(false);
 
     async function CropListGet(props) {
         const requestOptions = {
@@ -241,18 +259,23 @@ export default function Crop(props) {
             })
     }
 
-    useEffect(() => {
-        CropListGet(props);
-    }, [showAddRow]);
-
     const handleChangePage = (event, newPage) => {
+
         setPage(newPage);
     };
 
     const handleChangeRowsPerPage = (event) => {
+
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
+
+    useEffect(() => {
+        CropListGet(props);
+    }, [showAddRow]);
+
+    const uid = props.uid;
+    const addRowProps = {uid, setShowAddRow, setIsSave};
 
     return (
         <div>
@@ -272,7 +295,7 @@ export default function Crop(props) {
             }
 
             <Paper sx={{overflow: 'hidden', margin: "0px 15px"}}>
-                <TableContainer sx={{maxHeight: 440}}>
+                <TableContainer sx={{maxHeight: 640}}>
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>
                             <TableRow>
@@ -286,7 +309,7 @@ export default function Crop(props) {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {showAddRow && <AddCropRow uid={props.uid} setShowAddRow={setShowAddRow}/>}
+                            {showAddRow && <AddCropRow {...addRowProps}/>}
                             {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                                 return (<TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
                                     {columns.map((column) => {
@@ -322,6 +345,7 @@ export default function Crop(props) {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Paper>
+            <OperationSnackbars isSave={isSave} setIsSave={setIsSave} msg="Crop record is uploaded successfully!"/>
         </div>
     );
 }
