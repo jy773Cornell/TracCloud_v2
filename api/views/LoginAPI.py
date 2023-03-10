@@ -39,8 +39,7 @@ class UserLoginView(APIView):
 
             return Response({'Failed': 'Invalid Username.'}, status=status.HTTP_404_NOT_FOUND)
 
-        return Response({'Bad Request': 'Invalid post data'},
-                        status=status.HTTP_400_BAD_REQUEST)
+        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserLogoutView(APIView):

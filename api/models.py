@@ -134,6 +134,10 @@ class Crop(models.Model):
     def __str__(self):
         return "{}: {}".format(self.crop, self.variety)
 
+    def save(self, *args, **kwargs):
+        self.update_time = timezone.now()
+        super().save(*args, **kwargs)
+
 
 class CropCategory(models.Model):
     ccid = models.CharField(verbose_name="CCID", primary_key=True, max_length=48)
@@ -146,10 +150,6 @@ class CropCategory(models.Model):
 
     def __str__(self):
         return self.name
-
-    def save(self, *args, **kwargs):
-        self.updated_at = timezone.now()
-        super().save(*args, **kwargs)
 
 
 class CropVariety(models.Model):

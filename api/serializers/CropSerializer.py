@@ -52,3 +52,21 @@ class CropDeleteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Crop
         fields = ("cid", "user",)
+
+
+class CropCategoryGetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CropCategory
+        fields = "__all__"
+
+
+class CropVarietyGetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CropVariety
+        fields = "__all__"
+
+
+class CropGrowthStageGetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CropGrowthStage
+        fields = "__all__"

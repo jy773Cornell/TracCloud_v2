@@ -48,6 +48,9 @@ urlpatterns = [
     path('crop/list/get/', CropListGetView.as_view()),
     path('crop/update/', CropUpdateView.as_view()),
     path('crop/delete/', CropDeleteView.as_view()),
+    path('crop/category/', CropCategoryGetView.as_view()),
+    path('crop/variety/', CropVarietyGetView.as_view()),
+    path('crop/growthstage/', CropGrowthStageGetView.as_view()),
 
     # SiteAPI
 

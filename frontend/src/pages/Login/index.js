@@ -13,7 +13,7 @@ export default function Login() {
         "status": [false, false], "message": ["", ""],
     })
 
-     const navigate = useNavigate();
+    const navigate = useNavigate();
 
     function handleUsernameChange(e) {
         setUsername(e.target.value);
@@ -45,7 +45,8 @@ export default function Login() {
             })
         } else {
             const requestOptions = {
-                method: "POST", headers: {"Content-Type": "application/json"},
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
                     username: username,
                     password: password,

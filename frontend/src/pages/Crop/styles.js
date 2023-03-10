@@ -1,12 +1,21 @@
 import {styled} from "@mui/system";
 import {Button} from "@mui/material";
-import {purple} from '@mui/material/colors';
+import {orange} from '@mui/material/colors';
+import {pink} from '@mui/material/colors';
 
 
-export const StyledButton = styled(Button)(({theme}) => ({
+export const AddButton = styled(Button)(({theme}) => ({
     margin: "15px 15px",
-    backgroundColor: purple[500],
+    backgroundColor: orange[500],
     '&:hover': {
-        backgroundColor: purple[700],
+        backgroundColor: orange[700],
+    },
+}));
+
+export const CancelButton = styled(Button)(({theme}) => ({
+    margin: "15px 15px",
+    backgroundColor: pink[500],
+    '&:hover': {
+        backgroundColor: pink[700],
     },
 }));
