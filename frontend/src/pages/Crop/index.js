@@ -279,6 +279,7 @@ export default function Crop(props) {
     const [rows, setRows] = useState([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
+    const [editingRowId, setEditingRowId] = useState(null);
     const [isSave, setIsSave] = useState(false);
 
     async function CropListGet(props) {
@@ -297,8 +298,9 @@ export default function Crop(props) {
             })
     }
 
-    const onEditClicked = () => {
-        setIsEdit(true);
+    const onEditClicked = (params) => {
+        console.log(params)
+        setEditingRowId(params.id);
     };
 
     const uid = props.uid;
