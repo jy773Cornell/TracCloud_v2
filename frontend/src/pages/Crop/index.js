@@ -17,33 +17,27 @@ import {
 } from "@mui/x-data-grid";
 
 const columnWidth = 200;
-
+const options = ["s", "s"]
 const columns = [
     {field: 'id', headerName: 'ID', width: columnWidth},
-    {field: 'crop', headerName: 'Crop', width: columnWidth},
+    {
+        field: 'crop', headerName: 'Crop', width: columnWidth,
+        editable: true,
+        renderCell: (params) => (
+            <Autocomplete
+                options={options}
+                value={params.value}
+                onChange={(event, newValue) => {
+                    params.setValue(newValue);
+                }}
+                renderInput={(params) => <TextField {...params} sx={{width: columnWidth}}/>}
+            />),
+    },
     {field: 'variety', headerName: 'Variety', width: columnWidth},
     {field: 'crop_code', headerName: 'Crop Code', width: columnWidth,},
     {field: 'category', headerName: 'Category', width: columnWidth,},
     {field: 'growth_stage', headerName: 'Growth Stage', width: columnWidth,},
     {field: 'update_time', headerName: 'Update Time', width: columnWidth,},
-    {
-        field: 'operations',
-        headerName: 'Operations',
-        sortable: false,
-        width: 200,
-        renderCell: (params) => {
-            return (
-                <>
-                    <IconButton>
-                        <EditIcon/>
-                    </IconButton>
-                    <IconButton>
-                        <DeleteIcon/>
-                    </IconButton>
-                </>
-            );
-        },
-    },
 ];
 
 const field_names = ["crop_id", "variety_id", "crop_code", "category", "growth_stage_id"]
@@ -284,6 +278,7 @@ function AddCropRecord({uid, showAddModal, setShowAddModal, setIsSave}) {
 export default function Crop(props) {
     const [rows, setRows] = useState([]);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [isEdit, setIsEdit] = useState(false);
     const [isSave, setIsSave] = useState(false);
 
     async function CropListGet(props) {
@@ -302,15 +297,52 @@ export default function Crop(props) {
             })
     }
 
-    useEffect(() => {
-        CropListGet(props);
-    }, [showAddModal]);
+    const onEditClicked = () => {
+        setIsEdit(true);
+    };
 
     const uid = props.uid;
     const addProps = {uid, showAddModal, setShowAddModal, setIsSave};
 
     const msg = "Crop record is uploaded successfully!"
     const saveProps = {isSave, setIsSave, msg};
+
+    columns.push({
+        field: 'operations',
+        headerName: 'Operations',
+        sortable: false,
+        width: columnWidth,
+        disableClickEventBubbling: true,
+        renderCell: (params) => {
+
+            return (
+                <>
+                    {
+                        isEdit ?
+                            (
+                                <IconButton>
+                                    <DeleteIcon/>
+                                </IconButton>
+                            ) :
+                            (
+                                <>
+                                    <IconButton onClick={onEditClicked}>
+                                        <EditIcon/>
+                                    </IconButton>
+                                    <IconButton>
+                                        <DeleteIcon/>
+                                    </IconButton>
+                                </>
+                            )
+                    }
+                </>
+            );
+        },
+    })
+
+    useEffect(() => {
+        CropListGet(props);
+    }, [showAddModal]);
 
     return (
         <div>
@@ -326,7 +358,6 @@ export default function Crop(props) {
                     rows={rows}
                     disableRowSelectionOnClick={true}
                     rowSelection={false}
-                    disableVirtualization={false}
                     slots={{
                         toolbar: CustomToolbar,
                     }}
