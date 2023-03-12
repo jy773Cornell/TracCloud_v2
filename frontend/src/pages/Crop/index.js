@@ -1,37 +1,56 @@
 import * as React from 'react';
 import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
 import {useEffect, useState} from "react";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CancelIcon from '@mui/icons-material/Cancel';
-import {Autocomplete, Button, TextField} from "@mui/material";
-import {AddButton, CancelButton} from "./styles";
+import {Autocomplete, Button, Card, CardContent, Grid, Modal, TextField} from "@mui/material";
+import {AddButton} from "./styles";
 import OperationSnackbars from "../../components/Snackbars";
+import {
+    DataGrid,
+    GridToolbarColumnsButton,
+    GridToolbarContainer,
+    GridToolbarDensitySelector, GridToolbarExport,
+    GridToolbarFilterButton
+} from "@mui/x-data-grid";
+
+const columnWidth = 200;
 
 const columns = [
-    {id: 'crop', label: 'Crop', minWidth: 100},
-    {id: 'variety', label: 'Variety', minWidth: 100},
-    {id: 'crop_code', label: 'Crop Code', minWidth: 100,},
-    {id: 'category', label: 'Category', minWidth: 100,},
-    {id: 'growth_stage', label: 'Growth Stage', minWidth: 100,},
-    {id: 'update_time', label: 'Update Time', minWidth: 100,},
-    {id: 'operations', label: 'Operations', minWidth: 100,},
+    {field: 'id', headerName: 'ID', width: columnWidth},
+    {field: 'crop', headerName: 'Crop', width: columnWidth},
+    {field: 'variety', headerName: 'Variety', width: columnWidth},
+    {field: 'crop_code', headerName: 'Crop Code', width: columnWidth,},
+    {field: 'category', headerName: 'Category', width: columnWidth,},
+    {field: 'growth_stage', headerName: 'Growth Stage', width: columnWidth,},
+    {field: 'update_time', headerName: 'Update Time', width: columnWidth,},
+    {
+        field: 'operations',
+        headerName: 'Operations',
+        sortable: false,
+        width: 200,
+        renderCell: (params) => {
+            return (
+                <>
+                    <IconButton>
+                        <EditIcon/>
+                    </IconButton>
+                    <IconButton>
+                        <DeleteIcon/>
+                    </IconButton>
+                </>
+            );
+        },
+    },
 ];
 
 const field_names = ["crop_id", "variety_id", "crop_code", "category", "growth_stage_id"]
 
 function createRowData(record) {
     return {
-        "cid": record.cid,
+        "id": record.cid,
         "crop": record.crop,
         "variety": record.variety,
         "crop_code": record.crop_code,
@@ -41,7 +60,18 @@ function createRowData(record) {
     };
 }
 
-function AddCropRow({uid, setShowAddRow, setIsSave}) {
+function CustomToolbar() {
+    return (
+        <GridToolbarContainer>
+            <GridToolbarColumnsButton/>
+            <GridToolbarFilterButton/>
+            <GridToolbarDensitySelector/>
+            <GridToolbarExport/>
+        </GridToolbarContainer>
+    );
+}
+
+function AddCropRecord({uid, showAddModal, setShowAddModal, setIsSave}) {
     const [formData, setFormData] = useState({});
     const [fieldValues, setFieldValues] = useState({});
     const [cropCategory, setCropCategory] = useState([]);
@@ -103,7 +133,7 @@ function AddCropRow({uid, setShowAddRow, setIsSave}) {
             .then((response) => {
                 if (response.ok) {
                     setIsSave(true);
-                    setShowAddRow(false);
+                    setShowAddModal(false);
                 }
             })
     }
@@ -144,7 +174,8 @@ function AddCropRow({uid, setShowAddRow, setIsSave}) {
             });
             setFormData({
                     ...formData,
-                    [field]: value.id, [field_names[1]]: null,
+                    [field]: value.id,
+                    [field_names[1]]: null,
                     [field_names[4]]: null
                 }
             );
@@ -174,73 +205,85 @@ function AddCropRow({uid, setShowAddRow, setIsSave}) {
     }, [cropCategory]);
 
     return (
-        <TableRow>
-            <TableCell>
-                <Autocomplete
-                    options={CropCategoryOptions}
-                    renderInput={(params) => (
-                        <TextField {...params} variant="standard" sx={{width: 150}}/>
-                    )}
-                    onChange={(event, value) => {
-                        handleInputChange(event, value, field_names[0])
-                    }}
-                />
-            </TableCell>
-            <TableCell>
-                <Autocomplete
-                    options={cropVarietyOptions}
-                    renderInput={(params) => (
-                        <TextField {...params} variant="standard" sx={{}}/>
-                    )}
-                    onChange={(event, value) => {
-                        handleInputChange(event, value, field_names[1])
-                    }}
-                />
-            </TableCell>
-            <TableCell>
-                <TextField
-                    disabled
-                    value={fieldValues[field_names[2]]}
-                    variant="standard"
-                    sx={{width: 100}}
-                />
-            </TableCell>
-            <TableCell>
-                <TextField
-                    disabled
-                    value={fieldValues[field_names[3]]}
-                    variant="standard"
-                    sx={{width: 150}}
-                />
-            </TableCell>
-            <TableCell>
-                <Autocomplete
-                    options={CropGrowthStageOptions}
-                    renderInput={(params) => (
-                        <TextField {...params} variant="standard" sx={{}}/>
-                    )}
-                    onChange={(event, value) => {
-                        handleInputChange(event, value, field_names[4])
-                    }}
-                />
-            </TableCell>
-            <TableCell>
-
-            </TableCell>
-            <TableCell>
-                <Button variant="contained" color="success" onClick={() => handleSaveButtonPressed()}>
-                    Save
-                </Button>
-            </TableCell>
-        </TableRow>
+        <Modal
+            open={showAddModal}
+            onClose={() => setShowAddModal(false)}
+            sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+        >
+            <Card sx={{width: 400}}>
+                <CardContent>
+                    <Grid container justifyContent="center" spacing={2}>
+                        <Grid item xs={12} sx={{textAlign: 'center'}}>
+                            <h1>Add Crop Record</h1>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Autocomplete
+                                options={CropCategoryOptions}
+                                renderInput={(params) => (
+                                    <TextField {...params} variant="outlined" label={columns[1].headerName}/>
+                                )}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[0])
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Autocomplete
+                                options={cropVarietyOptions}
+                                renderInput={(params) => (
+                                    <TextField {...params} variant="outlined" label={columns[2].headerName}/>
+                                )}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[1])
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                disabled
+                                value={fieldValues[field_names[2]]}
+                                variant="outlined"
+                                label={columns[3].headerName}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                disabled
+                                value={fieldValues[field_names[3]]}
+                                variant="outlined"
+                                label={columns[4].headerName}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Autocomplete
+                                options={CropGrowthStageOptions}
+                                renderInput={(params) => (
+                                    <TextField {...params} variant="outlined" label={columns[5].headerName}/>
+                                )}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[4])
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sx={{justifyContent: 'center', textAlign: 'center'}}>
+                            <Button variant="contained" color="success" onClick={() => handleSaveButtonPressed()}>
+                                Save
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </CardContent>
+            </Card>
+        </Modal>
     );
 }
 
 export default function Crop(props) {
     const [rows, setRows] = useState([]);
-    const [showAddRow, setShowAddRow] = useState(false);
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [showAddModal, setShowAddModal] = useState(false);
     const [isSave, setIsSave] = useState(false);
 
     async function CropListGet(props) {
@@ -259,93 +302,38 @@ export default function Crop(props) {
             })
     }
 
-    const handleChangePage = (event, newPage) => {
-
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event) => {
-
-        setRowsPerPage(+event.target.value);
-        setPage(0);
-    };
-
     useEffect(() => {
         CropListGet(props);
-    }, [showAddRow]);
+    }, [showAddModal]);
 
     const uid = props.uid;
-    const addRowProps = {uid, setShowAddRow, setIsSave};
+    const addProps = {uid, showAddModal, setShowAddModal, setIsSave};
+
+    const msg = "Crop record is uploaded successfully!"
+    const saveProps = {isSave, setIsSave, msg};
 
     return (
         <div>
-            {showAddRow ?
-                <CancelButton
-                    variant="contained"
-                    startIcon={<CancelIcon/>}
-                    onClick={() => setShowAddRow(false)}>
-                    Cancel
-                </CancelButton> :
-                <AddButton
-                    variant="contained"
-                    startIcon={<AddIcon/>}
-                    onClick={() => setShowAddRow(true)}>
-                    Add Crop
-                </AddButton>
-            }
-
-            <Paper sx={{overflow: 'hidden', margin: "0px 15px"}}>
-                <TableContainer sx={{maxHeight: 640}}>
-                    <Table stickyHeader aria-label="sticky table">
-                        <TableHead>
-                            <TableRow>
-                                {columns.map((column) => (<TableCell
-                                    key={column.id}
-                                    align={column.align}
-                                    style={{minWidth: column.minWidth, backgroundColor: '#f5f5f5', color: 'black'}}
-                                >
-                                    {column.label}
-                                </TableCell>))}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {showAddRow && <AddCropRow {...addRowProps}/>}
-                            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                return (<TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                                    {columns.map((column) => {
-                                        if (column.id === "operations") {
-                                            return (<TableCell>
-                                                    <IconButton aria-label="edit">
-                                                        <EditIcon/>
-                                                    </IconButton>
-                                                    <IconButton aria-label="delete">
-                                                        <DeleteIcon/>
-                                                    </IconButton>
-                                                </TableCell>
-                                            )
-                                        }
-                                        const value = row[column.id];
-                                        return (<TableCell key={column.id} align={column.align}>
-                                            {column.format && typeof value === 'number' ? column.format(value) : value}
-                                        </TableCell>);
-                                    })}
-
-                                </TableRow>);
-                            })}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                <TablePagination
-                    rowsPerPageOptions={[10, 25, 100]}
-                    component="div"
-                    count={rows.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
+            <AddButton
+                variant="contained"
+                startIcon={<AddIcon/>}
+                onClick={() => setShowAddModal(true)}>
+                Add Crop
+            </AddButton>
+            <Paper style={{height: 900, margin: '0px 15px'}}>
+                <DataGrid
+                    columns={columns}
+                    rows={rows}
+                    disableRowSelectionOnClick={true}
+                    rowSelection={false}
+                    disableVirtualization={false}
+                    slots={{
+                        toolbar: CustomToolbar,
+                    }}
                 />
             </Paper>
-            <OperationSnackbars isSave={isSave} setIsSave={setIsSave} msg="Crop record is uploaded successfully!"/>
+            <AddCropRecord {...addProps}/>
+            <OperationSnackbars  {...saveProps}/>
         </div>
     );
 }
