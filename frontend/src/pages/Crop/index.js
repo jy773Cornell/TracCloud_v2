@@ -7,7 +7,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
-import {Autocomplete, Button, Card, CardContent, Grid, Modal, TextField} from "@mui/material";
+import {Autocomplete, Button, Card, CardContent, Grid, Modal, Popover, TextField, Typography} from "@mui/material";
 import {AddButton} from "./styles";
 import OperationSnackbars from "../../components/Snackbars";
 import {
@@ -18,6 +18,7 @@ import {
     GridToolbarExport,
     GridToolbarFilterButton
 } from "@mui/x-data-grid";
+import ConfirmPopover from "../../components/ConfirmPopover";
 
 const columnWidth = 200;
 const editWidth = 180;
@@ -150,9 +151,14 @@ function AddCropRecord({
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} sx={{justifyContent: 'center', textAlign: 'center'}}>
+                    <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
                         <Button variant="contained" color="success" onClick={() => handleSaveButtonPressed()}>
                             Save
+                        </Button>
+                    </Grid>
+                    <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
+                        <Button variant="contained" color="secondary" onClick={() => setShowAddModal(false)}>
+                            Cancel
                         </Button>
                     </Grid>
                 </Grid>
@@ -177,6 +183,8 @@ export default function Crop(props) {
     const [isSave, setIsSave] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
     const [editRowId, setEditRowId] = useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [popoverRowId, setPopoverRowId] = useState(null);
     const [refreshRecord, setRefreshRecord] = useState(false);
 
     async function CropListGet(props) {
@@ -279,7 +287,7 @@ export default function Crop(props) {
     };
 
     const onEditClicked = (params) => {
-        const crop = cropCategoryOptions.find(item => item.name === params.crop);
+        const crop = cropCategoryOptions.find(item => item.label === params.row.crop);
         setFormData({"cid": params.id, "crop": crop.id});
         setFieldValues(params.row);
         setEditRowId(params.id);
@@ -456,19 +464,43 @@ export default function Crop(props) {
                         <IconButton onClick={() => onEditClicked(params)}>
                             <EditIcon/>
                         </IconButton>
-                        <IconButton onClick={() => onDeleteClicked(params)}>
+                        <IconButton onClick={(event) => {
+                            setAnchorEl(event.currentTarget);
+                            setPopoverRowId(params.id);
+                        }}>
                             <DeleteIcon/>
                         </IconButton>
+                        {popoverRowId === params.id &&
+                            <ConfirmPopover anchorEl={anchorEl}
+                                            setAnchorEl={setAnchorEl}
+                                            onDeleteClicked={onDeleteClicked}
+                                            params={params}
+                                            msg="Delete this record?"
+                                            type="delete"
+                            />
+                        }
                     </>);
                 } else {
                     return (
                         <>
-                            <IconButton onClick={() => onSaveClicked()}>
+                            <IconButton onClick={(event) => {
+                                setAnchorEl(event.currentTarget);
+                                setPopoverRowId(params.id);
+                            }}>
                                 <SaveIcon/>
                             </IconButton>
                             <IconButton onClick={() => setEditRowId(null)}>
                                 < CancelIcon/>
                             </IconButton>
+                            {popoverRowId === params.id &&
+                                <ConfirmPopover anchorEl={anchorEl}
+                                                setAnchorEl={setAnchorEl}
+                                                onSaveClicked={onSaveClicked}
+                                                params={params}
+                                                msg="Update this record?"
+                                                type="update"
+                                />
+                            }
                         </>
                     )
                 }
