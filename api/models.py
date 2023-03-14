@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils import timezone
+from api.utils.ModelManager import MyModelManager
 
 '''
 User Entity 
@@ -134,9 +134,7 @@ class Crop(models.Model):
     def __str__(self):
         return "{}: {}".format(self.crop, self.variety)
 
-    def save(self, *args, **kwargs):
-        self.update_time = timezone.now()
-        super().save(*args, **kwargs)
+    objects = MyModelManager()
 
 
 class CropCategory(models.Model):

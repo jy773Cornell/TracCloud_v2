@@ -14,12 +14,12 @@ export default function OperationSnackbars(props) {
         if (reason === 'clickaway') {
             return;
         }
-        props.setIsSave(false);
+        props.setOpen(false);
     };
 
     return (
         <Stack spacing={2} sx={{width: '100%'}}>
-            <Snackbar open={props.isSave} autoHideDuration={6000} onClose={handleClose}>
+            <Snackbar open={props.open} autoHideDuration={6000} onClose={handleClose}>
                 <Alert onClose={handleClose} severity="success" sx={{width: '100%'}}>
                     {props.msg}
                 </Alert>

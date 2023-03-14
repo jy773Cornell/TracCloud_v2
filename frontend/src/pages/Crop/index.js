@@ -20,8 +20,14 @@ import {
 } from "@mui/x-data-grid";
 
 const columnWidth = 200;
+const editWidth = 180;
 
-const field_names = ["crop_id", "variety_id", "crop_code", "category", "growth_stage_id"]
+const field_names = ["crop", "variety", "crop_code", "category", "growth_stage"]
+
+function createAPIData(data) {
+    const {crop: crop_id, variety: variety_id, growth_stage: growth_stage_id, ...rest} = data;
+    return {crop_id, variety_id, growth_stage_id, ...rest};
+}
 
 function createRowData(record) {
     return {
@@ -60,8 +66,10 @@ function AddCropRecord({
                        }) {
 
     async function CropRecordSave() {
+        const apiData = createAPIData(formData);
+        console.log(apiData);
         const requestOptions = {
-            method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(formData),
+            method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
         };
         await fetch("/api/crop/create/", requestOptions)
             .then((response) => {
@@ -74,7 +82,6 @@ function AddCropRecord({
     }
 
     const handleSaveButtonPressed = () => {
-        console.log(formData)
         CropRecordSave();
     };
 
@@ -113,16 +120,22 @@ function AddCropRecord({
                     </Grid>
                     <Grid item xs={6}>
                         <TextField
-                            disabled
                             value={fieldValues[field_names[2]]}
+                            InputLabelProps={{
+                                shrink: true,
+                                readOnly: true,
+                            }}
                             variant="outlined"
                             label={columns[3].headerName}
                         />
                     </Grid>
                     <Grid item xs={6}>
                         <TextField
-                            disabled
                             value={fieldValues[field_names[3]]}
+                            InputLabelProps={{
+                                shrink: true,
+                                readOnly: true,
+                            }}
                             variant="outlined"
                             label={columns[4].headerName}
                         />
@@ -153,17 +166,18 @@ export default function Crop(props) {
     const [cropVariety, setCropVariety] = useState([]);
     const [cropGrowthStage, setCropGrowthStage] = useState([]);
 
+    const [rows, setRows] = useState([]);
     const [formData, setFormData] = useState({});
     const [fieldValues, setFieldValues] = useState({});
     const [cropCategoryOptions, setCropCategoryOptions] = useState([]);
     const [cropVarietyOptions, setCropVarietyOptions] = useState([]);
     const [cropGrowthStageOptions, setCropGrowthStageOptions] = useState([]);
 
-    const [rows, setRows] = useState([]);
     const [showAddModal, setShowAddModal] = useState(false);
-    const [refreshRecord, setRefreshRecord] = useState(false);
     const [isSave, setIsSave] = useState(false);
+    const [isDelete, setIsDelete] = useState(false);
     const [editRowId, setEditRowId] = useState(null);
+    const [refreshRecord, setRefreshRecord] = useState(false);
 
     async function CropListGet(props) {
         const requestOptions = {
@@ -224,8 +238,10 @@ export default function Crop(props) {
     }
 
     async function CropRecordUpdate() {
+        const apiData = createAPIData(formData);
+        console.log(apiData);
         const requestOptions = {
-            method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(formData),
+            method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
         };
         await fetch("/api/crop/update/", requestOptions)
             .then((response) => {
@@ -237,20 +253,51 @@ export default function Crop(props) {
             })
     }
 
-    const handleSaveButtonPressed = () => {
-        console.log(formData)
+    async function CropRecordDelete(cid) {
+        const apiData = {"user": props.uid, "cid": cid}
+        console.log(apiData);
+        const requestOptions = {
+            method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
+        };
+        await fetch("/api/crop/delete/", requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    setIsDelete(true);
+                    setRefreshRecord(~refreshRecord);
+                }
+            })
+    }
+
+    const onSaveClicked = () => {
         CropRecordUpdate();
+        const index = rows.findIndex(item => item.id === fieldValues.id);
+        setRows([
+            ...rows.slice(0, index),
+            fieldValues,
+            ...rows.slice(index + 1),
+        ]);
     };
 
     const onEditClicked = (params) => {
-        setFormData({cid: params.id});
-        setFieldValues(Object.fromEntries(field_names.map(item => [item, ""])));
+        const crop = cropCategoryOptions.find(item => item.name === params.crop);
+        setFormData({"cid": params.id, "crop": crop.id});
+        setFieldValues(params.row);
         setEditRowId(params.id);
     };
 
+    const onDeleteClicked = (params) => {
+        CropRecordDelete(params.id);
+        const index = rows.findIndex(item => item.id === params.id);
+        setRows([
+            ...rows.slice(0, index),
+            ...rows.slice(index + 1),
+        ]);
+    };
+
     const onAddClicked = () => {
-        setFormData({"user_id": props.uid});
+        setFormData({"user_id": props.uid,});
         setFieldValues(Object.fromEntries(field_names.map(item => [item, ""])));
+        setEditRowId(null);
         setShowAddModal(true);
     };
 
@@ -285,8 +332,6 @@ export default function Crop(props) {
             setFormData({
                 ...formData, [field]: value.id, [field_names[1]]: null, [field_names[4]]: null
             });
-            CropVarietyOptionsFresh(value.id);
-            CropGrowthStageOptionsFresh(value.id);
         } else {
             setFieldValues({...fieldValues, [field]: value.label})
             setFormData({...formData, [field]: value.id});
@@ -303,60 +348,95 @@ export default function Crop(props) {
             field: 'crop',
             headerName: 'Crop',
             width: columnWidth,
-            editable: true,
-            renderCell: (params) => (<Autocomplete
-                options={cropCategoryOptions}
-                value={params.value}
-                onChange={(event, value) => {
-                    handleInputChange(event, value, field_names[0]);
-                }}
-                disabled={editRowId !== params.id}
-                disabledItemsFocusable={true}
-                inputprops={{style: {color: '#000 !important'}}}
-                renderInput={(params) => <TextField {...params} sx={{width: columnWidth}}/>}
-            />),
+            renderCell: (params, rowID = params.id) => (
+                <Autocomplete
+                    options={cropCategoryOptions}
+                    freeSolo
+                    disableClearable
+                    readOnly={editRowId !== rowID}
+                    value={editRowId === rowID ? fieldValues.crop : params.value}
+                    onChange={(event, value) => {
+                        handleInputChange(event, value, field_names[0]);
+                    }}
+
+                    renderInput={(params) => {
+                        return (
+                            editRowId !== rowID ?
+                                <TextField {...params} variant="standard"
+                                           InputProps={{disableUnderline: true}}
+                                           sx={{width: columnWidth}}/> :
+                                <TextField {...params} variant="standard" sx={{width: editWidth}}/>
+                        )
+                    }}
+                />),
         },
         {
             field: 'variety',
             headerName: 'Variety',
             width: columnWidth,
-            editable: true,
-            renderCell: (params) => (<Autocomplete
-                options={cropVarietyOptions}
-                value={params.value}
-                onChange={(event, value) => {
-                    handleInputChange(event, value, field_names[1]);
-                }}
-                disabled={editRowId !== params.id}
-                disabledItemsFocusable={true}
-                inputprops={{style: {color: '#000'}}}
-                renderInput={(params) => <TextField {...params} sx={{width: columnWidth}}/>}
-            />),
+            renderCell: (params, rowID = params.id) => (
+                <Autocomplete
+                    options={cropVarietyOptions}
+                    freeSolo
+                    disableClearable
+                    readOnly={editRowId !== rowID}
+                    value={editRowId === rowID ? fieldValues.variety : params.value}
+                    onChange={(event, value) => {
+                        handleInputChange(event, value, field_names[1]);
+                    }}
+
+                    renderInput={(params) => {
+                        return (
+                            editRowId !== rowID ?
+                                <TextField {...params} variant="standard"
+                                           InputProps={{disableUnderline: true}}
+                                           sx={{width: columnWidth}}/> :
+                                <TextField {...params} variant="standard" sx={{width: editWidth}}/>
+                        )
+                    }}
+                />),
         },
         {
-            field: 'crop_code', headerName: 'Crop Code', width: columnWidth,
+            field: 'crop_code',
+            headerName: 'Crop Code',
+            width: columnWidth,
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues.crop_code : params.value)
+            },
         },
         {
             field: 'category',
             headerName: 'Category',
             width: columnWidth,
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues.category : params.value)
+            },
         },
         {
             field: 'growth_stage',
             headerName: 'Growth Stage',
             width: columnWidth,
-            editable: true,
-            renderCell: (params) => (<Autocomplete
-                options={cropGrowthStageOptions}
-                value={params.value}
-                onChange={(event, value) => {
-                    handleInputChange(event, value, field_names[4]);
-                }}
-                disabled={editRowId !== params.id}
-                disabledItemsFocusable={true}
-                inputprops={{style: {color: '#000 !important'}}}
-                renderInput={(params) => <TextField {...params} sx={{width: columnWidth}}/>}
-            />),
+            renderCell: (params, rowID = params.id) => (
+                <Autocomplete
+                    options={cropGrowthStageOptions}
+                    freeSolo
+                    disableClearable
+                    readOnly={editRowId !== rowID}
+                    value={editRowId === rowID ? fieldValues.growth_stage : params.value}
+                    onChange={(event, value) => {
+                        handleInputChange(event, value, field_names[4]);
+                    }}
+
+                    renderInput={(params) => {
+                        return (
+                            editRowId !== rowID ?
+                                <TextField {...params} variant="standard"
+                                           InputProps={{disableUnderline: true}}
+                                           sx={{width: columnWidth}}/> :
+                                <TextField {...params} variant="standard" sx={{width: editWidth}}/>
+                        )
+                    }}
+                />),
         },
         {
             field: 'update_time',
@@ -376,14 +456,14 @@ export default function Crop(props) {
                         <IconButton onClick={() => onEditClicked(params)}>
                             <EditIcon/>
                         </IconButton>
-                        <IconButton>
+                        <IconButton onClick={() => onDeleteClicked(params)}>
                             <DeleteIcon/>
                         </IconButton>
                     </>);
                 } else {
                     return (
                         <>
-                            <IconButton onClick={() => handleSaveButtonPressed()}>
+                            <IconButton onClick={() => onSaveClicked()}>
                                 <SaveIcon/>
                             </IconButton>
                             <IconButton onClick={() => setEditRowId(null)}>
@@ -410,8 +490,9 @@ export default function Crop(props) {
         setRefreshRecord,
     };
 
-    const msg = "Crop record is uploaded successfully!"
-    const saveProps = {isSave, setIsSave, msg};
+    const saveProps = {open: isSave, setOpen: setIsSave, msg: "Crop record is uploaded successfully!"};
+
+    const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Crop record has been deleted!"};
 
     useEffect(() => {
         CropCategoryGet();
@@ -422,6 +503,11 @@ export default function Crop(props) {
     useEffect(() => {
         CropCategoryOptionsFresh();
     }, [cropCategory]);
+
+    useEffect(() => {
+        CropVarietyOptionsFresh(formData.crop);
+        CropGrowthStageOptionsFresh(formData.crop);
+    }, [formData.crop]);
 
     useEffect(() => {
         CropListGet(props);
@@ -448,5 +534,6 @@ export default function Crop(props) {
         </Paper>
         <AddCropRecord {...addProps}/>
         <OperationSnackbars  {...saveProps}/>
+        <OperationSnackbars  {...deleteProps}/>
     </div>);
 }

@@ -1,9 +1,8 @@
 import {styled} from "@mui/system";
-import {Button, Card, Grid} from "@mui/material";
+import {Autocomplete, Button, TextField} from "@mui/material";
 import {orange} from '@mui/material/colors';
-import {pink} from '@mui/material/colors';
 
-export const AddButton = styled(Button)(({theme}) => ({
+export const AddButton = styled(Button)(() => ({
     margin: "15px 15px",
     backgroundColor: orange[500],
     '&:hover': {
