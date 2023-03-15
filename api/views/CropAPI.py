@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.views import APIView
@@ -6,7 +7,6 @@ from api.serializers.CropSerializer import *
 from api.models import *
 from api.utils.ModelManager import model_delete, request_data_transform
 from api.utils.UUIDGen import gen_uuid
-
 
 class CropCreateView(APIView):
     serializer_class = CropCreateSerializer
@@ -29,6 +29,7 @@ class CropGetView(APIView):
     lookup_url_kwarg = "cid"
 
     def get(self, request, format=None):
+        print(cache.get('CropVariety'))
         cid = request.GET.get(self.lookup_url_kwarg)
         if cid:
             crop = Crop.objects.filter(cid=cid, is_active=True).first()
