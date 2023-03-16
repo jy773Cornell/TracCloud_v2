@@ -8,6 +8,7 @@ from api.models import *
 from api.utils.ModelManager import model_delete, request_data_transform
 from api.utils.UUIDGen import gen_uuid
 
+
 class CropCreateView(APIView):
     serializer_class = CropCreateSerializer
 
@@ -29,7 +30,6 @@ class CropGetView(APIView):
     lookup_url_kwarg = "cid"
 
     def get(self, request, format=None):
-        print(cache.get('CropVariety'))
         cid = request.GET.get(self.lookup_url_kwarg)
         if cid:
             crop = Crop.objects.filter(cid=cid, is_active=True).first()
@@ -98,43 +98,61 @@ class CropDeleteView(APIView):
         return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+# class CropCategoryGetView(APIView):
+#     serializer_class = CropCategoryGetSerializer
+#
+#     def get(self, request, format=None):
+#         crop_category_query = CropCategory.objects.filter(is_active=True)
+#         if crop_category_query:
+#             data = []
+#             for crop_category in crop_category_query:
+#                 data.append(CropCategoryGetSerializer(crop_category).data)
+#             return Response({'Succeeded': 'Crop Category Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
+#
+#         return Response({'Failed': 'None active data.'}, status=status.HTTP_404_NOT_FOUND)
+
+
 class CropCategoryGetView(APIView):
-    serializer_class = CropCategoryGetSerializer
-
     def get(self, request, format=None):
-        crop_category_query = CropCategory.objects.filter(is_active=True)
-        if crop_category_query:
-            data = []
-            for crop_category in crop_category_query:
-                data.append(CropCategoryGetSerializer(crop_category).data)
-            return Response({'Succeeded': 'Crop Category Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
+        data = cache.get("CropCategory")
+        return Response({'Succeeded': 'Crop Category Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
 
-        return Response({'Failed': 'None active data.'}, status=status.HTTP_404_NOT_FOUND)
+
+# class CropVarietyGetView(APIView):
+#     serializer_class = CropVarietyGetSerializer
+#
+#     def get(self, request, format=None):
+#         crop_variety_query = CropVariety.objects.filter(is_active=True)
+#         if crop_variety_query:
+#             data = []
+#             for crop_variety in crop_variety_query:
+#                 data.append(CropVarietyGetSerializer(crop_variety).data)
+#             return Response({'Succeeded': 'Crop Variety Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
+#
+#         return Response({'Failed': 'None active data.'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class CropVarietyGetView(APIView):
-    serializer_class = CropVarietyGetSerializer
-
     def get(self, request, format=None):
-        crop_variety_query = CropVariety.objects.filter(is_active=True)
-        if crop_variety_query:
-            data = []
-            for crop_variety in crop_variety_query:
-                data.append(CropVarietyGetSerializer(crop_variety).data)
-            return Response({'Succeeded': 'Crop Variety Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
+        data = cache.get("CropVariety")
+        return Response({'Succeeded': 'Crop Variety Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
 
-        return Response({'Failed': 'None active data.'}, status=status.HTTP_404_NOT_FOUND)
+
+# class CropGrowthStageGetView(APIView):
+#     serializer_class = CropGrowthStageGetSerializer
+#
+#     def get(self, request, format=None):
+#         crop_growth_stage_query = CropGrowthStage.objects.filter(is_active=True)
+#         if crop_growth_stage_query:
+#             data = []
+#             for crop_growth_stage in crop_growth_stage_query:
+#                 data.append(CropGrowthStageGetSerializer(crop_growth_stage).data)
+#             return Response({'Succeeded': 'Crop Growth Stage Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
+#
+#         return Response({'Failed': 'None active data.'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class CropGrowthStageGetView(APIView):
-    serializer_class = CropGrowthStageGetSerializer
-
     def get(self, request, format=None):
-        crop_growth_stage_query = CropGrowthStage.objects.filter(is_active=True)
-        if crop_growth_stage_query:
-            data = []
-            for crop_growth_stage in crop_growth_stage_query:
-                data.append(CropGrowthStageGetSerializer(crop_growth_stage).data)
-            return Response({'Succeeded': 'Crop Growth Stage Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
-
-        return Response({'Failed': 'None active data.'}, status=status.HTTP_404_NOT_FOUND)
+        data = cache.get("CropGrowthStage")
+        return Response({'Succeeded': 'Crop Growth Stage Info Fetched.', 'data': data}, status=status.HTTP_200_OK)

@@ -101,6 +101,7 @@ function AddCropRecord({
                     </Grid>
                     <Grid item xs={12}>
                         <Autocomplete
+                            value={fieldValues.crop}
                             options={cropCategoryOptions}
                             renderInput={(params) => (
                                 <TextField {...params} variant="outlined" label={columns[1].headerName}/>)}
@@ -111,6 +112,7 @@ function AddCropRecord({
                     </Grid>
                     <Grid item xs={12}>
                         <Autocomplete
+                            value={fieldValues.variety}
                             options={cropVarietyOptions}
                             renderInput={(params) => (
                                 <TextField {...params} variant="outlined" label={columns[2].headerName}/>)}
@@ -143,6 +145,7 @@ function AddCropRecord({
                     </Grid>
                     <Grid item xs={12}>
                         <Autocomplete
+                            value={fieldValues.growth_stage}
                             options={cropGrowthStageOptions}
                             renderInput={(params) => (
                                 <TextField {...params} variant="outlined" label={columns[5].headerName}/>)}
@@ -316,13 +319,13 @@ export default function Crop(props) {
     };
 
     const CropVarietyOptionsFresh = (crop_id) => {
-        setCropVarietyOptions(cropVariety.filter(item => item.crop === crop_id).map(item => ({
+        setCropVarietyOptions(cropVariety.filter(item => item.crop_id === crop_id).map(item => ({
             label: item.name, id: item.cvid
         })))
     };
 
     const CropGrowthStageOptionsFresh = (crop_id) => {
-        setCropGrowthStageOptions(cropGrowthStage.filter(item => item.crop === crop_id).map(item => ({
+        setCropGrowthStageOptions(cropGrowthStage.filter(item => item.crop_id === crop_id).map(item => ({
             label: item.name, id: item.cgsid
         })))
     };
@@ -359,14 +362,12 @@ export default function Crop(props) {
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
                     options={cropCategoryOptions}
-                    freeSolo
                     disableClearable
                     readOnly={editRowId !== rowID}
                     value={editRowId === rowID ? fieldValues.crop : params.value}
                     onChange={(event, value) => {
                         handleInputChange(event, value, field_names[0]);
                     }}
-
                     renderInput={(params) => {
                         return (
                             editRowId !== rowID ?
@@ -385,14 +386,12 @@ export default function Crop(props) {
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
                     options={cropVarietyOptions}
-                    freeSolo
                     disableClearable
                     readOnly={editRowId !== rowID}
                     value={editRowId === rowID ? fieldValues.variety : params.value}
                     onChange={(event, value) => {
                         handleInputChange(event, value, field_names[1]);
                     }}
-
                     renderInput={(params) => {
                         return (
                             editRowId !== rowID ?
@@ -427,14 +426,12 @@ export default function Crop(props) {
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
                     options={cropGrowthStageOptions}
-                    freeSolo
                     disableClearable
                     readOnly={editRowId !== rowID}
                     value={editRowId === rowID ? fieldValues.growth_stage : params.value}
                     onChange={(event, value) => {
                         handleInputChange(event, value, field_names[4]);
                     }}
-
                     renderInput={(params) => {
                         return (
                             editRowId !== rowID ?

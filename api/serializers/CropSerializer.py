@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from rest_framework import serializers
 from api.models import User, Crop, CropCategory, CropVariety, CropGrowthStage
 
@@ -16,24 +17,32 @@ class CropCreateSerializer(serializers.ModelSerializer):
 
 
 class CropGetSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-    crop = serializers.StringRelatedField()
-    variety = serializers.StringRelatedField()
-    growth_stage = serializers.StringRelatedField()
-    update_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
-
+    crop = serializers.SerializerMethodField()
     crop_code = serializers.SerializerMethodField()
     category = serializers.SerializerMethodField()
+    variety = serializers.SerializerMethodField()
+    growth_stage = serializers.SerializerMethodField()
+    update_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
 
     class Meta:
         model = Crop
         fields = "__all__"
 
+    def get_crop(self, obj):
+        return next((item['name'] for item in cache.get("CropCategory") if item['ccid'] == obj.crop_id), None)
+
     def get_crop_code(self, obj):
-        return CropCategory.objects.filter(name=obj.crop, is_active=True).first().crop_code
+        return next((item['crop_code'] for item in cache.get("CropCategory") if item['ccid'] == obj.crop_id), None)
 
     def get_category(self, obj):
-        return CropCategory.objects.filter(name=obj.crop, is_active=True).first().category
+        return next((item['category'] for item in cache.get("CropCategory") if item['ccid'] == obj.crop_id), None)
+
+    def get_variety(self, obj):
+        return next((item['name'] for item in cache.get("CropVariety") if item['cvid'] == obj.variety_id), None)
+
+    def get_growth_stage(self, obj):
+        return next((item['name'] for item in cache.get("CropGrowthStage") if item['cgsid'] == obj.growth_stage_id),
+                    None)
 
 
 class CropUpdateSerializer(serializers.ModelSerializer):
