@@ -37,6 +37,8 @@ class User(models.Model):
     def __str__(self):
         return "{} ({})".format(self.username, self.type)
 
+    objects = MyModelManager()
+
 
 class UserType(models.Model):
     utid = models.CharField(verbose_name="UTID", primary_key=True, max_length=48)

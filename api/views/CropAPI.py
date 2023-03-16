@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from api.serializers.CropSerializer import *
 from api.models import *
-from api.utils.ModelManager import model_delete, request_data_transform
+from api.utils.ModelManager import request_data_transform
 from api.utils.UUIDGen import gen_uuid
 
 
@@ -32,7 +32,7 @@ class CropGetView(APIView):
     def get(self, request, format=None):
         cid = request.GET.get(self.lookup_url_kwarg)
         if cid:
-            crop = Crop.objects.filter(cid=cid, is_active=True).first()
+            crop = Crop.objects.filter(cid=cid).alive().first()
             if crop:
                 data = CropGetSerializer(crop).data
                 return Response({'Succeeded': 'Crop Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
@@ -49,9 +49,9 @@ class CropListGetView(APIView):
     def get(self, request, format=None):
         uid = request.GET.get(self.lookup_url_kwarg)
         if uid:
-            user = User.objects.filter(uid=uid, is_active=True)
+            user = User.objects.filter(uid=uid).alive()
             if user:
-                crop_list = Crop.objects.filter(user_id=uid, is_active=True)
+                crop_list = Crop.objects.filter(user_id=uid).alive()
                 data = []
                 for crop in crop_list:
                     data.append(CropGetSerializer(crop).data)
@@ -70,7 +70,7 @@ class CropUpdateView(APIView):
         data = request_data_transform(request.data)
         cid = data.pop("cid")
         if cid:
-            crop = Crop.objects.filter(cid=cid, is_active=True)
+            crop = Crop.objects.filter(cid=cid).alive()
             if crop:
                 crop.update(**data)
                 return Response({'Succeeded': 'Crop info has been updated.'}, status=status.HTTP_200_OK)
@@ -88,9 +88,9 @@ class CropDeleteView(APIView):
         cid = request.data.get("cid")
         user = request.data.get("user")
         if cid and user:
-            crop = Crop.objects.filter(cid=cid, user_id=user, is_active=True)
+            crop = Crop.objects.filter(cid=cid, user_id=user).alive()
             if crop:
-                model_delete(crop)
+                crop.delete()
                 return Response({'Succeeded': 'Crop has been deleted.'}, status=status.HTTP_200_OK)
 
             return Response({'Failed': 'Invalid cid'}, status=status.HTTP_404_NOT_FOUND)
@@ -102,7 +102,7 @@ class CropDeleteView(APIView):
 #     serializer_class = CropCategoryGetSerializer
 #
 #     def get(self, request, format=None):
-#         crop_category_query = CropCategory.objects.filter(is_active=True)
+#         crop_category_query = CropCategory.objects.all()
 #         if crop_category_query:
 #             data = []
 #             for crop_category in crop_category_query:
@@ -122,7 +122,7 @@ class CropCategoryGetView(APIView):
 #     serializer_class = CropVarietyGetSerializer
 #
 #     def get(self, request, format=None):
-#         crop_variety_query = CropVariety.objects.filter(is_active=True)
+#         crop_variety_query = CropVariety.objects.all()
 #         if crop_variety_query:
 #             data = []
 #             for crop_variety in crop_variety_query:
@@ -142,7 +142,7 @@ class CropVarietyGetView(APIView):
 #     serializer_class = CropGrowthStageGetSerializer
 #
 #     def get(self, request, format=None):
-#         crop_growth_stage_query = CropGrowthStage.objects.filter(is_active=True)
+#         crop_growth_stage_query = CropGrowthStage.objects.all()
 #         if crop_growth_stage_query:
 #             data = []
 #             for crop_growth_stage in crop_growth_stage_query:

@@ -62,6 +62,8 @@ function AddCropRecord({
                            showAddModal,
                            setShowAddModal,
                            setIsSave,
+                           inputError,
+                           updateInputError,
                            refreshRecord,
                            setRefreshRecord,
                        }) {
@@ -83,7 +85,11 @@ function AddCropRecord({
     }
 
     const handleSaveButtonPressed = () => {
-        CropRecordSave();
+        if (Object.values(fieldValues).every(value => value !== "")) {
+            CropRecordSave();
+        } else {
+            updateInputError();
+        }
     };
 
     return (<Modal
@@ -101,24 +107,26 @@ function AddCropRecord({
                     </Grid>
                     <Grid item xs={12}>
                         <Autocomplete
-                            value={fieldValues.crop}
+                            value={fieldValues[field_names[0]]}
                             options={cropCategoryOptions}
-                            renderInput={(params) => (
-                                <TextField {...params} variant="outlined" label={columns[1].headerName}/>)}
                             onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[0])
+                                handleInputChange(event, value, field_names[0]);
                             }}
+                            renderInput={(params) => (
+                                <TextField {...params} required variant="outlined" label={columns[1].headerName}
+                                           error={inputError[field_names[0]]}/>)}
                         />
                     </Grid>
                     <Grid item xs={12}>
                         <Autocomplete
-                            value={fieldValues.variety}
+                            value={fieldValues[field_names[1]]}
                             options={cropVarietyOptions}
-                            renderInput={(params) => (
-                                <TextField {...params} variant="outlined" label={columns[2].headerName}/>)}
                             onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[1])
+                                handleInputChange(event, value, field_names[1]);
                             }}
+                            renderInput={(params) => (
+                                <TextField {...params} required variant="outlined" label={columns[2].headerName}
+                                           error={inputError[field_names[1]]}/>)}
                         />
                     </Grid>
                     <Grid item xs={6}>
@@ -145,13 +153,14 @@ function AddCropRecord({
                     </Grid>
                     <Grid item xs={12}>
                         <Autocomplete
-                            value={fieldValues.growth_stage}
+                            value={fieldValues[field_names[4]]}
                             options={cropGrowthStageOptions}
-                            renderInput={(params) => (
-                                <TextField {...params} variant="outlined" label={columns[5].headerName}/>)}
                             onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[4])
+                                handleInputChange(event, value, field_names[4]);
                             }}
+                            renderInput={(params) => (
+                                <TextField {...params} required variant="outlined" label={columns[5].headerName}
+                                           error={inputError[field_names[4]]}/>)}
                         />
                     </Grid>
                     <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
@@ -185,6 +194,7 @@ export default function Crop(props) {
     const [showAddModal, setShowAddModal] = useState(false);
     const [isSave, setIsSave] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
+    const [inputError, setInputError] = useState([]);
     const [editRowId, setEditRowId] = useState(null);
     const [anchorEl, setAnchorEl] = useState(null);
     const [popoverRowId, setPopoverRowId] = useState(null);
@@ -279,21 +289,51 @@ export default function Crop(props) {
             })
     }
 
+    const clearInputError = () => {
+        setInputError(Object.fromEntries(field_names.map(item => [item, false])));
+    }
+
+    const updateInputError = () => {
+        Object.keys(fieldValues).forEach(key => {
+            if (fieldValues[key] === "") {
+                setInputError((prevInputError) => ({
+                    ...prevInputError,
+                    [key]: true
+                }));
+            } else {
+                setInputError((prevInputError) => ({
+                    ...prevInputError,
+                    [key]: false
+                }));
+            }
+        });
+    }
+
     const onSaveClicked = () => {
-        CropRecordUpdate();
-        const index = rows.findIndex(item => item.id === fieldValues.id);
-        setRows([
-            ...rows.slice(0, index),
-            fieldValues,
-            ...rows.slice(index + 1),
-        ]);
+        if (Object.values(fieldValues).every(value => value !== "")) {
+            CropRecordUpdate();
+            const index = rows.findIndex(item => item.id === fieldValues.id);
+            setRows([
+                ...rows.slice(0, index),
+                fieldValues,
+                ...rows.slice(index + 1),
+            ]);
+        } else {
+            updateInputError();
+        }
     };
+
+    const onCancelClicked = () => {
+        setEditRowId(null);
+        clearInputError();
+    }
 
     const onEditClicked = (params) => {
         const crop = cropCategoryOptions.find(item => item.label === params.row.crop);
         setFormData({"cid": params.id, "crop": crop.id});
         setFieldValues(params.row);
         setEditRowId(params.id);
+        clearInputError();
     };
 
     const onDeleteClicked = (params) => {
@@ -310,6 +350,7 @@ export default function Crop(props) {
         setFieldValues(Object.fromEntries(field_names.map(item => [item, ""])));
         setEditRowId(null);
         setShowAddModal(true);
+        clearInputError();
     };
 
     const CropCategoryOptionsFresh = () => {
@@ -364,7 +405,7 @@ export default function Crop(props) {
                     options={cropCategoryOptions}
                     disableClearable
                     readOnly={editRowId !== rowID}
-                    value={editRowId === rowID ? fieldValues.crop : params.value}
+                    value={editRowId === rowID ? fieldValues[field_names[0]] : params.value}
                     onChange={(event, value) => {
                         handleInputChange(event, value, field_names[0]);
                     }}
@@ -374,7 +415,8 @@ export default function Crop(props) {
                                 <TextField {...params} variant="standard"
                                            InputProps={{disableUnderline: true}}
                                            sx={{width: columnWidth}}/> :
-                                <TextField {...params} variant="standard" sx={{width: editWidth}}/>
+                                <TextField {...params} variant="standard" error={inputError[field_names[0]]}
+                                           sx={{width: editWidth}}/>
                         )
                     }}
                 />),
@@ -388,7 +430,7 @@ export default function Crop(props) {
                     options={cropVarietyOptions}
                     disableClearable
                     readOnly={editRowId !== rowID}
-                    value={editRowId === rowID ? fieldValues.variety : params.value}
+                    value={editRowId === rowID ? fieldValues[field_names[1]] : params.value}
                     onChange={(event, value) => {
                         handleInputChange(event, value, field_names[1]);
                     }}
@@ -398,7 +440,8 @@ export default function Crop(props) {
                                 <TextField {...params} variant="standard"
                                            InputProps={{disableUnderline: true}}
                                            sx={{width: columnWidth}}/> :
-                                <TextField {...params} variant="standard" sx={{width: editWidth}}/>
+                                <TextField {...params} variant="standard" sx={{width: editWidth}}
+                                           error={inputError[field_names[1]]}/>
                         )
                     }}
                 />),
@@ -408,7 +451,7 @@ export default function Crop(props) {
             headerName: 'Crop Code',
             width: columnWidth,
             valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues.crop_code : params.value)
+                return (editRowId === params.id ? fieldValues[field_names[2]] : params.value)
             },
         },
         {
@@ -416,7 +459,7 @@ export default function Crop(props) {
             headerName: 'Category',
             width: columnWidth,
             valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues.category : params.value)
+                return (editRowId === params.id ? fieldValues[field_names[3]] : params.value)
             },
         },
         {
@@ -428,7 +471,7 @@ export default function Crop(props) {
                     options={cropGrowthStageOptions}
                     disableClearable
                     readOnly={editRowId !== rowID}
-                    value={editRowId === rowID ? fieldValues.growth_stage : params.value}
+                    value={editRowId === rowID ? fieldValues[field_names[4]] : params.value}
                     onChange={(event, value) => {
                         handleInputChange(event, value, field_names[4]);
                     }}
@@ -438,7 +481,8 @@ export default function Crop(props) {
                                 <TextField {...params} variant="standard"
                                            InputProps={{disableUnderline: true}}
                                            sx={{width: columnWidth}}/> :
-                                <TextField {...params} variant="standard" sx={{width: editWidth}}/>
+                                <TextField {...params} variant="standard" sx={{width: editWidth}}
+                                           error={inputError[field_names[4]]}/>
                         )
                     }}
                 />),
@@ -486,7 +530,7 @@ export default function Crop(props) {
                             }}>
                                 <SaveIcon/>
                             </IconButton>
-                            <IconButton onClick={() => setEditRowId(null)}>
+                            <IconButton onClick={() => onCancelClicked()}>
                                 < CancelIcon/>
                             </IconButton>
                             {popoverRowId === params.id &&
@@ -515,6 +559,8 @@ export default function Crop(props) {
         showAddModal,
         setShowAddModal,
         setIsSave,
+        inputError,
+        updateInputError,
         refreshRecord,
         setRefreshRecord,
     };
@@ -527,6 +573,7 @@ export default function Crop(props) {
         CropCategoryGet();
         CropVarietyGet();
         CropGrowthStageGet();
+        clearInputError();
     }, []);
 
     useEffect(() => {

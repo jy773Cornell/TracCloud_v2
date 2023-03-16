@@ -4,12 +4,10 @@ from api.models import User, Crop, CropCategory, CropVariety, CropGrowthStage
 
 
 class CropCreateSerializer(serializers.ModelSerializer):
-    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=User.objects.filter(is_active=True))
-    crop_id = serializers.PrimaryKeyRelatedField(source='crop', queryset=CropCategory.objects.filter(is_active=True))
-    variety_id = serializers.PrimaryKeyRelatedField(source='variety',
-                                                    queryset=CropVariety.objects.filter(is_active=True))
-    growth_stage_id = serializers.PrimaryKeyRelatedField(source='growth_stage',
-                                                         queryset=CropGrowthStage.objects.filter(is_active=True))
+    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=User.objects.all().alive())
+    crop_id = serializers.PrimaryKeyRelatedField(source='crop', queryset=CropCategory.objects.all())
+    variety_id = serializers.PrimaryKeyRelatedField(source='variety', queryset=CropVariety.objects.all())
+    growth_stage_id = serializers.PrimaryKeyRelatedField(source='growth_stage', queryset=CropGrowthStage.objects.all())
 
     class Meta:
         model = Crop
@@ -46,11 +44,9 @@ class CropGetSerializer(serializers.ModelSerializer):
 
 
 class CropUpdateSerializer(serializers.ModelSerializer):
-    crop_id = serializers.PrimaryKeyRelatedField(source='crop', queryset=CropCategory.objects.filter(is_active=True))
-    variety_id = serializers.PrimaryKeyRelatedField(source='variety',
-                                                    queryset=CropVariety.objects.filter(is_active=True))
-    growth_stage_id = serializers.PrimaryKeyRelatedField(source='growth_stage',
-                                                         queryset=CropGrowthStage.objects.filter(is_active=True))
+    crop_id = serializers.PrimaryKeyRelatedField(source='crop', queryset=CropCategory.objects.all())
+    variety_id = serializers.PrimaryKeyRelatedField(source='variety', queryset=CropVariety.objects.all())
+    growth_stage_id = serializers.PrimaryKeyRelatedField(source='growth_stage', queryset=CropGrowthStage.objects.all())
 
     class Meta:
         model = Crop
@@ -63,19 +59,19 @@ class CropDeleteSerializer(serializers.ModelSerializer):
         fields = ("cid", "user",)
 
 
-class CropCategoryGetSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CropCategory
-        fields = "__all__"
-
-
-class CropVarietyGetSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CropVariety
-        fields = "__all__"
-
-
-class CropGrowthStageGetSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CropGrowthStage
-        fields = "__all__"
+# class CropCategoryGetSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = CropCategory
+#         fields = "__all__"
+#
+#
+# class CropVarietyGetSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = CropVariety
+#         fields = "__all__"
+#
+#
+# class CropGrowthStageGetSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = CropGrowthStage
+#         fields = "__all__"

@@ -22,6 +22,18 @@ class MyModelQuerySet(models.QuerySet):
         kwargs['update_time'] = timezone.now()
         super().update(**kwargs)
 
+    def delete(self):
+        self.update(is_active=False)
+
+    def hard_delete(self):
+        super(MyModelQuerySet, self).delete()
+
+    def alive(self):
+        return self.filter(is_active=True)
+
+    def dead(self):
+        return self.filter(is_active=False)
+
 
 class MyModelManager(models.Manager):
     def get_queryset(self):
