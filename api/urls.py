@@ -6,6 +6,7 @@ from api.views.CropAPI import *
 from api.views.SiteAPI import *
 from api.views.ChemicalAPI import *
 from api.views.OperationAPI import *
+from api.management import cache_initializer
 
 urlpatterns = [
 

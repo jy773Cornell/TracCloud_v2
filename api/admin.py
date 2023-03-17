@@ -109,7 +109,7 @@ class EquipmentTypeAdmin(admin.ModelAdmin):
 
 class CropAdmin(admin.ModelAdmin):
     list_display = ('cid', 'user', 'crop', 'variety', 'growth_stage',
-                    'is_active', 'create_time',)
+                    'is_active', 'update_time', 'create_time',)
 
     list_filter = ('crop', 'is_active',)
 
@@ -126,7 +126,7 @@ class CropAdmin(admin.ModelAdmin):
 
 
 class CropCategoryAdmin(admin.ModelAdmin):
-    list_display = ('ccid', 'name', 'crop_code', 'category', 'is_active', 'create_time',)
+    list_display = ('ccid', 'name', 'crop_code', 'category', 'is_active', 'refresh_time',)
 
     list_filter = ('is_active',)
 
@@ -143,9 +143,9 @@ class CropCategoryAdmin(admin.ModelAdmin):
 
 
 class CropVarietyAdmin(admin.ModelAdmin):
-    list_display = ('cvid', 'name', 'crop', 'is_active', 'create_time',)
+    list_display = ('cvid', 'name', 'crop', 'is_active', 'refresh_time',)
 
-    list_filter = ('is_active',)
+    list_filter = ('crop', 'is_active',)
 
     list_per_page = 10
 
@@ -160,7 +160,7 @@ class CropVarietyAdmin(admin.ModelAdmin):
 
 
 class CropGrowthStageAdmin(admin.ModelAdmin):
-    list_display = ('cgsid', 'name', 'crop', 'is_active', 'create_time',)
+    list_display = ('cgsid', 'name', 'crop', 'is_active', 'refresh_time',)
 
     list_filter = ('is_active',)
 

@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from api.reference_data.ref_data_management import preload_ref_data
+from api.reference_data.ref_data_cache_manage import preload_ref_data
 
 
 class Command(BaseCommand):
