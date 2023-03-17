@@ -6,14 +6,14 @@ from api.utils.UUIDGen import gen_uuid
 
 
 def refresh_ref_crop():
-    nan_value = "nan"
+    nan_value = ""
     ref_file = glob.glob('api/reference_data/Trac Cloud-Reference*.xlsx')[0]
 
     # Refresh CropCategory
 
     target = "CropCategory"
     target_model = CropCategory
-    crop_category_df = pd.read_excel(ref_file, sheet_name='CropCategory')
+    crop_category_df = pd.read_excel(ref_file, sheet_name='CropCategory').fillna(nan_value)
     with transaction.atomic():
         updated_or_created = set()
         for _, row in crop_category_df.iterrows():

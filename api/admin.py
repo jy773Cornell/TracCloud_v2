@@ -364,13 +364,13 @@ class PestsDiseasesAdmin(admin.ModelAdmin):
 
 
 class UnitAdmin(admin.ModelAdmin):
-    list_display = ('unitid', 'unit', 'usage', 'is_active', 'create_time',)
+    list_display = ('unitid', 'name', 'usage', 'is_active', 'refresh_time',)
 
     list_filter = ('is_active',)
 
     list_per_page = 10
 
-    list_editable = ('unit', 'is_active',)
+    list_editable = ('name', 'is_active',)
 
     exclude = ["unitid"]
 

@@ -484,17 +484,12 @@ Unit Entity
 
 class Unit(models.Model):
     unitid = models.CharField(verbose_name="UnitID", primary_key=True, max_length=48)
-    unit = models.CharField(verbose_name="Unit", unique=True, max_length=16)
-
-    usage_choices = (
-        (1, "Site"),
-        (2, "Chemical"),
-    )
-    usage = models.SmallIntegerField(verbose_name="Usage", choices=usage_choices)
-
+    name = models.CharField(verbose_name="Unit", unique=True, max_length=64)
+    usage = models.CharField(verbose_name="Usage", max_length=64)
     note = models.TextField(verbose_name="Note", null=True, blank=True)
+
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
-    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
+    refresh_time = models.DateTimeField(verbose_name="Refresh Time", auto_now=True)
 
     def __str__(self):
         return self.unit
