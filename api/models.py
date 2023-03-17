@@ -235,27 +235,67 @@ class Chemical(models.Model):
     chemid = models.CharField(verbose_name="ChemID", primary_key=True, max_length=48)
     user = models.ForeignKey(verbose_name="User", to="User", to_field="uid", related_name="chem_user",
                              null=True, blank=True, on_delete=models.SET_NULL)
+
     type = models.CharField(verbose_name="Product Type", max_length=128)
     trade_name = models.CharField(verbose_name="Trade Name", max_length=128)
     company = models.CharField(verbose_name="Company", max_length=128)
     epa_reg_no = models.CharField(verbose_name="EPA Registration No.", max_length=32)
-    active_ingredient = models.CharField(verbose_name="Active Ingredient", max_length=128)
+    active_ingredient = models.CharField(verbose_name="Active Ingredient", max_length=256)
     percent_ai = models.CharField(verbose_name="Active Ingredient Percent", max_length=128)
-    unit = models.ForeignKey(verbose_name="Application Unit", to="Unit", to_field="unitid",
-                             related_name="chem_unit", null=True, blank=True, on_delete=models.SET_NULL)
+    restricted_use = models.CharField(verbose_name="Restricted Use", max_length=16)
+
+    unit = models.ForeignKey(verbose_name="Application Unit", to="Unit", to_field="unitid", related_name="chem_unit",
+                             null=True, blank=True, on_delete=models.SET_NULL)
     rei = models.CharField(verbose_name="REI", max_length=32)
     phi = models.CharField(verbose_name="PHI", max_length=32)
     labeled_crops = models.CharField(verbose_name="Labeled Crops", null=True, blank=True, max_length=256)
-    restricted_use = models.BooleanField(verbose_name="Restricted Use", default=False)
     label_image = models.CharField(verbose_name="Labeled Image", null=True, blank=True, max_length=128)
     imported_from = models.CharField(verbose_name="Imported From", null=True, blank=True, max_length=32)
     validated_by = models.CharField(verbose_name="Validated By", null=True, blank=True, max_length=32)
     entered_year = models.CharField(verbose_name="Entered Year", null=True, blank=True, max_length=32)
+
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
+    update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
 
     def __str__(self):
         return "{} (EPA NO. {})".format(self.trade_name, self.epa_reg_no)
+
+    objects = MyModelManager()
+
+
+class ProductBase(models.Model):
+    pbid = models.CharField(verbose_name="PBID", primary_key=True, max_length=48)
+
+    product_id_dec = models.CharField(verbose_name="Product ID_DEC", max_length=32)
+    epa_reg_no_dec = models.CharField(verbose_name="EPA REG NO_DEC", max_length=32)
+    product_name_dec = models.CharField(verbose_name="Product Name_DEC", max_length=128)
+    restricted_use_dec = models.CharField(verbose_name="Restricted Use_DEC", max_length=16)
+    product_status_dec = models.CharField(verbose_name="Product Status_DEC", max_length=32)
+    company_code_dec = models.CharField(verbose_name="Company Code_DEC", null=True, blank=True, max_length=32)
+    company_name_dec = models.CharField(verbose_name="Company Name_DEC", null=True, blank=True, max_length=128)
+    pc_name_dec = models.CharField(verbose_name="PC Name_DEC", null=True, blank=True, max_length=256)
+    pc_pt_dec = models.CharField(verbose_name="PC Pt_DEC", null=True, blank=True, max_length=128)
+    product_type_dec = models.CharField(verbose_name="Product Type_DEC", null=True, blank=True, max_length=64)
+    product_use_dec = models.CharField(verbose_name="Product Use_DEC", null=True, blank=True, max_length=64)
+
+    epa_reg_no_epa = models.CharField(verbose_name="EPA REG NO_EPA", null=True, blank=True, max_length=32)
+    product_name_epa = models.CharField(verbose_name="Product Name_EPA", null=True, blank=True, max_length=128)
+    previous_reg_no_epa = models.CharField(verbose_name="Previous Reg No_EPA", null=True, blank=True, max_length=256)
+    distributor_reg_no_epa = models.CharField(verbose_name="Distributor Reg No_EPA", null=True, blank=True,
+                                              max_length=256)
+    distributor_product_name_epa = models.CharField(verbose_name="Previous Reg No_EPA", null=True, blank=True,
+                                                    max_length=256)
+    restricted_use_epa = models.CharField(verbose_name="Restricted Use_EPA", null=True, blank=True, max_length=16)
+    product_status_epa = models.CharField(verbose_name="Product Status_EPA", null=True, blank=True, max_length=32)
+    company_code_epa = models.CharField(verbose_name="Company Code_EPA", null=True, blank=True, max_length=32)
+    company_name_epa = models.CharField(verbose_name="Company Name_EPA", null=True, blank=True, max_length=128)
+    pc_name_epa = models.CharField(verbose_name="PC Name_EPA", null=True, blank=True, max_length=256)
+    pc_pt_epa = models.CharField(verbose_name="PC Pt_EPA", null=True, blank=True, max_length=128)
+    product_type_epa = models.CharField(verbose_name="Product Type_EPA", null=True, blank=True, max_length=64)
+
+    is_active = models.BooleanField(verbose_name="Is Active", default=True)
+    refresh_time = models.DateTimeField(verbose_name="Refresh Time", auto_now=True)
 
 
 '''
