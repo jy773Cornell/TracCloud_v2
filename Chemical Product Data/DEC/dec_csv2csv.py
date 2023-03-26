@@ -75,7 +75,7 @@ def refresh_dec_data(root_path):
 
     info_product = df_product[
         ['PRODUCT ID', 'EPA REGISTRATION NUMBER', 'PRODUCT NAME', 'RESTRICTED USe', 'REGISTRATION STATUS', ]]
-    # info_product = info_product[info_product["REGISTRATION STATUS"] != "EXPIRED"]
+    info_product = info_product[info_product["REGISTRATION STATUS"] != "EXPIRED"]
     info_product['EPA REGISTRATION NUMBER'] = info_product['EPA REGISTRATION NUMBER'].str.replace('=', '')
     info_product['EPA REGISTRATION NUMBER'] = info_product['EPA REGISTRATION NUMBER'].str.replace('"', '')
     info_product['EPA REGISTRATION NUMBER'] = info_product['EPA REGISTRATION NUMBER'].apply(lambda no: no.upper())

@@ -264,35 +264,33 @@ class Chemical(models.Model):
     objects = MyModelManager()
 
 
-class ProductBase(models.Model):
-    pbid = models.CharField(verbose_name="PBID", primary_key=True, max_length=48)
+class ChemicalProductBase(models.Model):
+    chempbid = models.CharField(verbose_name="ChemPBID", primary_key=True, max_length=48)
 
     product_id_dec = models.CharField(verbose_name="Product ID_DEC", max_length=32)
     epa_reg_no_dec = models.CharField(verbose_name="EPA REG NO_DEC", max_length=32)
-    product_name_dec = models.CharField(verbose_name="Product Name_DEC", max_length=128)
+    product_name_dec = models.CharField(verbose_name="Product Name_DEC", max_length=256)
     restricted_use_dec = models.CharField(verbose_name="Restricted Use_DEC", max_length=16)
     product_status_dec = models.CharField(verbose_name="Product Status_DEC", max_length=32)
     company_code_dec = models.CharField(verbose_name="Company Code_DEC", null=True, blank=True, max_length=32)
     company_name_dec = models.CharField(verbose_name="Company Name_DEC", null=True, blank=True, max_length=128)
-    pc_name_dec = models.CharField(verbose_name="PC Name_DEC", null=True, blank=True, max_length=256)
-    pc_pt_dec = models.CharField(verbose_name="PC Pt_DEC", null=True, blank=True, max_length=128)
-    product_type_dec = models.CharField(verbose_name="Product Type_DEC", null=True, blank=True, max_length=64)
-    product_use_dec = models.CharField(verbose_name="Product Use_DEC", null=True, blank=True, max_length=64)
+    pc_name_dec = models.TextField(verbose_name="PC Name_DEC", null=True, blank=True)
+    pc_pt_dec = models.CharField(verbose_name="PC Pt_DEC", null=True, blank=True, max_length=256)
+    product_type_dec = models.CharField(verbose_name="Product Type_DEC", null=True, blank=True, max_length=256)
+    product_use_dec = models.CharField(verbose_name="Product Use_DEC", null=True, blank=True, max_length=256)
 
     epa_reg_no_epa = models.CharField(verbose_name="EPA REG NO_EPA", null=True, blank=True, max_length=32)
-    product_name_epa = models.CharField(verbose_name="Product Name_EPA", null=True, blank=True, max_length=128)
-    previous_reg_no_epa = models.CharField(verbose_name="Previous Reg No_EPA", null=True, blank=True, max_length=256)
-    distributor_reg_no_epa = models.CharField(verbose_name="Distributor Reg No_EPA", null=True, blank=True,
-                                              max_length=256)
-    distributor_product_name_epa = models.CharField(verbose_name="Previous Reg No_EPA", null=True, blank=True,
-                                                    max_length=256)
+    product_name_epa = models.CharField(verbose_name="Product Name_EPA", null=True, blank=True, max_length=256)
+    previous_reg_no_epa = models.TextField(verbose_name="Previous Reg No_EPA", null=True, blank=True)
+    distributor_reg_no_epa = models.TextField(verbose_name="Distributor Reg No_EPA", null=True, blank=True)
+    distributor_product_name_epa = models.TextField(verbose_name="Distributor Product Name_EPA", null=True, blank=True)
     restricted_use_epa = models.CharField(verbose_name="Restricted Use_EPA", null=True, blank=True, max_length=16)
     product_status_epa = models.CharField(verbose_name="Product Status_EPA", null=True, blank=True, max_length=32)
     company_code_epa = models.CharField(verbose_name="Company Code_EPA", null=True, blank=True, max_length=32)
     company_name_epa = models.CharField(verbose_name="Company Name_EPA", null=True, blank=True, max_length=128)
-    pc_name_epa = models.CharField(verbose_name="PC Name_EPA", null=True, blank=True, max_length=256)
-    pc_pt_epa = models.CharField(verbose_name="PC Pt_EPA", null=True, blank=True, max_length=128)
-    product_type_epa = models.CharField(verbose_name="Product Type_EPA", null=True, blank=True, max_length=64)
+    pc_name_epa = models.TextField(verbose_name="PC Name_EPA", null=True, blank=True)
+    pc_pt_epa = models.CharField(verbose_name="PC Pt_EPA", null=True, blank=True, max_length=256)
+    product_type_epa = models.CharField(verbose_name="Product Type_EPA", null=True, blank=True, max_length=256)
 
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     refresh_time = models.DateTimeField(verbose_name="Refresh Time", auto_now=True)

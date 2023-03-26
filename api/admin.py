@@ -227,6 +227,25 @@ class ChemicalAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
+class ChemicalProductBaseAdmin(admin.ModelAdmin):
+    list_display = (
+        'epa_reg_no_dec', 'product_name_dec', 'pc_name_dec', 'pc_pt_dec', 'product_type_dec', 'is_active',
+        'refresh_time',)
+
+    list_filter = ('product_type_dec', 'is_active',)
+
+    list_per_page = 10
+
+    list_editable = ('is_active',)
+
+    exclude = ["chempbid"]
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.chempbid = gen_uuid("ChemPBID")
+        super().save_model(request, obj, form, change)
+
+
 class OperationAdmin(admin.ModelAdmin):
     list_display = ('opid', 'user', 'type', 'datetime', 'is_active', 'create_time',)
 
@@ -397,6 +416,7 @@ admin.site.register(Site, SiteAdmin)
 admin.site.register(SiteType, SiteTypeAdmin)
 
 admin.site.register(Chemical, ChemicalAdmin)
+admin.site.register(ChemicalProductBase, ChemicalProductBaseAdmin)
 
 admin.site.register(Operation, OperationAdmin)
 admin.site.register(OperationType, OperationTypeAdmin)
