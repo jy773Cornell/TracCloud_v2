@@ -478,7 +478,9 @@ export default function Chemical(props) {
 
     const chemicalProductBaseOptionsFresh = () => {
         setChemicalProductBaseOptions(chemicalProductBase.map(item => ({
-            label: item.epa_reg_no_dec, id: item.chempbid, ...rest,
+            label: item.epa_reg_no_dec,
+            id: item.chempbid,
+            ...item,
         })));
     };
 
