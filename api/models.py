@@ -236,13 +236,13 @@ class Chemical(models.Model):
     user = models.ForeignKey(verbose_name="User", to="User", to_field="uid", related_name="chem_user",
                              null=True, blank=True, on_delete=models.SET_NULL)
 
-    type = models.CharField(verbose_name="Product Type", max_length=128)
-    trade_name = models.CharField(verbose_name="Trade Name", max_length=128)
-    company = models.CharField(verbose_name="Company", max_length=128)
     epa_reg_no = models.CharField(verbose_name="EPA Registration No.", max_length=32)
+    trade_name = models.CharField(verbose_name="Trade Name", max_length=128)
+    restricted_use = models.CharField(verbose_name="Restricted Use", max_length=16)
+    company = models.CharField(verbose_name="Company", max_length=128)
     active_ingredient = models.CharField(verbose_name="Active Ingredient", max_length=256)
     percent_ai = models.CharField(verbose_name="Active Ingredient Percent", max_length=128)
-    restricted_use = models.CharField(verbose_name="Restricted Use", max_length=16)
+    type = models.CharField(verbose_name="Product Type", max_length=128)
 
     unit = models.ForeignKey(verbose_name="Application Unit", to="Unit", to_field="unitid", related_name="chem_unit",
                              null=True, blank=True, on_delete=models.SET_NULL)
@@ -490,4 +490,4 @@ class Unit(models.Model):
     refresh_time = models.DateTimeField(verbose_name="Refresh Time", auto_now=True)
 
     def __str__(self):
-        return self.unit
+        return self.name

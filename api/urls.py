@@ -6,6 +6,7 @@ from api.views.CropAPI import *
 from api.views.SiteAPI import *
 from api.views.ChemicalAPI import *
 from api.views.OperationAPI import *
+from api.views.UnitAPI import *
 from api.management import cache_initializer
 
 urlpatterns = [
@@ -71,6 +72,7 @@ urlpatterns = [
     path('chemical/list/get/', ChemicalListGetView.as_view()),
     path('chemical/update/', ChemicalUpdateView.as_view()),
     path('chemical/delete/', ChemicalDeleteView.as_view()),
+    path('chemical/product_base/', ChemicalProductBaseGetView.as_view()),
 
     # OperationAPI
 
@@ -95,4 +97,7 @@ urlpatterns = [
     path('operation/application/update/', ApplicationUpdateView.as_view()),
     path('operation/application/operation/delete/', ApplicationOperationDeleteView.as_view()),
     path('operation/application/delete/', ApplicationDeleteView.as_view()),
+
+    # UnitAPI
+    path('unit/', UnitGetView.as_view()),
 ]

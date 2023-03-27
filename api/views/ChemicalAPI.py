@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.views import APIView
@@ -102,3 +103,16 @@ class ChemicalDeleteView(APIView):
             return Response({'Failed': 'Invalid cid'}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChemicalProductBaseGetView(APIView):
+    lookup_url_kwarg = "reg_no"
+
+    def get(self, request, format=None):
+        reg_no = request.GET.get(self.lookup_url_kwarg)
+        if reg_no:
+            data = [item for item in cache.get("ChemicalProductBase") if reg_no in item['epa_reg_no_dec']]
+            return Response({'Succeeded': 'Chemical Product Base Info Fetched.', 'data': data},
+                            status=status.HTTP_200_OK)
+
+        return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)

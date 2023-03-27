@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from rest_framework import serializers
 from api.models import User, Unit, Chemical
 
@@ -12,12 +13,14 @@ class ChemicalCreateSerializer(serializers.ModelSerializer):
 
 
 class ChemicalGetSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-    unit = serializers.StringRelatedField()
+    unit = serializers.SerializerMethodField()
 
     class Meta:
         model = Chemical
         fields = "__all__"
+
+    def get_unit(self, obj):
+        return next((item['name'] for item in cache.get("Unit") if item['unitid'] == obj.unit_id), None)
 
 
 class ChemicalUpdateSerializer(serializers.ModelSerializer):

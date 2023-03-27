@@ -23,22 +23,48 @@ import ConfirmPopover from "../../components/ConfirmPopover";
 const columnWidth = 200;
 const editWidth = 180;
 
-const field_names = ["crop", "variety", "crop_code", "category", "growth_stage"]
+const field_names = [
+    "epa_reg_no",
+    "trade_name",
+    "restricted_use",
+    "company",
+    "active_ingredient",
+    "percent_ai",
+    "type",
+    "unit",
+    "rei",
+    "phi",
+    "labeled_crops",
+    "label_image",
+    "imported_from",
+    "validated_by",
+    "entered_year",
+]
 
 function createAPIData(data) {
-    const {crop: crop_id, variety: variety_id, growth_stage: growth_stage_id, ...rest} = data;
-    return {crop_id, variety_id, growth_stage_id, ...rest};
+    const {unit: unit_id, ...rest} = data;
+    return {unit_id, ...rest};
 }
 
 function createRowData(record) {
     return {
-        "id": record.cid,
-        "crop": record.crop,
-        "variety": record.variety,
-        "crop_code": record.crop_code,
-        "category": record.category,
-        "growth_stage": record.growth_stage,
-        "update_time": record.update_time
+        "id": record.chemid,
+        "epa_reg_no": record.epa_reg_no,
+        "trade_name": record.trade_name,
+        "restricted_use": record.restricted_use,
+        "company": record.company,
+        "active_ingredient": record.active_ingredient,
+        "percent_ai": record.percent_ai,
+        "type": record.type,
+        "unit": record.unit,
+        "rei": record.rei,
+        "phi": record.phi,
+        "labeled_crops": record.labeled_crops,
+        "label_image": record.label_image,
+        "imported_from": record.imported_from,
+        "validated_by": record.validated_by,
+        "entered_year": record.entered_year,
+        "update_time": record.update_time,
     };
 }
 
@@ -92,104 +118,104 @@ function AddChemicalRecord({
         }
     };
 
-    return (<Modal
-        open={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        sx={{
-            display: 'flex', justifyContent: 'center', alignItems: 'center',
-        }}
-    >
-        <Card sx={{width: 400}}>
-            <CardContent>
-                <Grid container justifyContent="center" spacing={2}>
-                    <Grid item xs={12} sx={{textAlign: 'center'}}>
-                        <h1>Add Crop Record</h1>
+    return (
+        <Modal
+            open={showAddModal}
+            onClose={() => setShowAddModal(false)}
+            sx={{
+                display: 'flex', justifyContent: 'center', alignItems: 'center',
+            }}
+        >
+            <Card sx={{width: 400}}>
+                <CardContent>
+                    <Grid container justifyContent="center" spacing={2}>
+                        <Grid item xs={12} sx={{textAlign: 'center'}}>
+                            <h1>Add Crop Record</h1>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Autocomplete
+                                value={fieldValues[field_names[0]]}
+                                options={cropCategoryOptions}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[0]);
+                                }}
+                                renderInput={(params) => (
+                                    <TextField {...params} required variant="outlined" label={columns[1].headerName}
+                                               error={inputError[field_names[0]]}/>)}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Autocomplete
+                                value={fieldValues[field_names[1]]}
+                                options={cropVarietyOptions}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[1]);
+                                }}
+                                renderInput={(params) => (
+                                    <TextField {...params} required variant="outlined" label={columns[2].headerName}
+                                               error={inputError[field_names[1]]}/>)}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                value={fieldValues[field_names[2]]}
+                                InputLabelProps={{
+                                    shrink: true,
+                                    readOnly: true,
+                                }}
+                                variant="outlined"
+                                label={columns[3].headerName}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                value={fieldValues[field_names[3]]}
+                                InputLabelProps={{
+                                    shrink: true,
+                                    readOnly: true,
+                                }}
+                                variant="outlined"
+                                label={columns[4].headerName}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Autocomplete
+                                value={fieldValues[field_names[4]]}
+                                options={cropGrowthStageOptions}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[4]);
+                                }}
+                                renderInput={(params) => (
+                                    <TextField {...params} required variant="outlined" label={columns[5].headerName}
+                                               error={inputError[field_names[4]]}/>)}
+                            />
+                        </Grid>
+                        <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
+                            <Button variant="contained" color="success" onClick={() => handleSaveButtonPressed()}>
+                                Save
+                            </Button>
+                        </Grid>
+                        <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
+                            <Button variant="contained" color="secondary" onClick={() => setShowAddModal(false)}>
+                                Cancel
+                            </Button>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12}>
-                        <Autocomplete
-                            value={fieldValues[field_names[0]]}
-                            options={cropCategoryOptions}
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[0]);
-                            }}
-                            renderInput={(params) => (
-                                <TextField {...params} required variant="outlined" label={columns[1].headerName}
-                                           error={inputError[field_names[0]]}/>)}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Autocomplete
-                            value={fieldValues[field_names[1]]}
-                            options={cropVarietyOptions}
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[1]);
-                            }}
-                            renderInput={(params) => (
-                                <TextField {...params} required variant="outlined" label={columns[2].headerName}
-                                           error={inputError[field_names[1]]}/>)}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            value={fieldValues[field_names[2]]}
-                            InputLabelProps={{
-                                shrink: true,
-                                readOnly: true,
-                            }}
-                            variant="outlined"
-                            label={columns[3].headerName}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            value={fieldValues[field_names[3]]}
-                            InputLabelProps={{
-                                shrink: true,
-                                readOnly: true,
-                            }}
-                            variant="outlined"
-                            label={columns[4].headerName}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Autocomplete
-                            value={fieldValues[field_names[4]]}
-                            options={cropGrowthStageOptions}
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[4]);
-                            }}
-                            renderInput={(params) => (
-                                <TextField {...params} required variant="outlined" label={columns[5].headerName}
-                                           error={inputError[field_names[4]]}/>)}
-                        />
-                    </Grid>
-                    <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
-                        <Button variant="contained" color="success" onClick={() => handleSaveButtonPressed()}>
-                            Save
-                        </Button>
-                    </Grid>
-                    <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
-                        <Button variant="contained" color="secondary" onClick={() => setShowAddModal(false)}>
-                            Cancel
-                        </Button>
-                    </Grid>
-                </Grid>
-            </CardContent>
-        </Card>
-    </Modal>);
+                </CardContent>
+            </Card>
+        </Modal>
+    );
 }
 
 export default function Chemical(props) {
-    const [cropCategory, setCropCategory] = useState([]);
-    const [cropVariety, setCropVariety] = useState([]);
-    const [cropGrowthStage, setCropGrowthStage] = useState([]);
+    const [unit, setUnit] = useState([]);
+    const [chemicalProductBase, setChemicalProductBase] = useState([]);
 
     const [rows, setRows] = useState([]);
     const [formData, setFormData] = useState({});
     const [fieldValues, setFieldValues] = useState({});
-    const [cropCategoryOptions, setCropCategoryOptions] = useState([]);
-    const [cropVarietyOptions, setCropVarietyOptions] = useState([]);
-    const [cropGrowthStageOptions, setCropGrowthStageOptions] = useState([]);
+    const [unitOptions, setUnitOptions] = useState([]);
+    const [chemicalProductBaseOptions, setChemicalProductBaseOptions] = useState([]);
 
     const [showAddModal, setShowAddModal] = useState(false);
     const [isSave, setIsSave] = useState(false);
@@ -200,11 +226,11 @@ export default function Chemical(props) {
     const [popoverRowId, setPopoverRowId] = useState(null);
     const [refreshRecord, setRefreshRecord] = useState(false);
 
-    async function CropListGet(props) {
+    async function ChemicalListGet(props) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/crop/list/get/" + "?uid=" + props.uid, requestOptions)
+        await fetch("/api/chemical/list/get/" + "?uid=" + props.uid, requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
@@ -216,55 +242,42 @@ export default function Chemical(props) {
             })
     }
 
-    async function CropCategoryGet() {
+    async function UnitGet() {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/crop/category/", requestOptions)
+        await fetch("/api/unit/", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        setCropCategory(data.data);
+                        setUnit(data.data);
                     })
                 }
             })
     }
 
-    async function CropVarietyGet() {
+    async function ChemicalProductBaseGet(reg_no) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/crop/variety/", requestOptions)
+        await fetch("/api/chemical/product_base/" + "?reg_no=" + reg_no, requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        setCropVariety(data.data);
+                        setChemicalProductBase(data.data);
                     })
                 }
             })
     }
 
-    async function CropGrowthStageGet() {
-        const requestOptions = {
-            method: "GET", headers: {"Content-Type": "application/json"},
-        };
-        await fetch("/api/crop/growthstage/", requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        setCropGrowthStage(data.data);
-                    })
-                }
-            })
-    }
 
-    async function CropRecordUpdate() {
+    async function ChemicalRecordUpdate() {
         const apiData = createAPIData(formData);
         console.log(apiData);
         const requestOptions = {
             method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
         };
-        await fetch("/api/crop/update/", requestOptions)
+        await fetch("/api/chemical/update/", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     setIsSave(true);
@@ -274,13 +287,13 @@ export default function Chemical(props) {
             })
     }
 
-    async function CropRecordDelete(cid) {
-        const apiData = {"user": props.uid, "cid": cid}
+    async function ChemicalRecordDelete(chemid) {
+        const apiData = {"user": props.uid, "chemid": chemid}
         console.log(apiData);
         const requestOptions = {
             method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
         };
-        await fetch("/api/crop/delete/", requestOptions)
+        await fetch("/api/chemical/delete/", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     setIsDelete(true);
@@ -353,22 +366,16 @@ export default function Chemical(props) {
         clearInputError();
     };
 
-    const CropCategoryOptionsFresh = () => {
-        setCropCategoryOptions(cropCategory.map(item => ({
-            label: item.name, id: item.ccid, crop_code: item.crop_code, category: item.category,
+    const UnitOptionsFresh = () => {
+        setUnitOptions(unit.map(item => ({
+            label: item.name, id: item.unitid,
         })));
     };
 
-    const CropVarietyOptionsFresh = (crop_id) => {
-        setCropVarietyOptions(cropVariety.filter(item => item.crop_id === crop_id).map(item => ({
-            label: item.name, id: item.cvid
-        })))
-    };
-
-    const CropGrowthStageOptionsFresh = (crop_id) => {
-        setCropGrowthStageOptions(cropGrowthStage.filter(item => item.crop_id === crop_id).map(item => ({
-            label: item.name, id: item.cgsid
-        })))
+    const chemicalProductBaseOptionsFresh = () => {
+        setChemicalProductBaseOptions(chemicalProductBase.map(item => ({
+            label: item.epa_reg_no_dec, id: item.chempbid, ...rest,
+        })));
     };
 
     const handleInputChange = (event, value, field) => {
@@ -384,9 +391,12 @@ export default function Chemical(props) {
             setFormData({
                 ...formData, [field]: value.id, [field_names[1]]: null, [field_names[4]]: null
             });
-        } else {
-            setFieldValues({...fieldValues, [field]: value.label})
-            setFormData({...formData, [field]: value.id});
+        }
+    };
+
+    const handleEPANOChange = (event, value) => {
+        if (value.length >= 4) {
+            ChemicalProductBaseGet(value);
         }
     };
 
@@ -397,12 +407,12 @@ export default function Chemical(props) {
             width: columnWidth
         },
         {
-            field: 'crop',
-            headerName: 'Crop',
+            field: 'epa_reg_no',
+            headerName: 'EAP REG NO.',
             width: columnWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
-                    options={cropCategoryOptions}
+                    options={chemicalProductBaseOptions}
                     disableClearable
                     readOnly={editRowId !== rowID}
                     value={editRowId === rowID ? fieldValues[field_names[0]] : params.value}
@@ -416,76 +426,126 @@ export default function Chemical(props) {
                                            InputProps={{disableUnderline: true}}
                                            sx={{width: columnWidth}}/> :
                                 <TextField {...params} variant="standard" error={inputError[field_names[0]]}
-                                           sx={{width: editWidth}}/>
+                                           sx={{width: editWidth}}
+                                           onChange={(event, value) => {
+                                               handleEPANOChange(event, value);
+                                           }}
+                                />
                         )
                     }}
                 />),
         },
         {
-            field: 'variety',
-            headerName: 'Variety',
+            field: 'trade_name',
+            headerName: 'Trade Name',
             width: columnWidth,
-            renderCell: (params, rowID = params.id) => (
-                <Autocomplete
-                    options={cropVarietyOptions}
-                    disableClearable
-                    readOnly={editRowId !== rowID}
-                    value={editRowId === rowID ? fieldValues[field_names[1]] : params.value}
-                    onChange={(event, value) => {
-                        handleInputChange(event, value, field_names[1]);
-                    }}
-                    renderInput={(params) => {
-                        return (
-                            editRowId !== rowID ?
-                                <TextField {...params} variant="standard"
-                                           InputProps={{disableUnderline: true}}
-                                           sx={{width: columnWidth}}/> :
-                                <TextField {...params} variant="standard" sx={{width: editWidth}}
-                                           error={inputError[field_names[1]]}/>
-                        )
-                    }}
-                />),
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues[field_names[1]] : params.value)
+            },
         },
         {
-            field: 'crop_code',
-            headerName: 'Crop Code',
+            field: 'restricted_use',
+            headerName: 'Restricted Use',
             width: columnWidth,
             valueGetter: (params) => {
                 return (editRowId === params.id ? fieldValues[field_names[2]] : params.value)
             },
         },
         {
-            field: 'category',
-            headerName: 'Category',
+            field: 'company',
+            headerName: 'Company',
             width: columnWidth,
             valueGetter: (params) => {
                 return (editRowId === params.id ? fieldValues[field_names[3]] : params.value)
             },
         },
         {
-            field: 'growth_stage',
-            headerName: 'Growth Stage',
+            field: 'active_ingredient',
+            headerName: 'Active Ingredient',
             width: columnWidth,
-            renderCell: (params, rowID = params.id) => (
-                <Autocomplete
-                    options={cropGrowthStageOptions}
-                    disableClearable
-                    readOnly={editRowId !== rowID}
-                    value={editRowId === rowID ? fieldValues[field_names[4]] : params.value}
-                    onChange={(event, value) => {
-                        handleInputChange(event, value, field_names[4]);
-                    }}
-                    renderInput={(params) => {
-                        return (
-                            editRowId !== rowID ?
-                                <TextField {...params} variant="standard"
-                                           InputProps={{disableUnderline: true}}
-                                           sx={{width: columnWidth}}/> :
-                                <TextField {...params} variant="standard" sx={{width: editWidth}}
-                                           error={inputError[field_names[4]]}/>
-                        )
-                    }}
-                />),
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues[field_names[4]] : params.value)
+            },
+        },
+        {
+            field: 'percent_ai',
+            headerName: 'Active Ingredient Percent',
+            width: columnWidth,
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues[field_names[5]] : params.value)
+            },
+        },
+        {
+            field: 'type',
+            headerName: 'Product Type',
+            width: columnWidth,
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues[field_names[6]] : params.value)
+            },
+        },
+        {
+            field: 'unit',
+            headerName: 'Application Unit',
+            width: columnWidth,
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues[field_names[7]] : params.value)
+            },
+        },
+        {
+            field: 'rei',
+            headerName: 'REI',
+            width: columnWidth,
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues[field_names[8]] : params.value)
+            },
+        },
+        {
+            field: 'phi',
+            headerName: 'PHI',
+            width: columnWidth,
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues[field_names[9]] : params.value)
+            },
+        },
+        {
+            field: 'labeled_crops',
+            headerName: 'Labeled Crops',
+            width: columnWidth,
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues[field_names[10]] : params.value)
+            },
+        },
+        {
+            field: 'label_image',
+            headerName: 'Labeled Image',
+            width: columnWidth,
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues[field_names[11]] : params.value)
+            },
+        },
+        {
+            field: 'imported_from',
+            headerName: 'Imported From',
+            width: columnWidth,
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues[field_names[12]] : params.value)
+            },
+        },
+        {
+            field: 'validated_by',
+            headerName: 'Validated By',
+            width: columnWidth,
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues[field_names[13]] : params.value)
+            },
+        },
+        {
+            field: 'entered_year',
+            headerName: 'Entered Year',
+            width: columnWidth,
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues[field_names[14]] : params.value)
+            },
         },
         {
             field: 'update_time',
@@ -552,9 +612,6 @@ export default function Chemical(props) {
         fieldValues,
         formData,
         columns,
-        cropCategoryOptions,
-        cropVarietyOptions,
-        cropGrowthStageOptions,
         handleInputChange,
         showAddModal,
         setShowAddModal,
@@ -570,15 +627,18 @@ export default function Chemical(props) {
     const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Crop record has been deleted!"};
 
     useEffect(() => {
-        CropCategoryGet();
-        CropVarietyGet();
-        CropGrowthStageGet();
+        ChemicalListGet();
+        UnitGet();
         clearInputError();
     }, []);
 
     useEffect(() => {
-        CropCategoryOptionsFresh();
-    }, [cropCategory]);
+        UnitOptionsFresh();
+    }, [unit]);
+
+    useEffect(() => {
+        chemicalProductBaseOptionsFresh();
+    }, [chemicalProductBase]);
 
     useEffect(() => {
         CropVarietyOptionsFresh(formData.crop);
@@ -586,7 +646,7 @@ export default function Chemical(props) {
     }, [formData.crop]);
 
     useEffect(() => {
-        CropListGet(props);
+        ChemicalListGet(props);
     }, [refreshRecord]);
 
     return (<div>
@@ -594,7 +654,7 @@ export default function Chemical(props) {
             variant="contained"
             startIcon={<AddIcon/>}
             onClick={() => onAddClicked()}>
-            Add Crop
+            Add Chemical
         </AddButton>
         <Paper style={{height: 900, margin: '0px 15px'}}>
             <DataGrid

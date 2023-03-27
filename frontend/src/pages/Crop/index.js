@@ -416,7 +416,8 @@ export default function Crop(props) {
                                            InputProps={{disableUnderline: true}}
                                            sx={{width: columnWidth}}/> :
                                 <TextField {...params} variant="standard" error={inputError[field_names[0]]}
-                                           sx={{width: editWidth}}/>
+                                           sx={{width: editWidth}}
+                                />
                         )
                     }}
                 />),
