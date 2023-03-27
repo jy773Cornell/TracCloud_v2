@@ -513,9 +513,9 @@ export default function Chemical(props) {
         }
     };
 
-    const handleEPANOChange = (event, value) => {
-        if (value.length >= 4) {
-            ChemicalProductBaseGet(value);
+    const handleEPANOChange = (event) => {
+        if (event.target.value.length >= 4) {
+            ChemicalProductBaseGet(event.target.value);
         }
     };
 
