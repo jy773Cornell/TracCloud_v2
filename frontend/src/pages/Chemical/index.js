@@ -373,7 +373,6 @@ export default function Chemical(props) {
             })
     }
 
-
     async function ChemicalRecordUpdate() {
         const apiData = createAPIData(formData);
         console.log(apiData);
