@@ -146,8 +146,8 @@ function AddChemicalRecord({
                                         variant="outlined"
                                         label={columns[1].headerName}
                                         error={inputError[field_names[0]]}
-                                        onChange={(event, value) => {
-                                            handleEPANOChange(event, value);
+                                        onChange={(event) => {
+                                            handleEPANOChange(event);
                                         }}
                                     />)}
                             />
@@ -546,8 +546,8 @@ export default function Chemical(props) {
                                            sx={{width: columnWidth}}/> :
                                 <TextField {...params} variant="standard" error={inputError[field_names[0]]}
                                            sx={{width: editWidth}}
-                                           onChange={(event, value) => {
-                                               handleEPANOChange(event, value);
+                                           onChange={(event) => {
+                                               handleEPANOChange(event);
                                            }}
                                 />
                         )
