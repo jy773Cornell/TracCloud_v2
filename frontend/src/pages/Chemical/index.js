@@ -293,6 +293,7 @@ function AddChemicalRecord({
                                 label={columns[15].headerName}
                             />
                         </Grid>
+                        <Grid item xs={3}/>
                         <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
                             <Button variant="contained" color="success" onClick={() => handleSaveButtonPressed()}>
                                 Save
