@@ -486,6 +486,7 @@ export default function Chemical(props) {
 
     const handleInputChange = (event, value, field) => {
         if (field === field_names[0]) {
+            console.log(value)
             setFieldValues({
                 ...fieldValues,
                 [field]: value.label,
