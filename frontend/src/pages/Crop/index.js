@@ -385,7 +385,7 @@ export default function Crop(props) {
                 ...formData, [field]: value.id, [field_names[1]]: null, [field_names[4]]: null
             });
         } else {
-            setFieldValues({...fieldValues, [field]: value.label})
+            setFieldValues({...fieldValues, [field]: value.label});
             setFormData({...formData, [field]: value.id});
         }
     };

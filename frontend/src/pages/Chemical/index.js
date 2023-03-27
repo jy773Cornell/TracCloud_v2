@@ -81,10 +81,10 @@ function AddChemicalRecord({
                                fieldValues,
                                formData,
                                columns,
-                               cropCategoryOptions,
-                               cropVarietyOptions,
-                               cropGrowthStageOptions,
+                               unitOptions,
+                               chemicalProductBaseOptions,
                                handleInputChange,
+                               handleEPANOChange,
                                showAddModal,
                                setShowAddModal,
                                setIsSave,
@@ -94,13 +94,13 @@ function AddChemicalRecord({
                                setRefreshRecord,
                            }) {
 
-    async function CropRecordSave() {
+    async function ChemicalRecordSave() {
         const apiData = createAPIData(formData);
         console.log(apiData);
         const requestOptions = {
             method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
         };
-        await fetch("/api/crop/create/", requestOptions)
+        await fetch("/api/chemical/create/", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     setIsSave(true);
@@ -112,7 +112,7 @@ function AddChemicalRecord({
 
     const handleSaveButtonPressed = () => {
         if (Object.values(fieldValues).every(value => value !== "")) {
-            CropRecordSave();
+            ChemicalRecordSave();
         } else {
             updateInputError();
         }
@@ -126,37 +126,44 @@ function AddChemicalRecord({
                 display: 'flex', justifyContent: 'center', alignItems: 'center',
             }}
         >
-            <Card sx={{width: 400}}>
+            <Card sx={{width: 800}}>
                 <CardContent>
                     <Grid container justifyContent="center" spacing={2}>
                         <Grid item xs={12} sx={{textAlign: 'center'}}>
-                            <h1>Add Crop Record</h1>
+                            <h1>Add Chemical Record</h1>
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={3}>
                             <Autocomplete
                                 value={fieldValues[field_names[0]]}
-                                options={cropCategoryOptions}
+                                options={chemicalProductBaseOptions}
                                 onChange={(event, value) => {
                                     handleInputChange(event, value, field_names[0]);
                                 }}
                                 renderInput={(params) => (
-                                    <TextField {...params} required variant="outlined" label={columns[1].headerName}
-                                               error={inputError[field_names[0]]}/>)}
+                                    <TextField
+                                        {...params}
+                                        required
+                                        variant="outlined"
+                                        label={columns[1].headerName}
+                                        error={inputError[field_names[0]]}
+                                        onChange={(event, value) => {
+                                            handleEPANOChange(event, value);
+                                        }}
+                                    />)}
                             />
                         </Grid>
-                        <Grid item xs={12}>
-                            <Autocomplete
+                        <Grid item xs={3}>
+                            <TextField
                                 value={fieldValues[field_names[1]]}
-                                options={cropVarietyOptions}
-                                onChange={(event, value) => {
-                                    handleInputChange(event, value, field_names[1]);
+                                InputLabelProps={{
+                                    shrink: true,
+                                    readOnly: true,
                                 }}
-                                renderInput={(params) => (
-                                    <TextField {...params} required variant="outlined" label={columns[2].headerName}
-                                               error={inputError[field_names[1]]}/>)}
+                                variant="outlined"
+                                label={columns[2].headerName}
                             />
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={3}>
                             <TextField
                                 value={fieldValues[field_names[2]]}
                                 InputLabelProps={{
@@ -167,7 +174,7 @@ function AddChemicalRecord({
                                 label={columns[3].headerName}
                             />
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={3}>
                             <TextField
                                 value={fieldValues[field_names[3]]}
                                 InputLabelProps={{
@@ -178,16 +185,112 @@ function AddChemicalRecord({
                                 label={columns[4].headerName}
                             />
                         </Grid>
-                        <Grid item xs={12}>
-                            <Autocomplete
+                        <Grid item xs={3}>
+                            <TextField
                                 value={fieldValues[field_names[4]]}
-                                options={cropGrowthStageOptions}
+                                InputLabelProps={{
+                                    shrink: true,
+                                    readOnly: true,
+                                }}
+                                variant="outlined"
+                                label={columns[5].headerName}
+                            />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <TextField
+                                value={fieldValues[field_names[5]]}
+                                InputLabelProps={{
+                                    shrink: true,
+                                    readOnly: true,
+                                }}
+                                variant="outlined"
+                                label={columns[6].headerName}
+                            />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <TextField
+                                value={fieldValues[field_names[6]]}
+                                InputLabelProps={{
+                                    shrink: true,
+                                    readOnly: true,
+                                }}
+                                variant="outlined"
+                                label={columns[7].headerName}
+                            />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <Autocomplete
+                                value={fieldValues[field_names[7]]}
+                                options={unitOptions}
                                 onChange={(event, value) => {
-                                    handleInputChange(event, value, field_names[4]);
+                                    handleInputChange(event, value, field_names[7]);
                                 }}
                                 renderInput={(params) => (
-                                    <TextField {...params} required variant="outlined" label={columns[5].headerName}
-                                               error={inputError[field_names[4]]}/>)}
+                                    <TextField {...params} required variant="outlined" label={columns[8].headerName}
+                                               error={inputError[field_names[7]]}/>)}
+                            />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <TextField
+                                value={fieldValues[field_names[8]]}
+                                error={inputError[field_names[8]]}
+                                required
+                                variant="outlined"
+                                label={columns[9].headerName}
+                            />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <TextField
+                                value={fieldValues[field_names[9]]}
+                                error={inputError[field_names[9]]}
+                                required
+                                variant="outlined"
+                                label={columns[10].headerName}
+                            />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <TextField
+                                value={fieldValues[field_names[10]]}
+                                error={inputError[field_names[10]]}
+                                required
+                                variant="outlined"
+                                label={columns[11].headerName}
+                            />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <TextField
+                                value={fieldValues[field_names[11]]}
+                                error={inputError[field_names[11]]}
+                                required
+                                variant="outlined"
+                                label={columns[12].headerName}
+                            />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <TextField
+                                value={fieldValues[field_names[12]]}
+                                error={inputError[field_names[12]]}
+                                required
+                                variant="outlined"
+                                label={columns[13].headerName}
+                            />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <TextField
+                                value={fieldValues[field_names[13]]}
+                                error={inputError[field_names[13]]}
+                                required
+                                variant="outlined"
+                                label={columns[14].headerName}
+                            />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <TextField
+                                value={fieldValues[field_names[14]]}
+                                error={inputError[field_names[14]]}
+                                required
+                                variant="outlined"
+                                label={columns[15].headerName}
                             />
                         </Grid>
                         <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
@@ -324,7 +427,7 @@ export default function Chemical(props) {
 
     const onSaveClicked = () => {
         if (Object.values(fieldValues).every(value => value !== "")) {
-            CropRecordUpdate();
+            ChemicalRecordUpdate();
             const index = rows.findIndex(item => item.id === fieldValues.id);
             setRows([
                 ...rows.slice(0, index),
@@ -342,15 +445,15 @@ export default function Chemical(props) {
     }
 
     const onEditClicked = (params) => {
-        const crop = cropCategoryOptions.find(item => item.label === params.row.crop);
-        setFormData({"cid": params.id, "crop": crop.id});
+        const unit = unitOptions.find(item => item.label === params.row.unit);
+        setFormData({"chemid": params.id, "unit": unit.id});
         setFieldValues(params.row);
         setEditRowId(params.id);
         clearInputError();
     };
 
     const onDeleteClicked = (params) => {
-        CropRecordDelete(params.id);
+        ChemicalRecordDelete(params.id);
         const index = rows.findIndex(item => item.id === params.id);
         setRows([
             ...rows.slice(0, index),
@@ -383,14 +486,29 @@ export default function Chemical(props) {
             setFieldValues({
                 ...fieldValues,
                 [field]: value.label,
-                [field_names[1]]: "",
-                [field_names[2]]: value.crop_code,
-                [field_names[3]]: value.category,
-                [field_names[4]]: "",
+                [field_names[1]]: value.trade_name,
+                [field_names[2]]: value.restricted_use,
+                [field_names[3]]: value.company,
+                [field_names[4]]: value.active_ingredient,
+                [field_names[5]]: value.percent_ai,
+                [field_names[6]]: value.type,
             });
             setFormData({
-                ...formData, [field]: value.id, [field_names[1]]: null, [field_names[4]]: null
+                ...formData,
+                [field]: value.label,
+                [field_names[1]]: value.trade_name,
+                [field_names[2]]: value.restricted_use,
+                [field_names[3]]: value.company,
+                [field_names[4]]: value.active_ingredient,
+                [field_names[5]]: value.percent_ai,
+                [field_names[6]]: value.type,
             });
+        } else if (field === field_names[7]) {
+            setFieldValues({...fieldValues, [field]: value.label});
+            setFormData({...formData, [field]: value.id});
+        } else {
+            setFieldValues({...fieldValues, [field]: value});
+            setFormData({...formData, [field]: value});
         }
     };
 
@@ -487,64 +605,210 @@ export default function Chemical(props) {
             field: 'unit',
             headerName: 'Application Unit',
             width: columnWidth,
-            valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[7]] : params.value)
-            },
+            renderCell: (params, rowID = params.id) => (
+                <Autocomplete
+                    options={unitOptions}
+                    disableClearable
+                    readOnly={editRowId !== rowID}
+                    value={editRowId === rowID ? fieldValues[field_names[7]] : params.value}
+                    onChange={(event, value) => {
+                        handleInputChange(event, value, field_names[0]);
+                    }}
+                    renderInput={(params) => {
+                        return (
+                            editRowId !== rowID ?
+                                <TextField {...params} variant="standard"
+                                           InputProps={{disableUnderline: true}}
+                                           sx={{width: columnWidth}}/> :
+                                <TextField {...params} variant="standard" error={inputError[field_names[7]]}
+                                           sx={{width: editWidth}}
+                                />
+                        )
+                    }}
+                />),
         },
         {
             field: 'rei',
             headerName: 'REI',
             width: columnWidth,
-            valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[8]] : params.value)
+            renderCell: (params, rowID = params.id) => {
+                return (
+                    editRowId !== rowID ?
+                        <TextField
+                            variant="standard"
+                            value={params.value}
+                            InputProps={{
+                                disableUnderline: true,
+                                readOnly: true,
+                            }}
+                            sx={{width: columnWidth}}/> :
+                        <TextField
+                            variant="standard"
+                            value={fieldValues[field_names[8]]}
+                            error={inputError[field_names[8]]}
+                            sx={{width: editWidth}}
+                            onChange={(event, value) => {
+                                handleInputChange(event, value, field_names[8]);
+                            }}
+                        />
+                )
             },
         },
         {
             field: 'phi',
             headerName: 'PHI',
             width: columnWidth,
-            valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[9]] : params.value)
+            renderCell: (params, rowID = params.id) => {
+                return (
+                    editRowId !== rowID ?
+                        <TextField
+                            variant="standard"
+                            value={params.value}
+                            InputProps={{
+                                disableUnderline: true,
+                                readOnly: true,
+                            }}
+                            sx={{width: columnWidth}}/> :
+                        <TextField
+                            variant="standard"
+                            value={fieldValues[field_names[9]]}
+                            error={inputError[field_names[9]]}
+                            sx={{width: editWidth}}
+                            onChange={(event, value) => {
+                                handleInputChange(event, value, field_names[9]);
+                            }}
+                        />
+                )
             },
         },
         {
             field: 'labeled_crops',
             headerName: 'Labeled Crops',
             width: columnWidth,
-            valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[10]] : params.value)
+            renderCell: (params, rowID = params.id) => {
+                return (
+                    editRowId !== rowID ?
+                        <TextField
+                            variant="standard"
+                            value={params.value}
+                            InputProps={{
+                                disableUnderline: true,
+                                readOnly: true,
+                            }}
+                            sx={{width: columnWidth}}/> :
+                        <TextField
+                            variant="standard"
+                            value={fieldValues[field_names[10]]}
+                            sx={{width: editWidth}}
+                            onChange={(event, value) => {
+                                handleInputChange(event, value, field_names[10]);
+                            }}
+                        />
+                )
             },
         },
         {
             field: 'label_image',
             headerName: 'Labeled Image',
             width: columnWidth,
-            valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[11]] : params.value)
+            renderCell: (params, rowID = params.id) => {
+                return (
+                    editRowId !== rowID ?
+                        <TextField
+                            variant="standard"
+                            value={params.value}
+                            InputProps={{
+                                disableUnderline: true,
+                                readOnly: true,
+                            }}
+                            sx={{width: columnWidth}}/> :
+                        <TextField
+                            variant="standard"
+                            value={fieldValues[field_names[11]]}
+                            sx={{width: editWidth}}
+                            onChange={(event, value) => {
+                                handleInputChange(event, value, field_names[11]);
+                            }}
+                        />
+                )
             },
         },
         {
             field: 'imported_from',
             headerName: 'Imported From',
             width: columnWidth,
-            valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[12]] : params.value)
+            renderCell: (params, rowID = params.id) => {
+                return (
+                    editRowId !== rowID ?
+                        <TextField
+                            variant="standard"
+                            value={params.value}
+                            InputProps={{
+                                disableUnderline: true,
+                                readOnly: true,
+                            }}
+                            sx={{width: columnWidth}}/> :
+                        <TextField
+                            variant="standard"
+                            value={fieldValues[field_names[12]]}
+                            sx={{width: editWidth}}
+                            onChange={(event, value) => {
+                                handleInputChange(event, value, field_names[12]);
+                            }}
+                        />
+                )
             },
         },
         {
             field: 'validated_by',
             headerName: 'Validated By',
             width: columnWidth,
-            valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[13]] : params.value)
+            renderCell: (params, rowID = params.id) => {
+                return (
+                    editRowId !== rowID ?
+                        <TextField
+                            variant="standard"
+                            value={params.value}
+                            InputProps={{
+                                disableUnderline: true,
+                                readOnly: true,
+                            }}
+                            sx={{width: columnWidth}}/> :
+                        <TextField
+                            variant="standard"
+                            value={fieldValues[field_names[13]]}
+                            sx={{width: editWidth}}
+                            onChange={(event, value) => {
+                                handleInputChange(event, value, field_names[13]);
+                            }}
+                        />
+                )
             },
         },
         {
             field: 'entered_year',
             headerName: 'Entered Year',
             width: columnWidth,
-            valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[14]] : params.value)
+            renderCell: (params, rowID = params.id) => {
+                return (
+                    editRowId !== rowID ?
+                        <TextField
+                            variant="standard"
+                            value={params.value}
+                            InputProps={{
+                                disableUnderline: true,
+                                readOnly: true,
+                            }}
+                            sx={{width: columnWidth}}/> :
+                        <TextField
+                            variant="standard"
+                            value={fieldValues[field_names[14]]}
+                            sx={{width: editWidth}}
+                            onChange={(event, value) => {
+                                handleInputChange(event, value, field_names[14]);
+                            }}
+                        />
+                )
             },
         },
         {
@@ -556,7 +820,8 @@ export default function Chemical(props) {
             field: 'operations',
             headerName: 'Operations',
             sortable: false,
-            width: columnWidth,
+            width:
+            columnWidth,
             disableColumnMenu: true,
             disableClickEventBubbling: true,
             renderCell: (params) => {
@@ -606,13 +871,17 @@ export default function Chemical(props) {
                     )
                 }
             },
-        },];
+        },
+    ];
 
     const addProps = {
         fieldValues,
         formData,
         columns,
+        unitOptions,
+        chemicalProductBaseOptions,
         handleInputChange,
+        handleEPANOChange,
         showAddModal,
         setShowAddModal,
         setIsSave,
@@ -622,9 +891,9 @@ export default function Chemical(props) {
         setRefreshRecord,
     };
 
-    const saveProps = {open: isSave, setOpen: setIsSave, msg: "Crop record is uploaded successfully!"};
+    const saveProps = {open: isSave, setOpen: setIsSave, msg: "Chemical record is uploaded successfully!"};
 
-    const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Crop record has been deleted!"};
+    const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Chemical record has been deleted!"};
 
     useEffect(() => {
         ChemicalListGet();
@@ -639,11 +908,6 @@ export default function Chemical(props) {
     useEffect(() => {
         chemicalProductBaseOptionsFresh();
     }, [chemicalProductBase]);
-
-    useEffect(() => {
-        CropVarietyOptionsFresh(formData.crop);
-        CropGrowthStageOptionsFresh(formData.crop);
-    }, [formData.crop]);
 
     useEffect(() => {
         ChemicalListGet(props);
