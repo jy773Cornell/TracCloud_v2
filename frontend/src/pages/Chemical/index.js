@@ -334,7 +334,7 @@ export default function Chemical(props) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/chemical/list/get/" + "?uid=" + uid, requestOptions)
+        await fetch("/api/chemical/list/get/" + "?uid=" + props.uid, requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
