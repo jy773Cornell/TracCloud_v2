@@ -236,8 +236,8 @@ function AddChemicalRecord({
                                 required
                                 variant="outlined"
                                 label={columns[9].headerName}
-                                onChange={(event, value) => {
-                                    handleInputChange(event, value, field_names[8]);
+                                onChange={(event) => {
+                                    handleInputChange(event, event.target.value, field_names[8]);
                                 }}
                             />
                         </Grid>
@@ -247,8 +247,8 @@ function AddChemicalRecord({
                                 required
                                 variant="outlined"
                                 label={columns[10].headerName}
-                                onChange={(event, value) => {
-                                    handleInputChange(event, value, field_names[9]);
+                                onChange={(event) => {
+                                    handleInputChange(event, event.target.value, field_names[9]);
                                 }}
                             />
                         </Grid>
@@ -256,8 +256,8 @@ function AddChemicalRecord({
                             <TextField
                                 variant="outlined"
                                 label={columns[11].headerName}
-                                onChange={(event, value) => {
-                                    handleInputChange(event, value, field_names[10]);
+                                onChange={(event) => {
+                                    handleInputChange(event, event.target.value, field_names[10]);
                                 }}
                             />
                         </Grid>
@@ -265,8 +265,8 @@ function AddChemicalRecord({
                             <TextField
                                 variant="outlined"
                                 label={columns[12].headerName}
-                                onChange={(event, value) => {
-                                    handleInputChange(event, value, field_names[11]);
+                                onChange={(event) => {
+                                    handleInputChange(event, event.target.value, field_names[11]);
                                 }}
                             />
                         </Grid>
@@ -274,8 +274,8 @@ function AddChemicalRecord({
                             <TextField
                                 variant="outlined"
                                 label={columns[13].headerName}
-                                onChange={(event, value) => {
-                                    handleInputChange(event, value, field_names[12]);
+                                onChange={(event) => {
+                                    handleInputChange(event, event.target.value, field_names[12]);
                                 }}
                             />
                         </Grid>
@@ -283,8 +283,8 @@ function AddChemicalRecord({
                             <TextField
                                 variant="outlined"
                                 label={columns[14].headerName}
-                                onChange={(event, value) => {
-                                    handleInputChange(event, value, field_names[13]);
+                                onChange={(event) => {
+                                    handleInputChange(event, event.target.value, field_names[13]);
                                 }}
                             />
                         </Grid>
@@ -292,8 +292,8 @@ function AddChemicalRecord({
                             <TextField
                                 variant="outlined"
                                 label={columns[15].headerName}
-                                onChange={(event, value) => {
-                                    handleInputChange(event, value, field_names[14]);
+                                onChange={(event) => {
+                                    handleInputChange(event, event.target.value, field_names[14]);
                                 }}
                             />
                         </Grid>
@@ -655,8 +655,8 @@ export default function Chemical(props) {
                             value={fieldValues[field_names[8]]}
                             error={inputError[field_names[8]]}
                             sx={{width: editWidth}}
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[8]);
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[8]);
                             }}
                         />
                 )
@@ -682,8 +682,8 @@ export default function Chemical(props) {
                             value={fieldValues[field_names[9]]}
                             error={inputError[field_names[9]]}
                             sx={{width: editWidth}}
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[9]);
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[9]);
                             }}
                         />
                 )
@@ -708,8 +708,8 @@ export default function Chemical(props) {
                             variant="standard"
                             value={fieldValues[field_names[10]]}
                             sx={{width: editWidth}}
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[10]);
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[10]);
                             }}
                         />
                 )
@@ -734,8 +734,8 @@ export default function Chemical(props) {
                             variant="standard"
                             value={fieldValues[field_names[11]]}
                             sx={{width: editWidth}}
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[11]);
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[11]);
                             }}
                         />
                 )
@@ -760,8 +760,8 @@ export default function Chemical(props) {
                             variant="standard"
                             value={fieldValues[field_names[12]]}
                             sx={{width: editWidth}}
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[12]);
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[12]);
                             }}
                         />
                 )
@@ -786,8 +786,8 @@ export default function Chemical(props) {
                             variant="standard"
                             value={fieldValues[field_names[13]]}
                             sx={{width: editWidth}}
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[13]);
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[13]);
                             }}
                         />
                 )
@@ -812,8 +812,8 @@ export default function Chemical(props) {
                             variant="standard"
                             value={fieldValues[field_names[14]]}
                             sx={{width: editWidth}}
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[14]);
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[14]);
                             }}
                         />
                 )
