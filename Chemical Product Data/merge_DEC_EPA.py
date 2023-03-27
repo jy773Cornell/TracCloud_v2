@@ -34,6 +34,8 @@ epa_file = "./EPA/Trac Cloud EPA Product Data {}.csv".format(datetime.now().strf
 
 # Refresh DEC and EPA data
 
+nan_value = ""
+
 refresh_dec_data("DEC/")
 print("DEC data has been refreshed.")
 
@@ -63,6 +65,7 @@ match_data = match_previous_reg_no(unmatch_data, df_dec, df_epa)
 merge_data = pd.concat([merge_data, match_data], ignore_index=True).sort_values(by='PRODUCT ID_DEC')
 merge_data = merge_data.drop("REG_NR", axis=1)
 
+merge_data = merge_data.fillna(nan_value)
 merge_data.to_csv(trac_cloud_chemical_file, index=False)
 print(trac_cloud_chemical_file + " has been generated.")
 

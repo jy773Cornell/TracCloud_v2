@@ -490,22 +490,22 @@ export default function Chemical(props) {
             setFieldValues({
                 ...fieldValues,
                 [field]: value.label,
-                [field_names[1]]: value.trade_name,
-                [field_names[2]]: value.restricted_use,
-                [field_names[3]]: value.company,
-                [field_names[4]]: value.active_ingredient,
-                [field_names[5]]: value.percent_ai,
-                [field_names[6]]: value.type,
+                [field_names[1]]: value.product_name_dec,
+                [field_names[2]]: value.restricted_use_dec,
+                [field_names[3]]: value.company_name_dec,
+                [field_names[4]]: value.pc_name_dec,
+                [field_names[5]]: value.pc_pt_dec,
+                [field_names[6]]: value.product_type_dec,
             });
             setFormData({
                 ...formData,
                 [field]: value.label,
-                [field_names[1]]: value.trade_name,
-                [field_names[2]]: value.restricted_use,
-                [field_names[3]]: value.company,
-                [field_names[4]]: value.active_ingredient,
-                [field_names[5]]: value.percent_ai,
-                [field_names[6]]: value.type,
+                [field_names[1]]: value.product_name_dec,
+                [field_names[2]]: value.restricted_use_dec,
+                [field_names[3]]: value.company_name_dec,
+                [field_names[4]]: value.pc_name_dec,
+                [field_names[5]]: value.pc_pt_dec,
+                [field_names[6]]: value.product_type_dec,
             });
         } else if (field === field_names[7]) {
             setFieldValues({...fieldValues, [field]: value.label});
