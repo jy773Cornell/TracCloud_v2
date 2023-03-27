@@ -311,7 +311,7 @@ function AddChemicalRecord({
 }
 
 export default function Chemical(props) {
-    const [uid, setUID] = useState("");
+    const uid = props.uid;
     const [unit, setUnit] = useState([]);
     const [chemicalProductBase, setChemicalProductBase] = useState([]);
 
@@ -330,11 +330,11 @@ export default function Chemical(props) {
     const [popoverRowId, setPopoverRowId] = useState(null);
     const [refreshRecord, setRefreshRecord] = useState(false);
 
-    async function ChemicalListGet(props) {
+    async function ChemicalListGet(uid) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/chemical/list/get/" + "?uid=" + props.uid, requestOptions)
+        await fetch("/api/chemical/list/get/" + "?uid=" + uid, requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
@@ -896,8 +896,6 @@ export default function Chemical(props) {
     const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Chemical record has been deleted!"};
 
     useEffect(() => {
-        setUID(props.uid);
-        ChemicalListGet();
         UnitGet();
         clearInputError();
     }, []);
@@ -911,7 +909,7 @@ export default function Chemical(props) {
     }, [chemicalProductBase]);
 
     useEffect(() => {
-        ChemicalListGet(props);
+        ChemicalListGet(uid);
     }, [refreshRecord]);
 
     return (<div>
