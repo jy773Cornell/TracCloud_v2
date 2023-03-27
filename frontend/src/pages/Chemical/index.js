@@ -232,65 +232,69 @@ function AddChemicalRecord({
                         </Grid>
                         <Grid item xs={3}>
                             <TextField
-                                value={fieldValues[field_names[8]]}
                                 error={inputError[field_names[8]]}
                                 required
                                 variant="outlined"
                                 label={columns[9].headerName}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[8]);
+                                }}
                             />
                         </Grid>
                         <Grid item xs={3}>
                             <TextField
-                                value={fieldValues[field_names[9]]}
                                 error={inputError[field_names[9]]}
                                 required
                                 variant="outlined"
                                 label={columns[10].headerName}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[9]);
+                                }}
                             />
                         </Grid>
                         <Grid item xs={3}>
                             <TextField
-                                value={fieldValues[field_names[10]]}
-                                error={inputError[field_names[10]]}
-                                required
                                 variant="outlined"
                                 label={columns[11].headerName}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[10]);
+                                }}
                             />
                         </Grid>
                         <Grid item xs={3}>
                             <TextField
-                                value={fieldValues[field_names[11]]}
-                                error={inputError[field_names[11]]}
-                                required
                                 variant="outlined"
                                 label={columns[12].headerName}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[11]);
+                                }}
                             />
                         </Grid>
                         <Grid item xs={3}>
                             <TextField
-                                value={fieldValues[field_names[12]]}
-                                error={inputError[field_names[12]]}
-                                required
                                 variant="outlined"
                                 label={columns[13].headerName}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[12]);
+                                }}
                             />
                         </Grid>
                         <Grid item xs={3}>
                             <TextField
-                                value={fieldValues[field_names[13]]}
-                                error={inputError[field_names[13]]}
-                                required
                                 variant="outlined"
                                 label={columns[14].headerName}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[13]);
+                                }}
                             />
                         </Grid>
                         <Grid item xs={3}>
                             <TextField
-                                value={fieldValues[field_names[14]]}
-                                error={inputError[field_names[14]]}
-                                required
                                 variant="outlined"
                                 label={columns[15].headerName}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[14]);
+                                }}
                             />
                         </Grid>
                         <Grid item xs={3}/>
