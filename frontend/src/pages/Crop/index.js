@@ -180,6 +180,7 @@ function AddCropRecord({
 }
 
 export default function Crop(props) {
+    const [uid, setUID] = useState("");
     const [cropCategory, setCropCategory] = useState([]);
     const [cropVariety, setCropVariety] = useState([]);
     const [cropGrowthStage, setCropGrowthStage] = useState([]);
@@ -204,7 +205,7 @@ export default function Crop(props) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/crop/list/get/" + "?uid=" + props.uid, requestOptions)
+        await fetch("/api/crop/list/get/" + "?uid=" + uid, requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
@@ -275,7 +276,7 @@ export default function Crop(props) {
     }
 
     async function CropRecordDelete(cid) {
-        const apiData = {"user": props.uid, "cid": cid}
+        const apiData = {"user": uid, "cid": cid}
         console.log(apiData);
         const requestOptions = {
             method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
@@ -346,7 +347,7 @@ export default function Crop(props) {
     };
 
     const onAddClicked = () => {
-        setFormData({"user_id": props.uid,});
+        setFormData({"user_id": uid,});
         setFieldValues(Object.fromEntries(field_names.map(item => [item, ""])));
         setEditRowId(null);
         setShowAddModal(true);
@@ -571,6 +572,7 @@ export default function Crop(props) {
     const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Crop record has been deleted!"};
 
     useEffect(() => {
+        setUID(props.uid)
         CropCategoryGet();
         CropVarietyGet();
         CropGrowthStageGet();

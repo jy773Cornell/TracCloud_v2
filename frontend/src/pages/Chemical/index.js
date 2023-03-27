@@ -311,6 +311,7 @@ function AddChemicalRecord({
 }
 
 export default function Chemical(props) {
+    const [uid, setUID] = useState("");
     const [unit, setUnit] = useState([]);
     const [chemicalProductBase, setChemicalProductBase] = useState([]);
 
@@ -333,7 +334,7 @@ export default function Chemical(props) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/chemical/list/get/" + "?uid=" + props.uid, requestOptions)
+        await fetch("/api/chemical/list/get/" + "?uid=" + uid, requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
@@ -390,7 +391,7 @@ export default function Chemical(props) {
     }
 
     async function ChemicalRecordDelete(chemid) {
-        const apiData = {"user": props.uid, "chemid": chemid}
+        const apiData = {"user": uid, "chemid": chemid}
         console.log(apiData);
         const requestOptions = {
             method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
@@ -461,7 +462,7 @@ export default function Chemical(props) {
     };
 
     const onAddClicked = () => {
-        setFormData({"user_id": props.uid,});
+        setFormData({"user_id": uid,});
         setFieldValues(Object.fromEntries(field_names.map(item => [item, ""])));
         setEditRowId(null);
         setShowAddModal(true);
@@ -895,6 +896,7 @@ export default function Chemical(props) {
     const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Chemical record has been deleted!"};
 
     useEffect(() => {
+        setUID(props.uid);
         ChemicalListGet();
         UnitGet();
         clearInputError();
