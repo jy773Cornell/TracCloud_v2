@@ -14,6 +14,7 @@ class ChemicalCreateSerializer(serializers.ModelSerializer):
 
 class ChemicalGetSerializer(serializers.ModelSerializer):
     unit = serializers.SerializerMethodField()
+    update_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
 
     class Meta:
         model = Chemical
