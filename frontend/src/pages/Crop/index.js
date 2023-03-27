@@ -180,7 +180,7 @@ function AddCropRecord({
 }
 
 export default function Crop(props) {
-    const [uid, setUID] = useState("");
+    const uid = props.uid;
     const [cropCategory, setCropCategory] = useState([]);
     const [cropVariety, setCropVariety] = useState([]);
     const [cropGrowthStage, setCropGrowthStage] = useState([]);
@@ -201,7 +201,7 @@ export default function Crop(props) {
     const [popoverRowId, setPopoverRowId] = useState(null);
     const [refreshRecord, setRefreshRecord] = useState(false);
 
-    async function CropListGet(props) {
+    async function CropListGet(uid) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
@@ -572,7 +572,6 @@ export default function Crop(props) {
     const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Crop record has been deleted!"};
 
     useEffect(() => {
-        setUID(props.uid)
         CropCategoryGet();
         CropVarietyGet();
         CropGrowthStageGet();
@@ -589,7 +588,7 @@ export default function Crop(props) {
     }, [formData.crop]);
 
     useEffect(() => {
-        CropListGet(props);
+        CropListGet(uid);
     }, [refreshRecord]);
 
     return (<div>
