@@ -18,7 +18,10 @@ import {
     GridToolbarExport,
     GridToolbarFilterButton
 } from "@mui/x-data-grid";
+import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
+import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 import ConfirmPopover from "../../components/ConfirmPopover";
+import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 
 const columnWidth = 200;
 const editWidth = 180;
@@ -111,7 +114,7 @@ function AddChemicalRecord({
     }
 
     const handleSaveButtonPressed = () => {
-        if (Object.values(fieldValues).every(value => value !== "")) {
+        if (Object.values(fieldValues).slice(0, 10).every(value => value !== "")) {
             ChemicalRecordSave();
         } else {
             updateInputError();
@@ -144,7 +147,7 @@ function AddChemicalRecord({
                                         {...params}
                                         required
                                         variant="outlined"
-                                        label={columns[1].headerName}
+                                        label={columns[2].headerName}
                                         error={inputError[field_names[0]]}
                                         onChange={(event) => {
                                             handleEPANOChange(event);
@@ -160,7 +163,7 @@ function AddChemicalRecord({
                                     readOnly: true,
                                 }}
                                 variant="outlined"
-                                label={columns[2].headerName}
+                                label={columns[3].headerName}
                             />
                         </Grid>
                         <Grid item xs={3}>
@@ -171,7 +174,7 @@ function AddChemicalRecord({
                                     readOnly: true,
                                 }}
                                 variant="outlined"
-                                label={columns[3].headerName}
+                                label={columns[4].headerName}
                             />
                         </Grid>
                         <Grid item xs={3}>
@@ -182,7 +185,7 @@ function AddChemicalRecord({
                                     readOnly: true,
                                 }}
                                 variant="outlined"
-                                label={columns[4].headerName}
+                                label={columns[5].headerName}
                             />
                         </Grid>
                         <Grid item xs={3}>
@@ -193,7 +196,7 @@ function AddChemicalRecord({
                                     readOnly: true,
                                 }}
                                 variant="outlined"
-                                label={columns[5].headerName}
+                                label={columns[6].headerName}
                             />
                         </Grid>
                         <Grid item xs={3}>
@@ -215,7 +218,7 @@ function AddChemicalRecord({
                                     readOnly: true,
                                 }}
                                 variant="outlined"
-                                label={columns[7].headerName}
+                                label={columns[8].headerName}
                             />
                         </Grid>
                         <Grid item xs={3}>
@@ -226,7 +229,7 @@ function AddChemicalRecord({
                                     handleInputChange(event, value, field_names[7]);
                                 }}
                                 renderInput={(params) => (
-                                    <TextField {...params} required variant="outlined" label={columns[8].headerName}
+                                    <TextField {...params} required variant="outlined" label={columns[9].headerName}
                                                error={inputError[field_names[7]]}/>)}
                             />
                         </Grid>
@@ -235,7 +238,7 @@ function AddChemicalRecord({
                                 error={inputError[field_names[8]]}
                                 required
                                 variant="outlined"
-                                label={columns[9].headerName}
+                                label={columns[10].headerName}
                                 onChange={(event) => {
                                     handleInputChange(event, event.target.value, field_names[8]);
                                 }}
@@ -246,7 +249,7 @@ function AddChemicalRecord({
                                 error={inputError[field_names[9]]}
                                 required
                                 variant="outlined"
-                                label={columns[10].headerName}
+                                label={columns[11].headerName}
                                 onChange={(event) => {
                                     handleInputChange(event, event.target.value, field_names[9]);
                                 }}
@@ -255,7 +258,7 @@ function AddChemicalRecord({
                         <Grid item xs={3}>
                             <TextField
                                 variant="outlined"
-                                label={columns[11].headerName}
+                                label={columns[12].headerName}
                                 onChange={(event) => {
                                     handleInputChange(event, event.target.value, field_names[10]);
                                 }}
@@ -264,7 +267,7 @@ function AddChemicalRecord({
                         <Grid item xs={3}>
                             <TextField
                                 variant="outlined"
-                                label={columns[12].headerName}
+                                label={columns[13].headerName}
                                 onChange={(event) => {
                                     handleInputChange(event, event.target.value, field_names[11]);
                                 }}
@@ -273,7 +276,7 @@ function AddChemicalRecord({
                         <Grid item xs={3}>
                             <TextField
                                 variant="outlined"
-                                label={columns[13].headerName}
+                                label={columns[14].headerName}
                                 onChange={(event) => {
                                     handleInputChange(event, event.target.value, field_names[12]);
                                 }}
@@ -282,20 +285,24 @@ function AddChemicalRecord({
                         <Grid item xs={3}>
                             <TextField
                                 variant="outlined"
-                                label={columns[14].headerName}
+                                label={columns[15].headerName}
                                 onChange={(event) => {
                                     handleInputChange(event, event.target.value, field_names[13]);
                                 }}
                             />
                         </Grid>
                         <Grid item xs={3}>
-                            <TextField
-                                variant="outlined"
-                                label={columns[15].headerName}
-                                onChange={(event) => {
-                                    handleInputChange(event, event.target.value, field_names[14]);
-                                }}
-                            />
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                    variant="outlined"
+                                    label={columns[16].headerName}
+                                    views={["year"]}
+                                    openTo="year"
+                                    onChange={(event) => {
+                                        handleInputChange(event, event.$y, field_names[14]);
+                                    }}
+                                />
+                            </LocalizationProvider>
                         </Grid>
                         <Grid item xs={3}/>
                         <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
@@ -431,7 +438,7 @@ export default function Chemical(props) {
     }
 
     const onSaveClicked = () => {
-        if (Object.values(fieldValues).every(value => value !== "")) {
+        if (Object.values(fieldValues).slice(0, 10).every(value => value !== "")) {
             ChemicalRecordUpdate();
             const index = rows.findIndex(item => item.id === fieldValues.id);
             setRows([
@@ -528,6 +535,62 @@ export default function Chemical(props) {
 
     const columns = [
         {
+            field: 'operations',
+            headerName: 'Operations',
+            sortable: false,
+            width:
+                100,
+            disableColumnMenu: true,
+            disableClickEventBubbling: true,
+            renderCell: (params) => {
+                if (editRowId !== params.id) {
+                    return (<>
+                        <IconButton onClick={() => onEditClicked(params)}>
+                            <EditIcon/>
+                        </IconButton>
+                        <IconButton onClick={(event) => {
+                            setAnchorEl(event.currentTarget);
+                            setPopoverRowId(params.id);
+                        }}>
+                            <DeleteIcon/>
+                        </IconButton>
+                        {popoverRowId === params.id &&
+                            <ConfirmPopover anchorEl={anchorEl}
+                                            setAnchorEl={setAnchorEl}
+                                            onDeleteClicked={onDeleteClicked}
+                                            params={params}
+                                            msg="Delete this record?"
+                                            type="delete"
+                            />
+                        }
+                    </>);
+                } else {
+                    return (
+                        <>
+                            <IconButton onClick={(event) => {
+                                setAnchorEl(event.currentTarget);
+                                setPopoverRowId(params.id);
+                            }}>
+                                <SaveIcon/>
+                            </IconButton>
+                            <IconButton onClick={() => onCancelClicked()}>
+                                < CancelIcon/>
+                            </IconButton>
+                            {popoverRowId === params.id &&
+                                <ConfirmPopover anchorEl={anchorEl}
+                                                setAnchorEl={setAnchorEl}
+                                                onSaveClicked={onSaveClicked}
+                                                params={params}
+                                                msg="Update this record?"
+                                                type="update"
+                                />
+                            }
+                        </>
+                    )
+                }
+            },
+        },
+        {
             field: 'id',
             headerName: 'ID',
             width: columnWidth
@@ -620,7 +683,7 @@ export default function Chemical(props) {
                     readOnly={editRowId !== rowID}
                     value={editRowId === rowID ? fieldValues[field_names[7]] : params.value}
                     onChange={(event, value) => {
-                        handleInputChange(event, value, field_names[0]);
+                        handleInputChange(event, value, field_names[7]);
                     }}
                     renderInput={(params) => {
                         return (
@@ -808,14 +871,22 @@ export default function Chemical(props) {
                                 readOnly: true,
                             }}
                             sx={{width: columnWidth}}/> :
-                        <TextField
-                            variant="standard"
-                            value={fieldValues[field_names[14]]}
-                            sx={{width: editWidth}}
-                            onChange={(event) => {
-                                handleInputChange(event, event.target.value, field_names[14]);
-                            }}
-                        />
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                                variant="standard"
+                                sx={{width: editWidth}}
+                                views={["year"]}
+                                slotProps={{
+                                    textField: {
+                                        variant: "standard",
+                                        placeholder: fieldValues[field_names[14]],
+                                    },
+                                }}
+                                onChange={(event) => {
+                                    handleInputChange(event, event.$y, field_names[14]);
+                                }}
+                            />
+                        </LocalizationProvider>
                 )
             },
         },
@@ -823,62 +894,6 @@ export default function Chemical(props) {
             field: 'update_time',
             headerName: 'Update Time',
             width: columnWidth,
-        },
-        {
-            field: 'operations',
-            headerName: 'Operations',
-            sortable: false,
-            width:
-            columnWidth,
-            disableColumnMenu: true,
-            disableClickEventBubbling: true,
-            renderCell: (params) => {
-                if (editRowId !== params.id) {
-                    return (<>
-                        <IconButton onClick={() => onEditClicked(params)}>
-                            <EditIcon/>
-                        </IconButton>
-                        <IconButton onClick={(event) => {
-                            setAnchorEl(event.currentTarget);
-                            setPopoverRowId(params.id);
-                        }}>
-                            <DeleteIcon/>
-                        </IconButton>
-                        {popoverRowId === params.id &&
-                            <ConfirmPopover anchorEl={anchorEl}
-                                            setAnchorEl={setAnchorEl}
-                                            onDeleteClicked={onDeleteClicked}
-                                            params={params}
-                                            msg="Delete this record?"
-                                            type="delete"
-                            />
-                        }
-                    </>);
-                } else {
-                    return (
-                        <>
-                            <IconButton onClick={(event) => {
-                                setAnchorEl(event.currentTarget);
-                                setPopoverRowId(params.id);
-                            }}>
-                                <SaveIcon/>
-                            </IconButton>
-                            <IconButton onClick={() => onCancelClicked()}>
-                                < CancelIcon/>
-                            </IconButton>
-                            {popoverRowId === params.id &&
-                                <ConfirmPopover anchorEl={anchorEl}
-                                                setAnchorEl={setAnchorEl}
-                                                onSaveClicked={onSaveClicked}
-                                                params={params}
-                                                msg="Update this record?"
-                                                type="update"
-                                />
-                            }
-                        </>
-                    )
-                }
-            },
         },
     ];
 

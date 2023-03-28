@@ -113,7 +113,7 @@ function AddCropRecord({
                                 handleInputChange(event, value, field_names[0]);
                             }}
                             renderInput={(params) => (
-                                <TextField {...params} required variant="outlined" label={columns[1].headerName}
+                                <TextField {...params} required variant="outlined" label={columns[2].headerName}
                                            error={inputError[field_names[0]]}/>)}
                         />
                     </Grid>
@@ -125,7 +125,7 @@ function AddCropRecord({
                                 handleInputChange(event, value, field_names[1]);
                             }}
                             renderInput={(params) => (
-                                <TextField {...params} required variant="outlined" label={columns[2].headerName}
+                                <TextField {...params} required variant="outlined" label={columns[3].headerName}
                                            error={inputError[field_names[1]]}/>)}
                         />
                     </Grid>
@@ -137,7 +137,7 @@ function AddCropRecord({
                                 readOnly: true,
                             }}
                             variant="outlined"
-                            label={columns[3].headerName}
+                            label={columns[4].headerName}
                         />
                     </Grid>
                     <Grid item xs={6}>
@@ -148,7 +148,7 @@ function AddCropRecord({
                                 readOnly: true,
                             }}
                             variant="outlined"
-                            label={columns[4].headerName}
+                            label={columns[5].headerName}
                         />
                     </Grid>
                     <Grid item xs={12}>
@@ -159,7 +159,7 @@ function AddCropRecord({
                                 handleInputChange(event, value, field_names[4]);
                             }}
                             renderInput={(params) => (
-                                <TextField {...params} required variant="outlined" label={columns[5].headerName}
+                                <TextField {...params} required variant="outlined" label={columns[6].headerName}
                                            error={inputError[field_names[4]]}/>)}
                         />
                     </Grid>
@@ -393,6 +393,61 @@ export default function Crop(props) {
 
     const columns = [
         {
+            field: 'operations',
+            headerName: 'Operations',
+            sortable: false,
+            width: 100,
+            disableColumnMenu: true,
+            disableClickEventBubbling: true,
+            renderCell: (params) => {
+                if (editRowId !== params.id) {
+                    return (<>
+                        <IconButton onClick={() => onEditClicked(params)}>
+                            <EditIcon/>
+                        </IconButton>
+                        <IconButton onClick={(event) => {
+                            setAnchorEl(event.currentTarget);
+                            setPopoverRowId(params.id);
+                        }}>
+                            <DeleteIcon/>
+                        </IconButton>
+                        {popoverRowId === params.id &&
+                            <ConfirmPopover anchorEl={anchorEl}
+                                            setAnchorEl={setAnchorEl}
+                                            onDeleteClicked={onDeleteClicked}
+                                            params={params}
+                                            msg="Delete this record?"
+                                            type="delete"
+                            />
+                        }
+                    </>);
+                } else {
+                    return (
+                        <>
+                            <IconButton onClick={(event) => {
+                                setAnchorEl(event.currentTarget);
+                                setPopoverRowId(params.id);
+                            }}>
+                                <SaveIcon/>
+                            </IconButton>
+                            <IconButton onClick={() => onCancelClicked()}>
+                                < CancelIcon/>
+                            </IconButton>
+                            {popoverRowId === params.id &&
+                                <ConfirmPopover anchorEl={anchorEl}
+                                                setAnchorEl={setAnchorEl}
+                                                onSaveClicked={onSaveClicked}
+                                                params={params}
+                                                msg="Update this record?"
+                                                type="update"
+                                />
+                            }
+                        </>
+                    )
+                }
+            },
+        },
+        {
             field: 'id',
             headerName: 'ID',
             width: columnWidth
@@ -494,61 +549,7 @@ export default function Crop(props) {
             headerName: 'Update Time',
             width: columnWidth,
         },
-        {
-            field: 'operations',
-            headerName: 'Operations',
-            sortable: false,
-            width: columnWidth,
-            disableColumnMenu: true,
-            disableClickEventBubbling: true,
-            renderCell: (params) => {
-                if (editRowId !== params.id) {
-                    return (<>
-                        <IconButton onClick={() => onEditClicked(params)}>
-                            <EditIcon/>
-                        </IconButton>
-                        <IconButton onClick={(event) => {
-                            setAnchorEl(event.currentTarget);
-                            setPopoverRowId(params.id);
-                        }}>
-                            <DeleteIcon/>
-                        </IconButton>
-                        {popoverRowId === params.id &&
-                            <ConfirmPopover anchorEl={anchorEl}
-                                            setAnchorEl={setAnchorEl}
-                                            onDeleteClicked={onDeleteClicked}
-                                            params={params}
-                                            msg="Delete this record?"
-                                            type="delete"
-                            />
-                        }
-                    </>);
-                } else {
-                    return (
-                        <>
-                            <IconButton onClick={(event) => {
-                                setAnchorEl(event.currentTarget);
-                                setPopoverRowId(params.id);
-                            }}>
-                                <SaveIcon/>
-                            </IconButton>
-                            <IconButton onClick={() => onCancelClicked()}>
-                                < CancelIcon/>
-                            </IconButton>
-                            {popoverRowId === params.id &&
-                                <ConfirmPopover anchorEl={anchorEl}
-                                                setAnchorEl={setAnchorEl}
-                                                onSaveClicked={onSaveClicked}
-                                                params={params}
-                                                msg="Update this record?"
-                                                type="update"
-                                />
-                            }
-                        </>
-                    )
-                }
-            },
-        },];
+    ];
 
     const addProps = {
         fieldValues,
