@@ -207,20 +207,16 @@ class Site(models.Model):
     def __str__(self):
         return self.name
 
+    objects = MyModelManager()
+
 
 class SiteType(models.Model):
     stid = models.CharField(verbose_name="STID", primary_key=True, max_length=48)
     name = models.CharField(verbose_name="Type Name", unique=True, max_length=128)
-
-    level_choices = (
-        (1, "Child"),
-        (2, "Parent"),
-    )
-    level = models.SmallIntegerField(verbose_name="Level", choices=level_choices)
-
+    level = models.SmallIntegerField(verbose_name="Level")
     note = models.TextField(verbose_name="Note", null=True, blank=True)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
-    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
+    refresh_time = models.DateTimeField(verbose_name="Refresh Time", auto_now=True)
 
     def __str__(self):
         return self.name

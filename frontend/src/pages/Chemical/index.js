@@ -147,7 +147,7 @@ function AddChemicalRecord({
                                         {...params}
                                         required
                                         variant="outlined"
-                                        label={columns[2].headerName}
+                                        label={columns[1].headerName}
                                         error={inputError[field_names[0]]}
                                         onChange={(event) => {
                                             handleEPANOChange(event);
@@ -163,7 +163,7 @@ function AddChemicalRecord({
                                     readOnly: true,
                                 }}
                                 variant="outlined"
-                                label={columns[3].headerName}
+                                label={columns[2].headerName}
                             />
                         </Grid>
                         <Grid item xs={3}>
@@ -174,7 +174,7 @@ function AddChemicalRecord({
                                     readOnly: true,
                                 }}
                                 variant="outlined"
-                                label={columns[4].headerName}
+                                label={columns[3].headerName}
                             />
                         </Grid>
                         <Grid item xs={3}>
@@ -185,7 +185,7 @@ function AddChemicalRecord({
                                     readOnly: true,
                                 }}
                                 variant="outlined"
-                                label={columns[5].headerName}
+                                label={columns[4].headerName}
                             />
                         </Grid>
                         <Grid item xs={3}>
@@ -196,7 +196,7 @@ function AddChemicalRecord({
                                     readOnly: true,
                                 }}
                                 variant="outlined"
-                                label={columns[6].headerName}
+                                label={columns[5].headerName}
                             />
                         </Grid>
                         <Grid item xs={3}>
@@ -218,7 +218,7 @@ function AddChemicalRecord({
                                     readOnly: true,
                                 }}
                                 variant="outlined"
-                                label={columns[8].headerName}
+                                label={columns[7].headerName}
                             />
                         </Grid>
                         <Grid item xs={3}>
@@ -229,7 +229,7 @@ function AddChemicalRecord({
                                     handleInputChange(event, value, field_names[7]);
                                 }}
                                 renderInput={(params) => (
-                                    <TextField {...params} required variant="outlined" label={columns[9].headerName}
+                                    <TextField {...params} required variant="outlined" label={columns[8].headerName}
                                                error={inputError[field_names[7]]}/>)}
                             />
                         </Grid>
@@ -238,7 +238,7 @@ function AddChemicalRecord({
                                 error={inputError[field_names[8]]}
                                 required
                                 variant="outlined"
-                                label={columns[10].headerName}
+                                label={columns[9].headerName}
                                 onChange={(event) => {
                                     handleInputChange(event, event.target.value, field_names[8]);
                                 }}
@@ -249,7 +249,7 @@ function AddChemicalRecord({
                                 error={inputError[field_names[9]]}
                                 required
                                 variant="outlined"
-                                label={columns[11].headerName}
+                                label={columns[10].headerName}
                                 onChange={(event) => {
                                     handleInputChange(event, event.target.value, field_names[9]);
                                 }}
@@ -258,7 +258,7 @@ function AddChemicalRecord({
                         <Grid item xs={3}>
                             <TextField
                                 variant="outlined"
-                                label={columns[12].headerName}
+                                label={columns[11].headerName}
                                 onChange={(event) => {
                                     handleInputChange(event, event.target.value, field_names[10]);
                                 }}
@@ -267,7 +267,7 @@ function AddChemicalRecord({
                         <Grid item xs={3}>
                             <TextField
                                 variant="outlined"
-                                label={columns[13].headerName}
+                                label={columns[12].headerName}
                                 onChange={(event) => {
                                     handleInputChange(event, event.target.value, field_names[11]);
                                 }}
@@ -276,7 +276,7 @@ function AddChemicalRecord({
                         <Grid item xs={3}>
                             <TextField
                                 variant="outlined"
-                                label={columns[14].headerName}
+                                label={columns[13].headerName}
                                 onChange={(event) => {
                                     handleInputChange(event, event.target.value, field_names[12]);
                                 }}
@@ -285,7 +285,7 @@ function AddChemicalRecord({
                         <Grid item xs={3}>
                             <TextField
                                 variant="outlined"
-                                label={columns[15].headerName}
+                                label={columns[14].headerName}
                                 onChange={(event) => {
                                     handleInputChange(event, event.target.value, field_names[13]);
                                 }}
@@ -295,7 +295,7 @@ function AddChemicalRecord({
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <DatePicker
                                     variant="outlined"
-                                    label={columns[16].headerName}
+                                    label={columns[15].headerName}
                                     views={["year"]}
                                     openTo="year"
                                     onChange={(event) => {
@@ -376,7 +376,7 @@ export default function Chemical(props) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/chemical/product_base/" + "?reg_no=" + reg_no, requestOptions)
+        await fetch("/api/chemical/productbase/" + "?reg_no=" + reg_no, requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
@@ -538,8 +538,7 @@ export default function Chemical(props) {
             field: 'operations',
             headerName: 'Operations',
             sortable: false,
-            width:
-                100,
+            width: 150,
             disableColumnMenu: true,
             disableClickEventBubbling: true,
             renderCell: (params) => {
@@ -589,11 +588,6 @@ export default function Chemical(props) {
                     )
                 }
             },
-        },
-        {
-            field: 'id',
-            headerName: 'ID',
-            width: columnWidth
         },
         {
             field: 'epa_reg_no',

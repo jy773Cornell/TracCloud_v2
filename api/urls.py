@@ -64,6 +64,7 @@ urlpatterns = [
     path('site/update/', SiteUpdateView.as_view()),
     path('site/parent/delete/', SiteParentDeleteView.as_view()),
     path('site/child/delete/', SiteChildDeleteView.as_view()),
+    path('site/sitetype/', SiteTypeGetView.as_view()),
 
     # ChemicalAPI
 
@@ -72,7 +73,7 @@ urlpatterns = [
     path('chemical/list/get/', ChemicalListGetView.as_view()),
     path('chemical/update/', ChemicalUpdateView.as_view()),
     path('chemical/delete/', ChemicalDeleteView.as_view()),
-    path('chemical/product_base/', ChemicalProductBaseGetView.as_view()),
+    path('chemical/productbase/', ChemicalProductBaseGetView.as_view()),
 
     # OperationAPI
 

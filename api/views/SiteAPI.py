@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.views import APIView
@@ -157,3 +158,9 @@ class SiteChildDeleteView(APIView):
             return Response({'Failed': 'Invalid sid'}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SiteTypeGetView(APIView):
+    def get(self, request, format=None):
+        data = cache.get("SiteType")
+        return Response({'Succeeded': 'Site Type Info Fetched.', 'data': data}, status=status.HTTP_200_OK)

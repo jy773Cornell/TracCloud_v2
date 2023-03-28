@@ -4,6 +4,7 @@ from django.core.management import call_command
 
 command_executed = False
 
+
 @receiver(request_started)
 def run_command_on_startup(sender, **kwargs):
     global command_executed

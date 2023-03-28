@@ -39,7 +39,7 @@ class ChemicalGetView(APIView):
     def get(self, request, format=None):
         chemid = request.GET.get(self.lookup_url_kwarg)
         if chemid:
-            chemical = Chemical.objects.filter(chemid=chemid, is_active=True).first()
+            chemical = Chemical.objects.filter(chemid=chemid).alive().first()
             if chemical:
                 data = ChemicalGetSerializer(chemical).data
                 return Response({'Succeeded': 'Chemical Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
@@ -56,9 +56,9 @@ class ChemicalListGetView(APIView):
     def get(self, request, format=None):
         uid = request.GET.get(self.lookup_url_kwarg)
         if uid:
-            user = User.objects.filter(uid=uid, is_active=True)
+            user = User.objects.filter(uid=uid).alive()
             if user:
-                chemical_list = Chemical.objects.filter(user_id=uid, is_active=True)
+                chemical_list = Chemical.objects.filter(user_id=uid).alive()
                 data = []
                 for chemical in chemical_list:
                     data.append(ChemicalGetSerializer(chemical).data)
@@ -77,7 +77,7 @@ class ChemicalUpdateView(APIView):
         data = request_data_transform(request.data)
         chemid = data.pop("chemid")
         if chemid:
-            chemical = Chemical.objects.filter(chemid=chemid, is_active=True)
+            chemical = Chemical.objects.filter(chemid=chemid).alive()
             if chemical:
                 chemical.update(**data)
                 return Response({'Succeeded': 'Chemical info has been updated.'}, status=status.HTTP_200_OK)
@@ -95,9 +95,9 @@ class ChemicalDeleteView(APIView):
         chemid = request.data.get("chemid")
         user = request.data.get("user")
         if chemid and user:
-            chemical = Chemical.objects.filter(chemid=chemid, user_id=user, is_active=True)
+            chemical = Chemical.objects.filter(chemid=chemid, user_id=user).alive()
             if chemical:
-                model_delete(chemical)
+                chemical.delete()
                 return Response({'Succeeded': 'Chemical has been deleted.'}, status=status.HTTP_200_OK)
 
             return Response({'Failed': 'Invalid cid'}, status=status.HTTP_404_NOT_FOUND)

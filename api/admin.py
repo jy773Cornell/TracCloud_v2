@@ -194,7 +194,7 @@ class SiteAdmin(admin.ModelAdmin):
 
 
 class SiteTypeAdmin(admin.ModelAdmin):
-    list_display = ('stid', 'name', 'level', 'is_active', 'create_time',)
+    list_display = ('stid', 'name', 'level', 'is_active', 'refresh_time',)
 
     list_filter = ('level', 'is_active',)
 
