@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from rest_framework import serializers
 from api.models import User, Crop, Site, SiteType, Unit
 
@@ -18,15 +19,22 @@ class SiteCreateSerializer(serializers.ModelSerializer):
 
 
 class SiteGetSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-    type = serializers.StringRelatedField()
-    crop = serializers.StringRelatedField()
-    size_unit = serializers.StringRelatedField()
-    parent = serializers.StringRelatedField()
+    type = serializers.SerializerMethodField()
+    crop = serializers.SerializerMethodField()
+    size_unit = serializers.SerializerMethodField()
 
     class Meta:
         model = Site
         fields = "__all__"
+
+    def get_type(self, obj):
+        return next((item['name'] for item in cache.get("CropCategory") if item['ccid'] == obj.type_id), None)
+
+    def get_crop(self, obj):
+        return next((item['name'] for item in cache.get("CropCategory") if item['ccid'] == obj.crop_id), None)
+
+    def get_size_unit(self, obj):
+        return next((item['name'] for item in cache.get("Unit") if item['unitid'] == obj.size_unit_id), None)
 
 
 class SiteUpdateSerializer(serializers.ModelSerializer):
