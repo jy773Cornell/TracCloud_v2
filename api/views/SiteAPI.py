@@ -3,6 +3,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
+from api.serializers.CropSerializer import CropGetSerializer
 from api.serializers.SiteSerializer import *
 from api.models import *
 from api.utils.ModelManager import model_delete, request_data_transform
@@ -52,9 +54,13 @@ class SiteRootListGetView(APIView):
             if user:
                 root_type_id = [site_type["stid"] for site_type in cache.get("SiteType") if site_type["level"] == 1]
                 site_root_list = Site.objects.filter(user_id=uid, type_id__in=root_type_id).alive()
+                user_crop_list = Crop.objects.filter(user_id=uid).alive()
+                user_crop_list = [CropGetSerializer(crop).data for crop in user_crop_list]
                 data = []
                 for site in site_root_list:
-                    data.append(SiteGetSerializer(site).data)
+                    site = SiteGetSerializer(site).data
+                    [site.update({"crop": crop}) for crop in user_crop_list if crop["cid"] == site["crop"]]
+                    data.append(site)
                 return Response({'Succeeded': 'Site Root List Info Fetched.', 'data': data},
                                 status=status.HTTP_200_OK)
 

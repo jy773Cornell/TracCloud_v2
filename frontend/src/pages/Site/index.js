@@ -37,7 +37,7 @@ function createRowData(record) {
         "type": record.type,
         "name": record.name,
         "owner_name": record.owner_name,
-        "crop": record.crop,
+        "crop": record.crop ? record.crop.crop + " (" + record.crop.variety + ", " + record.crop.growth_stage + ")" : "",
         "crop_year": record.crop_year,
         "size": record.size,
         "size_unit": record.size_unit,
@@ -89,7 +89,7 @@ function AddSiteRecord({
     }
 
     const handleSaveButtonPressed = () => {
-        if (Object.values(fieldValues).every(value => value !== "")) {
+        if ([fieldValues[field_names[0]], fieldValues[field_names[1]]].every(value => value !== "")) {
             SiteRecordSave();
         } else {
             updateInputError();
@@ -232,6 +232,7 @@ export default function Site(props) {
                 if (response.ok) {
                     response.json().then((data) => {
                         const record_list = data.data;
+                        console.log(record_list)
                         const record_row = record_list.map((record) => createRowData(record))
                         setRows(record_row);
                     })
@@ -565,9 +566,9 @@ export default function Site(props) {
                             editRowId !== rowID ?
                                 <TextField {...params} variant="standard"
                                            InputProps={{disableUnderline: true}}
-                                           sx={{width: columnWidth}}/> :
+                                           sx={{width: 300}}/> :
                                 <TextField {...params} variant="standard" error={inputError[field_names[3]]}
-                                           sx={{width: editWidth}}
+                                           sx={{width: 280}}
                                 />
                         )
                     }}
@@ -731,7 +732,6 @@ export default function Site(props) {
     const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Site record has been deleted!"};
 
     useEffect(() => {
-        SiteRootListGet(uid);
         SiteTypeGet();
         CropListGet();
         UnitGet();

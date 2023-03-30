@@ -20,7 +20,6 @@ class SiteCreateSerializer(serializers.ModelSerializer):
 
 class SiteGetSerializer(serializers.ModelSerializer):
     type = serializers.SerializerMethodField()
-    crop = serializers.SerializerMethodField()
     size_unit = serializers.SerializerMethodField()
     update_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
 
@@ -30,9 +29,6 @@ class SiteGetSerializer(serializers.ModelSerializer):
 
     def get_type(self, obj):
         return next((item['name'] for item in cache.get("SiteType") if item['stid'] == obj.type_id), None)
-
-    def get_crop(self, obj):
-        return next((item['name'] for item in cache.get("CropCategory") if item['ccid'] == obj.crop_id), None)
 
     def get_size_unit(self, obj):
         return next((item['name'] for item in cache.get("Unit") if item['unitid'] == obj.size_unit_id), None)
