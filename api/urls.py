@@ -61,9 +61,8 @@ urlpatterns = [
     path('site/root/list/get/', SiteRootListGetView.as_view()),
     path('site/child/list/get/', SiteChildListGetView.as_view()),
     path('site/update/', SiteUpdateView.as_view()),
-    path('site/parent/delete/', SiteParentDeleteView.as_view()),
-    path('site/child/delete/', SiteChildDeleteView.as_view()),
-    path('site/sitetype/', SiteTypeGetView.as_view()),
+    path('site/delete/', SiteDeleteView.as_view()),
+    path('site/type/', SiteTypeGetView.as_view()),
 
     # ChemicalAPI
 

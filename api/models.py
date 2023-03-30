@@ -187,21 +187,22 @@ class Site(models.Model):
     sid = models.CharField(verbose_name="SID", primary_key=True, max_length=48)
     user = models.ForeignKey(verbose_name="User", to="User", to_field="uid", related_name="site_user",
                              null=True, blank=True, on_delete=models.SET_NULL)
-    name = models.CharField(verbose_name="Site Name", max_length=256)
-    owner_name = models.CharField(verbose_name="Owner Name", null=True, blank=True, max_length=64)
     type = models.ForeignKey(verbose_name="Type", to="SiteType", to_field="stid", related_name="site_type",
                              null=True, blank=True, on_delete=models.SET_NULL)
+    name = models.CharField(verbose_name="Site Name", max_length=256)
+    owner_name = models.CharField(verbose_name="Owner Name", null=True, blank=True, max_length=64)
     crop = models.ForeignKey(verbose_name="Crop", to="Crop", to_field="cid", related_name="site_crop",
                              null=True, blank=True, on_delete=models.SET_NULL)
     crop_year = models.CharField(verbose_name="Crop Year", max_length=32, null=True, blank=True)
-    size = models.CharField(verbose_name="Size", max_length=32)
+    size = models.CharField(verbose_name="Size", null=True, blank=True, max_length=32)
     size_unit = models.ForeignKey(verbose_name="Size Unit", to="Unit", to_field="unitid", related_name="site_unit",
                                   null=True, blank=True, on_delete=models.SET_NULL)
     gps = models.CharField(verbose_name="GPS", null=True, blank=True, max_length=128)
     gps_system = models.CharField(verbose_name="GPS System", null=True, blank=True, max_length=64)
     parent = models.ForeignKey(verbose_name="Parent Site", to="Site", to_field="sid", related_name="site_site",
-                               null=True, blank=True, on_delete=models.SET_NULL)
+                               null=True, blank=True, on_delete=models.CASCADE)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
+    update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
 
     def __str__(self):

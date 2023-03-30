@@ -5,6 +5,7 @@ import IconButton from "@mui/material/IconButton";
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 import {Autocomplete, Button, Card, CardContent, Grid, Modal, Popover, TextField, Typography} from "@mui/material";
@@ -23,22 +24,26 @@ import ConfirmPopover from "../../components/ConfirmPopover";
 const columnWidth = 200;
 const editWidth = 180;
 
-const field_names = ["crop", "variety", "crop_code", "category", "growth_stage"]
+const field_names = ["type", "name", "owner_name", "crop", "crop_year", "size", "size_unit", "gps", "gps_system"]
 
 function createAPIData(data) {
-    const {crop: crop_id, variety: variety_id, growth_stage: growth_stage_id, ...rest} = data;
-    return {crop_id, variety_id, growth_stage_id, ...rest};
+    const {type: type_id, crop: crop_id, size_unit: size_unit_id, ...rest} = data;
+    return {type_id, crop_id, size_unit_id, ...rest};
 }
 
 function createRowData(record) {
     return {
-        "id": record.cid,
+        "id": record.sid,
+        "type": record.type,
+        "name": record.name,
+        "owner_name": record.owner_name,
         "crop": record.crop,
-        "variety": record.variety,
-        "crop_code": record.crop_code,
-        "category": record.category,
-        "growth_stage": record.growth_stage,
-        "update_time": record.update_time
+        "crop_year": record.crop_year,
+        "size": record.size,
+        "size_unit": record.size_unit,
+        "gps": record.gps,
+        "gps_system": record.gps_system,
+        "update_time": record.update_time,
     };
 }
 
@@ -55,9 +60,9 @@ function AddSiteRecord({
                            fieldValues,
                            formData,
                            columns,
-                           cropCategoryOptions,
-                           cropVarietyOptions,
-                           cropGrowthStageOptions,
+                           siteTypeOptions,
+                           cropOptions,
+                           unitOptions,
                            handleInputChange,
                            showAddModal,
                            setShowAddModal,
@@ -68,13 +73,13 @@ function AddSiteRecord({
                            setRefreshRecord,
                        }) {
 
-    async function CropRecordSave() {
+    async function SiteRecordSave() {
         const apiData = createAPIData(formData);
         console.log(apiData);
         const requestOptions = {
             method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
         };
-        await fetch("/api/crop/create/", requestOptions)
+        await fetch("/api/site/create/", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     setIsSave(true);
@@ -86,7 +91,7 @@ function AddSiteRecord({
 
     const handleSaveButtonPressed = () => {
         if (Object.values(fieldValues).every(value => value !== "")) {
-            CropRecordSave();
+            SiteRecordSave();
         } else {
             updateInputError();
         }
@@ -103,64 +108,82 @@ function AddSiteRecord({
             <CardContent>
                 <Grid container justifyContent="center" spacing={2}>
                     <Grid item xs={12} sx={{textAlign: 'center'}}>
-                        <h1>Add Crop Record</h1>
+                        <h1>Add Site Record</h1>
                     </Grid>
                     <Grid item xs={12}>
                         <Autocomplete
                             value={fieldValues[field_names[0]]}
-                            options={cropCategoryOptions}
+                            options={siteTypeOptions}
                             onChange={(event, value) => {
                                 handleInputChange(event, value, field_names[0]);
                             }}
                             renderInput={(params) => (
-                                <TextField {...params} required variant="outlined" label={columns[2].headerName}
+                                <TextField {...params} required variant="outlined" label={columns[1].headerName}
                                            error={inputError[field_names[0]]}/>)}
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <Autocomplete
-                            value={fieldValues[field_names[1]]}
-                            options={cropVarietyOptions}
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[1]);
-                            }}
-                            renderInput={(params) => (
-                                <TextField {...params} required variant="outlined" label={columns[3].headerName}
-                                           error={inputError[field_names[1]]}/>)}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
                         <TextField
-                            value={fieldValues[field_names[2]]}
-                            InputLabelProps={{
-                                shrink: true,
-                                readOnly: true,
-                            }}
+                            error={inputError[field_names[1]]}
+                            required
+                            fullWidth
                             variant="outlined"
-                            label={columns[4].headerName}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            value={fieldValues[field_names[3]]}
-                            InputLabelProps={{
-                                shrink: true,
-                                readOnly: true,
+                            label={columns[2].headerName}
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[1]);
                             }}
-                            variant="outlined"
-                            label={columns[5].headerName}
                         />
                     </Grid>
                     <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            label={columns[3].headerName}
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[2]);
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            variant="outlined"
+                            label={columns[6].headerName}
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[5]);
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
                         <Autocomplete
-                            value={fieldValues[field_names[4]]}
-                            options={cropGrowthStageOptions}
+                            value={fieldValues[field_names[6]]}
+                            options={unitOptions}
                             onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[4]);
+                                handleInputChange(event, value, field_names[6]);
                             }}
                             renderInput={(params) => (
-                                <TextField {...params} required variant="outlined" label={columns[6].headerName}
-                                           error={inputError[field_names[4]]}/>)}
+                                <TextField
+                                    {...params}
+                                    variant="outlined"
+                                    label={columns[7].headerName}
+                                />)}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            variant="outlined"
+                            label={columns[8].headerName}
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[7]);
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            variant="outlined"
+                            label={columns[9].headerName}
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[8]);
+                            }}
                         />
                     </Grid>
                     <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
@@ -181,16 +204,16 @@ function AddSiteRecord({
 
 export default function Site(props) {
     const uid = props.uid;
-    const [cropCategory, setCropCategory] = useState([]);
-    const [cropVariety, setCropVariety] = useState([]);
-    const [cropGrowthStage, setCropGrowthStage] = useState([]);
+    const [siteType, setSiteType] = useState([]);
+    const [cropList, setCropList] = useState([]);
+    const [unit, setUnit] = useState([]);
 
     const [rows, setRows] = useState([]);
     const [formData, setFormData] = useState({});
     const [fieldValues, setFieldValues] = useState({});
-    const [cropCategoryOptions, setCropCategoryOptions] = useState([]);
-    const [cropVarietyOptions, setCropVarietyOptions] = useState([]);
-    const [cropGrowthStageOptions, setCropGrowthStageOptions] = useState([]);
+    const [siteTypeOptions, setSiteTypeOptions] = useState([]);
+    const [cropOptions, setCropOptions] = useState([]);
+    const [unitOptions, setUnitOptions] = useState([]);
 
     const [showAddModal, setShowAddModal] = useState(false);
     const [isSave, setIsSave] = useState(false);
@@ -201,11 +224,11 @@ export default function Site(props) {
     const [popoverRowId, setPopoverRowId] = useState(null);
     const [refreshRecord, setRefreshRecord] = useState(false);
 
-    async function CropListGet(uid) {
+    async function SiteRootListGet(uid) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/crop/list/get/" + "?uid=" + uid, requestOptions)
+        await fetch("/api/site/root/list/get/" + "?uid=" + uid, requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
@@ -217,55 +240,55 @@ export default function Site(props) {
             })
     }
 
-    async function CropCategoryGet() {
+    async function SiteTypeGet() {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/crop/category/", requestOptions)
+        await fetch("/api/site/type/", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        setCropCategory(data.data);
+                        setSiteType(data.data);
                     })
                 }
             })
     }
 
-    async function CropVarietyGet() {
+    async function CropListGet() {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/crop/variety/", requestOptions)
+        await fetch("/api/crop/list/get/" + "?uid=" + uid, requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        setCropVariety(data.data);
+                        setCropList(data.data);
                     })
                 }
             })
     }
 
-    async function CropGrowthStageGet() {
+    async function UnitGet() {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/crop/growthstage/", requestOptions)
+        await fetch("/api/unit/?usage=site", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        setCropGrowthStage(data.data);
+                        setUnit(data.data);
                     })
                 }
             })
     }
 
-    async function CropRecordUpdate() {
+    async function SiteRecordUpdate() {
         const apiData = createAPIData(formData);
         console.log(apiData);
         const requestOptions = {
             method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
         };
-        await fetch("/api/crop/update/", requestOptions)
+        await fetch("/api/site/update/", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     setIsSave(true);
@@ -275,13 +298,13 @@ export default function Site(props) {
             })
     }
 
-    async function CropRecordDelete(cid) {
-        const apiData = {"user": uid, "cid": cid}
+    async function SiteRecordDelete(sid) {
+        const apiData = {"user": uid, "sid": sid}
         console.log(apiData);
         const requestOptions = {
             method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
         };
-        await fetch("/api/crop/delete/", requestOptions)
+        await fetch("/api/site/delete/", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     setIsDelete(true);
@@ -312,7 +335,7 @@ export default function Site(props) {
 
     const onSaveClicked = () => {
         if (Object.values(fieldValues).every(value => value !== "")) {
-            CropRecordUpdate();
+            SiteRecordUpdate();
             const index = rows.findIndex(item => item.id === fieldValues.id);
             setRows([
                 ...rows.slice(0, index),
@@ -330,15 +353,14 @@ export default function Site(props) {
     }
 
     const onEditClicked = (params) => {
-        const crop = cropCategoryOptions.find(item => item.label === params.row.crop);
-        setFormData({"cid": params.id, "crop": crop.id});
+        setFormData({"sid": params.id});
         setFieldValues(params.row);
         setEditRowId(params.id);
         clearInputError();
     };
 
     const onDeleteClicked = (params) => {
-        CropRecordDelete(params.id);
+        SiteRecordDelete(params.id);
         const index = rows.findIndex(item => item.id === params.id);
         setRows([
             ...rows.slice(0, index),
@@ -354,40 +376,37 @@ export default function Site(props) {
         clearInputError();
     };
 
-    const CropCategoryOptionsFresh = () => {
-        setCropCategoryOptions(cropCategory.map(item => ({
-            label: item.name, id: item.ccid, crop_code: item.crop_code, category: item.category,
+    const SiteTypeOptionsFresh = (level) => {
+        setSiteTypeOptions(siteType.filter(item => item.level === level).map(item => ({
+            label: item.name, id: item.stid
+        })))
+    };
+
+    const CropOptionsFresh = () => {
+        setCropOptions(cropList.map(item => ({
+            label: item.crop + " (" + item.variety + ", " + item.growth_stage + ")", id: item.cid,
         })));
     };
 
-    const CropVarietyOptionsFresh = (crop_id) => {
-        setCropVarietyOptions(cropVariety.filter(item => item.crop_id === crop_id).map(item => ({
-            label: item.name, id: item.cvid
-        })))
-    };
-
-    const CropGrowthStageOptionsFresh = (crop_id) => {
-        setCropGrowthStageOptions(cropGrowthStage.filter(item => item.crop_id === crop_id).map(item => ({
-            label: item.name, id: item.cgsid
-        })))
+    const UnitOptionsFresh = () => {
+        setUnitOptions(unit.map(item => ({
+            label: item.name, id: item.unitid,
+        })));
     };
 
     const handleInputChange = (event, value, field) => {
-        if (field === field_names[0]) {
+        if ([field_names[0], field_names[3], field_names[6]].includes(field)) {
             setFieldValues({
                 ...fieldValues,
                 [field]: value.label,
-                [field_names[1]]: "",
-                [field_names[2]]: value.crop_code,
-                [field_names[3]]: value.category,
-                [field_names[4]]: "",
             });
             setFormData({
-                ...formData, [field]: value.id, [field_names[1]]: null, [field_names[4]]: null
+                ...formData,
+                [field]: value.id,
             });
         } else {
-            setFieldValues({...fieldValues, [field]: value.label});
-            setFormData({...formData, [field]: value.id});
+            setFieldValues({...fieldValues, [field]: value});
+            setFormData({...formData, [field]: value});
         }
     };
 
@@ -396,7 +415,7 @@ export default function Site(props) {
             field: 'operations',
             headerName: 'Operations',
             sortable: false,
-            width: 100,
+            width: 150,
             disableColumnMenu: true,
             disableClickEventBubbling: true,
             renderCell: (params) => {
@@ -404,6 +423,9 @@ export default function Site(props) {
                     return (<>
                         <IconButton onClick={() => onEditClicked(params)}>
                             <EditIcon/>
+                        </IconButton>
+                        <IconButton>
+                            <AddCircleIcon/>
                         </IconButton>
                         <IconButton onClick={(event) => {
                             setAnchorEl(event.currentTarget);
@@ -448,17 +470,12 @@ export default function Site(props) {
             },
         },
         {
-            field: 'id',
-            headerName: 'ID',
-            width: columnWidth
-        },
-        {
-            field: 'crop',
-            headerName: 'Crop',
+            field: 'type',
+            headerName: 'Site Type',
             width: columnWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
-                    options={cropCategoryOptions}
+                    options={siteTypeOptions}
                     disableClearable
                     readOnly={editRowId !== rowID}
                     value={editRowId === rowID ? fieldValues[field_names[0]] : params.value}
@@ -479,17 +496,70 @@ export default function Site(props) {
                 />),
         },
         {
-            field: 'variety',
-            headerName: 'Variety',
+            field: 'name',
+            headerName: 'Site Name',
             width: columnWidth,
+            renderCell: (params, rowID = params.id) => {
+                return (
+                    editRowId !== rowID ?
+                        <TextField
+                            variant="standard"
+                            value={params.value}
+                            InputProps={{
+                                disableUnderline: true,
+                                readOnly: true,
+                            }}
+                            sx={{width: columnWidth}}/> :
+                        <TextField
+                            variant="standard"
+                            value={fieldValues[field_names[1]]}
+                            error={inputError[field_names[1]]}
+                            sx={{width: editWidth}}
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[1]);
+                            }}
+                        />
+                )
+            },
+        },
+        {
+            field: 'owner_name',
+            headerName: 'Owner Name',
+            width: columnWidth,
+            renderCell: (params, rowID = params.id) => {
+                return (
+                    editRowId !== rowID ?
+                        <TextField
+                            variant="standard"
+                            value={params.value}
+                            InputProps={{
+                                disableUnderline: true,
+                                readOnly: true,
+                            }}
+                            sx={{width: columnWidth}}/> :
+                        <TextField
+                            variant="standard"
+                            value={fieldValues[field_names[2]]}
+                            sx={{width: editWidth}}
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[2]);
+                            }}
+                        />
+                )
+            },
+        },
+        {
+            field: 'crop',
+            headerName: 'Crop',
+            width: 300,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
-                    options={cropVarietyOptions}
+                    options={cropOptions}
                     disableClearable
                     readOnly={editRowId !== rowID}
-                    value={editRowId === rowID ? fieldValues[field_names[1]] : params.value}
+                    value={editRowId === rowID ? fieldValues[field_names[3]] : params.value}
                     onChange={(event, value) => {
-                        handleInputChange(event, value, field_names[1]);
+                        handleInputChange(event, value, field_names[3]);
                     }}
                     renderInput={(params) => {
                         return (
@@ -497,40 +567,77 @@ export default function Site(props) {
                                 <TextField {...params} variant="standard"
                                            InputProps={{disableUnderline: true}}
                                            sx={{width: columnWidth}}/> :
-                                <TextField {...params} variant="standard" sx={{width: editWidth}}
-                                           error={inputError[field_names[1]]}/>
+                                <TextField {...params} variant="standard" error={inputError[field_names[3]]}
+                                           sx={{width: editWidth}}
+                                />
                         )
                     }}
                 />),
         },
         {
-            field: 'crop_code',
-            headerName: 'Crop Code',
+            field: 'crop_year',
+            headerName: 'Crop Year',
             width: columnWidth,
-            valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[2]] : params.value)
+            renderCell: (params, rowID = params.id) => {
+                return (
+                    editRowId !== rowID ?
+                        <TextField
+                            variant="standard"
+                            value={params.value}
+                            InputProps={{
+                                disableUnderline: true,
+                                readOnly: true,
+                            }}
+                            sx={{width: columnWidth}}/> :
+                        <TextField
+                            variant="standard"
+                            value={fieldValues[field_names[4]]}
+                            sx={{width: editWidth}}
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[4]);
+                            }}
+                        />
+                )
             },
         },
         {
-            field: 'category',
-            headerName: 'Category',
+            field: 'size',
+            headerName: 'Size',
             width: columnWidth,
-            valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[3]] : params.value)
+            renderCell: (params, rowID = params.id) => {
+                return (
+                    editRowId !== rowID ?
+                        <TextField
+                            variant="standard"
+                            value={params.value}
+                            InputProps={{
+                                disableUnderline: true,
+                                readOnly: true,
+                            }}
+                            sx={{width: columnWidth}}/> :
+                        <TextField
+                            variant="standard"
+                            value={fieldValues[field_names[5]]}
+                            sx={{width: editWidth}}
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[5]);
+                            }}
+                        />
+                )
             },
         },
         {
-            field: 'growth_stage',
-            headerName: 'Growth Stage',
+            field: 'size_unit',
+            headerName: 'Size Unit',
             width: columnWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
-                    options={cropGrowthStageOptions}
+                    options={unitOptions}
                     disableClearable
                     readOnly={editRowId !== rowID}
-                    value={editRowId === rowID ? fieldValues[field_names[4]] : params.value}
+                    value={editRowId === rowID ? fieldValues[field_names[6]] : params.value}
                     onChange={(event, value) => {
-                        handleInputChange(event, value, field_names[4]);
+                        handleInputChange(event, value, field_names[6]);
                     }}
                     renderInput={(params) => {
                         return (
@@ -538,11 +645,64 @@ export default function Site(props) {
                                 <TextField {...params} variant="standard"
                                            InputProps={{disableUnderline: true}}
                                            sx={{width: columnWidth}}/> :
-                                <TextField {...params} variant="standard" sx={{width: editWidth}}
-                                           error={inputError[field_names[4]]}/>
+                                <TextField {...params} variant="standard"
+                                           sx={{width: editWidth}}
+                                />
                         )
                     }}
                 />),
+        },
+        {
+            field: 'gps',
+            headerName: 'GPS',
+            width: columnWidth,
+            renderCell: (params, rowID = params.id) => {
+                return (
+                    editRowId !== rowID ?
+                        <TextField
+                            variant="standard"
+                            value={params.value}
+                            InputProps={{
+                                disableUnderline: true,
+                                readOnly: true,
+                            }}
+                            sx={{width: columnWidth}}/> :
+                        <TextField
+                            variant="standard"
+                            value={fieldValues[field_names[7]]}
+                            sx={{width: editWidth}}
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[7]);
+                            }}
+                        />
+                )
+            },
+        },
+        {
+            field: 'gps_system',
+            headerName: 'GPS System',
+            width: columnWidth,
+            renderCell: (params, rowID = params.id) => {
+                return (
+                    editRowId !== rowID ?
+                        <TextField
+                            variant="standard"
+                            value={params.value}
+                            InputProps={{
+                                disableUnderline: true,
+                                readOnly: true,
+                            }}
+                            sx={{width: columnWidth}}/> :
+                        <TextField
+                            variant="standard"
+                            value={fieldValues[field_names[8]]}
+                            sx={{width: editWidth}}
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[8]);
+                            }}
+                        />
+                )
+            },
         },
         {
             field: 'update_time',
@@ -555,9 +715,9 @@ export default function Site(props) {
         fieldValues,
         formData,
         columns,
-        cropCategoryOptions,
-        cropVarietyOptions,
-        cropGrowthStageOptions,
+        siteTypeOptions,
+        cropOptions,
+        unitOptions,
         handleInputChange,
         showAddModal,
         setShowAddModal,
@@ -568,28 +728,26 @@ export default function Site(props) {
         setRefreshRecord,
     };
 
-    const saveProps = {open: isSave, setOpen: setIsSave, msg: "Crop record is uploaded successfully!"};
+    const saveProps = {open: isSave, setOpen: setIsSave, msg: "Site record is uploaded successfully!"};
 
-    const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Crop record has been deleted!"};
+    const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Site record has been deleted!"};
 
     useEffect(() => {
-        CropCategoryGet();
-        CropVarietyGet();
-        CropGrowthStageGet();
+        SiteRootListGet(uid);
+        SiteTypeGet();
+        CropListGet();
+        UnitGet();
         clearInputError();
     }, []);
 
     useEffect(() => {
-        CropCategoryOptionsFresh();
-    }, [cropCategory]);
+        SiteTypeOptionsFresh(1);
+        CropOptionsFresh();
+        UnitOptionsFresh();
+    }, [siteType, cropList, unit]);
 
     useEffect(() => {
-        CropVarietyOptionsFresh(formData.crop);
-        CropGrowthStageOptionsFresh(formData.crop);
-    }, [formData.crop]);
-
-    useEffect(() => {
-        CropListGet(uid);
+        SiteRootListGet(uid)
     }, [refreshRecord]);
 
     return (<div>
@@ -597,10 +755,11 @@ export default function Site(props) {
             variant="contained"
             startIcon={<AddIcon/>}
             onClick={() => onAddClicked()}>
-            Add Crop
+            Add Site
         </AddButton>
         <Paper style={{height: 900, margin: '0px 15px'}}>
             <DataGrid
+                isTreeData={true}
                 columns={columns}
                 rows={rows}
                 disableRowSelectionOnClick={true}

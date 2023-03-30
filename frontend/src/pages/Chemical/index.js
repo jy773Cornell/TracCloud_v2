@@ -362,7 +362,7 @@ export default function Chemical(props) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/unit/", requestOptions)
+        await fetch("/api/unit/?usage=chemical", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {

@@ -5,6 +5,12 @@ from rest_framework.response import Response
 
 
 class UnitGetView(APIView):
+    lookup_url_kwarg = "usage"
+
     def get(self, request, format=None):
-        data = cache.get("Unit")
-        return Response({'Succeeded': 'Chemical Product Base Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
+        usage = request.GET.get(self.lookup_url_kwarg)
+        if usage:
+            data = [unit for unit in cache.get("Unit") if unit["usage"] == usage]
+            return Response({'Succeeded': 'Unit Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
+
+        return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
