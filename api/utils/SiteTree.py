@@ -1,7 +1,3 @@
-from api.serializers.CropSerializer import CropGetSerializer
-from api.serializers.SiteSerializer import SiteGetSerializer
-
-
 def create_tree(data, parent=None):
     children = [item for item in data if item['parent'] == parent]
     if not children:
@@ -15,8 +11,7 @@ def create_tree(data, parent=None):
 def site_tree_data(site_list, user_crop_list):
     site_list_get_view = []
     for site in site_list:
-        site = SiteGetSerializer(site).data
-        [site.update({"crop": CropGetSerializer(crop).data}) for crop in user_crop_list if crop["cid"] == site["crop"]]
+        [site.update({"crop": crop}) for crop in user_crop_list if crop["cid"] == site["crop"]]
         site_list_get_view.append(site)
 
     data = create_tree(site_list_get_view)

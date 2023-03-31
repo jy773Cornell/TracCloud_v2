@@ -3,6 +3,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
+from api.serializers.CropSerializer import CropGetSerializer
 from api.serializers.SiteSerializer import *
 from api.models import *
 from api.utils.ModelManager import request_data_transform
@@ -52,7 +54,10 @@ class SiteListGetView(APIView):
             user = User.objects.filter(uid=uid).alive()
             if user:
                 site_list = Site.objects.filter(user_id=uid).alive()
+                site_list = [SiteGetSerializer(site).data for site in site_list]
                 user_crop_list = Crop.objects.filter(user_id=uid).alive()
+                user_crop_list = [CropGetSerializer(crop).data for crop in user_crop_list]
+
                 data = site_tree_data(site_list, user_crop_list)
                 return Response({'Succeeded': 'Site List Info Fetched.', 'data': data},
                                 status=status.HTTP_200_OK)
