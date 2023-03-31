@@ -58,8 +58,7 @@ urlpatterns = [
 
     path('site/create/', SiteCreateView.as_view()),
     path('site/get/', SiteGetView.as_view()),
-    path('site/root/list/get/', SiteRootListGetView.as_view()),
-    path('site/child/list/get/', SiteChildListGetView.as_view()),
+    path('site/list/get/', SiteListGetView.as_view()),
     path('site/update/', SiteUpdateView.as_view()),
     path('site/delete/', SiteDeleteView.as_view()),
     path('site/type/', SiteTypeGetView.as_view()),

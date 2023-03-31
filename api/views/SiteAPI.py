@@ -3,12 +3,11 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
-from api.serializers.CropSerializer import CropGetSerializer
 from api.serializers.SiteSerializer import *
 from api.models import *
-from api.utils.ModelManager import model_delete, request_data_transform
+from api.utils.ModelManager import request_data_transform
 from api.utils.UUIDGen import gen_uuid
+from api.utils.SiteTree import site_tree_data
 
 
 class SiteCreateView(APIView):
@@ -43,7 +42,7 @@ class SiteGetView(APIView):
         return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class SiteRootListGetView(APIView):
+class SiteListGetView(APIView):
     serializer_class = SiteGetSerializer
     lookup_url_kwarg = "uid"
 
@@ -52,39 +51,13 @@ class SiteRootListGetView(APIView):
         if uid:
             user = User.objects.filter(uid=uid).alive()
             if user:
-                root_type_id = [site_type["stid"] for site_type in cache.get("SiteType") if site_type["level"] == 1]
-                site_root_list = Site.objects.filter(user_id=uid, type_id__in=root_type_id).alive()
+                site_list = Site.objects.filter(user_id=uid).alive()
                 user_crop_list = Crop.objects.filter(user_id=uid).alive()
-                user_crop_list = [CropGetSerializer(crop).data for crop in user_crop_list]
-                data = []
-                for site in site_root_list:
-                    site = SiteGetSerializer(site).data
-                    [site.update({"crop": crop}) for crop in user_crop_list if crop["cid"] == site["crop"]]
-                    data.append(site)
-                return Response({'Succeeded': 'Site Root List Info Fetched.', 'data': data},
+                data = site_tree_data(site_list, user_crop_list)
+                return Response({'Succeeded': 'Site List Info Fetched.', 'data': data},
                                 status=status.HTTP_200_OK)
 
             return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
-
-        return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class SiteChildListGetView(APIView):
-    serializer_class = SiteGetSerializer
-    lookup_url_kwarg1 = "uid"
-    lookup_url_kwarg2 = "parent_sid"
-
-    def get(self, request, format=None):
-        uid = request.GET.get(self.lookup_url_kwarg1)
-        parent_sid = request.GET.get(self.lookup_url_kwarg2)
-
-        if uid and parent_sid:
-            site_child_list = Site.objects.filter(user_id=uid, parent_id=parent_sid).alive()
-            data = []
-            for site in site_child_list:
-                data.append(SiteGetSerializer(site).data)
-            return Response({'Succeeded': 'Child Site List Info Fetched.', 'data': data},
-                            status=status.HTTP_200_OK)
 
         return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
 
