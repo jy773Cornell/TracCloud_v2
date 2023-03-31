@@ -18,6 +18,10 @@ import {
 
 const getChildRows = (row, rootRows) => (row ? row.items : rootRows);
 
+const EditButton = () => (
+    <button>Edit</button>
+);
+
 export default function Homepage() {
     const [columns] = useState([
         {name: 'name', title: 'Name'},
@@ -28,11 +32,7 @@ export default function Homepage() {
             name: 'edit',
             title: '',
             getCellValue: (row) => row.id,
-            customCell: ({value}) => (
-                <button>
-                    Edit
-                </button>
-            ),
+            cellComponent: EditButton,
         },
     ]);
     const [data] = useState(generateRows({
