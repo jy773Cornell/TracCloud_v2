@@ -74,9 +74,9 @@ class UserRelationTypeAdmin(admin.ModelAdmin):
 
 
 class EquipmentAdmin(admin.ModelAdmin):
-    list_display = ('eid', 'user', 'name', 'type', 'owner', 'code', 'is_active', 'create_time',)
+    list_display = ('eid', 'user', 'name', 'owner', 'code', 'is_active', 'update_time', 'create_time',)
 
-    list_filter = ('type', 'is_active',)
+    list_filter = ('is_active',)
 
     list_per_page = 10
 

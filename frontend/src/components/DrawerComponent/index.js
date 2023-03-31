@@ -78,6 +78,15 @@ export default function LayoutDrawer(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/equipment')}
+                                selected={location.pathname === "/equipment"}>
+                    <ListItemIcon>
+                        <ConstructionIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="Equipment"/>
+                </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/record')}
                                 selected={location.pathname === "/record"}>
                     <ListItemIcon>

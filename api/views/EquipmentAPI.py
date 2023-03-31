@@ -14,7 +14,7 @@ class EquipmentCreateView(APIView):
     @csrf_exempt
     def post(self, request, format=None):
         data = request_data_transform(request.data)
-        if data.get("user_id") and data.get("name") and data.get("type_id"):
+        if data.get("user_id") and data.get("name") and data.get("owner"):
             eid = gen_uuid("EID")
             data["eid"] = eid
             Equipment(**data).save()
@@ -30,7 +30,7 @@ class EquipmentGetView(APIView):
     def get(self, request, format=None):
         eid = request.GET.get(self.lookup_url_kwarg)
         if eid:
-            equipment = Equipment.objects.filter(eid=eid, is_active=True).first()
+            equipment = Equipment.objects.filter(eid=eid).alive().first()
             if equipment:
                 data = EquipmentGetSerializer(equipment).data
                 return Response({'Succeeded': 'Equipment Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
@@ -47,9 +47,9 @@ class EquipmentListGetView(APIView):
     def get(self, request, format=None):
         uid = request.GET.get(self.lookup_url_kwarg)
         if uid:
-            user = User.objects.filter(uid=uid, is_active=True)
+            user = User.objects.filter(uid=uid).alive()
             if user:
-                equipment_list = Equipment.objects.filter(user_id=uid, is_active=True)
+                equipment_list = Equipment.objects.filter(user_id=uid).alive()
                 data = []
                 for equipment in equipment_list:
                     data.append(EquipmentGetSerializer(equipment).data)
@@ -68,7 +68,7 @@ class EquipmentUpdateView(APIView):
         data = request_data_transform(request.data)
         eid = data.pop("eid")
         if eid:
-            equipment = Equipment.objects.filter(eid=eid, is_active=True)
+            equipment = Equipment.objects.filter(eid=eid).alive()
             if equipment:
                 equipment.update(**data)
                 return Response({'Succeeded': 'Equipment info has been updated.'}, status=status.HTTP_200_OK)
@@ -86,9 +86,9 @@ class EquipmentDeleteView(APIView):
         eid = request.data.get("eid")
         user = request.data.get("user")
         if eid and user:
-            equipment = Equipment.objects.filter(eid=eid, user_id=user, is_active=True)
+            equipment = Equipment.objects.filter(eid=eid, user_id=user).alive()
             if equipment:
-                model_delete(equipment)
+                equipment.delete()
                 return Response({'Succeeded': 'Equipment has been deleted.'}, status=status.HTTP_200_OK)
 
             return Response({'Failed': 'Invalid eid'}, status=status.HTTP_404_NOT_FOUND)

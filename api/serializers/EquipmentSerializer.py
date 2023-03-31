@@ -13,9 +13,7 @@ class EquipmentCreateSerializer(serializers.ModelSerializer):
 
 
 class EquipmentGetSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-    type = serializers.StringRelatedField()
-    owner = serializers.StringRelatedField()
+    update_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
 
     class Meta:
         model = Equipment

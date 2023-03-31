@@ -90,16 +90,18 @@ class Equipment(models.Model):
     user = models.ForeignKey(verbose_name="User", to="User", to_field="uid", related_name="equip_user",
                              null=True, blank=True, on_delete=models.SET_NULL)
     name = models.CharField(verbose_name="Equipment Name", max_length=64)
-    type = models.ForeignKey(verbose_name="Type", to="EquipmentType", to_field="etid",
-                             related_name="equip_type", null=True, blank=True, on_delete=models.SET_NULL)
-    owner = models.ForeignKey(verbose_name="Owner", to="User", to_field="uid", related_name="owner_user",
-                              null=True, blank=True, on_delete=models.SET_NULL)
+    # type = models.ForeignKey(verbose_name="Type", to="EquipmentType", to_field="etid",
+    #                          related_name="equip_type", null=True, blank=True, on_delete=models.SET_NULL)
+    owner = models.CharField(verbose_name="Owner Name", max_length=64)
     code = models.CharField(verbose_name="Code", null=True, blank=True, max_length=64)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
+    update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
 
     def __str__(self):
         return self.name
+
+    objects = MyModelManager()
 
 
 class EquipmentType(models.Model):

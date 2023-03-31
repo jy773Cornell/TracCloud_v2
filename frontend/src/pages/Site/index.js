@@ -17,7 +17,7 @@ import {
     GridToolbarContainer,
     GridToolbarDensitySelector,
     GridToolbarExport,
-    GridToolbarFilterButton
+    GridToolbarFilterButton,
 } from "@mui/x-data-grid";
 import ConfirmPopover from "../../components/ConfirmPopover";
 
@@ -757,7 +757,6 @@ export default function Site(props) {
         </AddButton>
         <Paper style={{height: 900, margin: '0px 15px'}}>
             <DataGrid
-                isTreeData={true}
                 columns={columns}
                 rows={rows}
                 disableRowSelectionOnClick={true}
