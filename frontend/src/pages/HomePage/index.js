@@ -18,7 +18,7 @@ import {
 
 const getChildRows = (row, rootRows) => (row ? row.items : rootRows);
 
-export default () => {
+export default function Homepage() {
   const [columns] = useState([
     { name: 'name', title: 'Name' },
     { name: 'gender', title: 'Gender' },
