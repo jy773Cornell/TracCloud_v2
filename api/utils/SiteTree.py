@@ -4,7 +4,7 @@ def create_tree(data, parent=None):
         return []
 
     for child in children:
-        child['item'] = create_tree(data, child['sid'])
+        child['children'] = create_tree(data, child['sid'])
     return children
 
 

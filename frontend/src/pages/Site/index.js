@@ -8,6 +8,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import {Autocomplete, Button, Card, CardContent, Grid, Modal, Popover, TextField, Typography} from "@mui/material";
 import {AddButton} from "./styles";
 import OperationSnackbars from "../../components/Snackbars";
@@ -43,6 +45,7 @@ function createRowData(record) {
         "size_unit": record.size_unit,
         "gps": record.gps,
         "gps_system": record.gps_system,
+        "children": record.children,
         "update_time": record.update_time,
     };
 }
@@ -159,12 +162,11 @@ function AddSiteRecord({
                             onChange={(event, value) => {
                                 handleInputChange(event, value, field_names[6]);
                             }}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    variant="outlined"
-                                    label={columns[7].headerName}
-                                />)}
+                            renderInput={(params) => (<TextField
+                                {...params}
+                                variant="outlined"
+                                label={columns[7].headerName}
+                            />)}
                         />
                     </Grid>
                     <Grid item xs={6}>
@@ -208,6 +210,7 @@ export default function Site(props) {
     const [unit, setUnit] = useState([]);
 
     const [rows, setRows] = useState([]);
+    const [expandedRows, setExpandedRows] = useState({});
     const [formData, setFormData] = useState({});
     const [fieldValues, setFieldValues] = useState({});
     const [siteTypeOptions, setSiteTypeOptions] = useState([]);
@@ -223,16 +226,15 @@ export default function Site(props) {
     const [popoverRowId, setPopoverRowId] = useState(null);
     const [refreshRecord, setRefreshRecord] = useState(false);
 
-    async function SiteRootListGet(uid) {
+    async function SiteListGet(uid) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/site/root/list/get/" + "?uid=" + uid, requestOptions)
+        await fetch("/api/site/list/get/" + "?uid=" + uid, requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
                         const record_list = data.data;
-                        console.log(record_list)
                         const record_row = record_list.map((record) => createRowData(record))
                         setRows(record_row);
                     })
@@ -321,13 +323,11 @@ export default function Site(props) {
         Object.keys(fieldValues).forEach(key => {
             if (fieldValues[key] === "") {
                 setInputError((prevInputError) => ({
-                    ...prevInputError,
-                    [key]: true
+                    ...prevInputError, [key]: true
                 }));
             } else {
                 setInputError((prevInputError) => ({
-                    ...prevInputError,
-                    [key]: false
+                    ...prevInputError, [key]: false
                 }));
             }
         });
@@ -337,11 +337,7 @@ export default function Site(props) {
         if (Object.values(fieldValues).every(value => value !== "")) {
             SiteRecordUpdate();
             const index = rows.findIndex(item => item.id === fieldValues.id);
-            setRows([
-                ...rows.slice(0, index),
-                fieldValues,
-                ...rows.slice(index + 1),
-            ]);
+            setRows([...rows.slice(0, index), fieldValues, ...rows.slice(index + 1),]);
         } else {
             updateInputError();
         }
@@ -359,13 +355,37 @@ export default function Site(props) {
         clearInputError();
     };
 
+    const onExpandClicked = (params) => {
+        const {id, children} = params.row;
+        const newExpandedRows = {...expandedRows};
+        newExpandedRows[id] = children.map((child) => child.sid);
+        setExpandedRows(newExpandedRows);
+        setRows(rows.concat(children.map((child) => createRowData(child))))
+    };
+
+    const deleteExpandedChildren = (id) => {
+        if (!expandedRows[id]) {
+            return;
+        }
+
+        const newExpandedRows = {...expandedRows};
+        newExpandedRows[id].forEach((childId) => {
+            deleteExpandedChildren(childId);
+            setRows((prevRows) => prevRows.filter((item) => item.id !== childId));
+        });
+        delete newExpandedRows[id];
+        setExpandedRows(newExpandedRows);
+    };
+
+
+    const onExpandLessClicked = (params) => {
+        deleteExpandedChildren(params.id);
+    };
+
     const onDeleteClicked = (params) => {
         SiteRecordDelete(params.id);
         const index = rows.findIndex(item => item.id === params.id);
-        setRows([
-            ...rows.slice(0, index),
-            ...rows.slice(index + 1),
-        ]);
+        setRows([...rows.slice(0, index), ...rows.slice(index + 1),]);
     };
 
     const onAddClicked = () => {
@@ -397,12 +417,10 @@ export default function Site(props) {
     const handleInputChange = (event, value, field) => {
         if ([field_names[0], field_names[3], field_names[6]].includes(field)) {
             setFieldValues({
-                ...fieldValues,
-                [field]: value.label,
+                ...fieldValues, [field]: value.label,
             });
             setFormData({
-                ...formData,
-                [field]: value.id,
+                ...formData, [field]: value.id,
             });
         } else {
             setFieldValues({...fieldValues, [field]: value});
@@ -415,7 +433,7 @@ export default function Site(props) {
             field: 'operations',
             headerName: 'Operations',
             sortable: false,
-            width: 150,
+            width: 200,
             disableColumnMenu: true,
             disableClickEventBubbling: true,
             renderCell: (params) => {
@@ -424,289 +442,261 @@ export default function Site(props) {
                         <IconButton onClick={() => onEditClicked(params)}>
                             <EditIcon/>
                         </IconButton>
-                        <IconButton>
-                            <AddCircleIcon/>
-                        </IconButton>
                         <IconButton onClick={(event) => {
                             setAnchorEl(event.currentTarget);
                             setPopoverRowId(params.id);
                         }}>
                             <DeleteIcon/>
                         </IconButton>
-                        {popoverRowId === params.id &&
-                            <ConfirmPopover anchorEl={anchorEl}
-                                            setAnchorEl={setAnchorEl}
-                                            onDeleteClicked={onDeleteClicked}
-                                            params={params}
-                                            msg="Delete this record?"
-                                            type="delete"
-                            />
+                        <IconButton>
+                            <AddCircleIcon/>
+                        </IconButton>
+                        {params.row.children.length > 0 && (
+                            !(params.id in expandedRows) ? (
+                                <IconButton>
+                                    <ExpandMoreIcon onClick={() => onExpandClicked(params)}/>
+                                </IconButton>) : (
+                                <IconButton>
+                                    <ExpandLessIcon onClick={() => onExpandLessClicked(params)}/>
+                                </IconButton>
+                            ))
                         }
+                        {popoverRowId === params.id && <ConfirmPopover anchorEl={anchorEl}
+                                                                       setAnchorEl={setAnchorEl}
+                                                                       onDeleteClicked={onDeleteClicked}
+                                                                       params={params}
+                                                                       msg="Delete this record?"
+                                                                       type="delete"
+                        />}
                     </>);
                 } else {
-                    return (
-                        <>
-                            <IconButton onClick={(event) => {
-                                setAnchorEl(event.currentTarget);
-                                setPopoverRowId(params.id);
-                            }}>
-                                <SaveIcon/>
-                            </IconButton>
-                            <IconButton onClick={() => onCancelClicked()}>
-                                < CancelIcon/>
-                            </IconButton>
-                            {popoverRowId === params.id &&
-                                <ConfirmPopover anchorEl={anchorEl}
-                                                setAnchorEl={setAnchorEl}
-                                                onSaveClicked={onSaveClicked}
-                                                params={params}
-                                                msg="Update this record?"
-                                                type="update"
-                                />
-                            }
-                        </>
-                    )
+                    return (<>
+                        <IconButton onClick={(event) => {
+                            setAnchorEl(event.currentTarget);
+                            setPopoverRowId(params.id);
+                        }}>
+                            <SaveIcon/>
+                        </IconButton>
+                        <IconButton onClick={() => onCancelClicked()}>
+                            < CancelIcon/>
+                        </IconButton>
+                        {popoverRowId === params.id && <ConfirmPopover anchorEl={anchorEl}
+                                                                       setAnchorEl={setAnchorEl}
+                                                                       onSaveClicked={onSaveClicked}
+                                                                       params={params}
+                                                                       msg="Update this record?"
+                                                                       type="update"
+                        />}
+                    </>)
                 }
             },
         },
         {
             field: 'type',
             headerName: 'Site Type',
+            sortable: false,
             width: columnWidth,
-            renderCell: (params, rowID = params.id) => (
-                <Autocomplete
-                    options={siteTypeOptions}
-                    disableClearable
-                    readOnly={editRowId !== rowID}
-                    value={editRowId === rowID ? fieldValues[field_names[0]] : params.value}
-                    onChange={(event, value) => {
-                        handleInputChange(event, value, field_names[0]);
-                    }}
-                    renderInput={(params) => {
-                        return (
-                            editRowId !== rowID ?
-                                <TextField {...params} variant="standard"
-                                           InputProps={{disableUnderline: true}}
-                                           sx={{width: columnWidth}}/> :
-                                <TextField {...params} variant="standard" error={inputError[field_names[0]]}
-                                           sx={{width: editWidth}}
-                                />
-                        )
-                    }}
-                />),
+            renderCell: (params, rowID = params.id) => (<Autocomplete
+                options={siteTypeOptions}
+                disableClearable
+                readOnly={editRowId !== rowID}
+                value={editRowId === rowID ? fieldValues[field_names[0]] : params.value}
+                onChange={(event, value) => {
+                    handleInputChange(event, value, field_names[0]);
+                }}
+                renderInput={(params) => {
+                    return (editRowId !== rowID ? <TextField {...params} variant="standard"
+                                                             InputProps={{disableUnderline: true}}
+                                                             sx={{width: columnWidth}}/> :
+                        <TextField {...params} variant="standard" error={inputError[field_names[0]]}
+                                   sx={{width: editWidth}}
+                        />)
+                }}
+            />),
         },
         {
             field: 'name',
             headerName: 'Site Name',
+            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
-                return (
-                    editRowId !== rowID ?
-                        <TextField
-                            variant="standard"
-                            value={params.value}
-                            InputProps={{
-                                disableUnderline: true,
-                                readOnly: true,
-                            }}
-                            sx={{width: columnWidth}}/> :
-                        <TextField
-                            variant="standard"
-                            value={fieldValues[field_names[1]]}
-                            error={inputError[field_names[1]]}
-                            sx={{width: editWidth}}
-                            onChange={(event) => {
-                                handleInputChange(event, event.target.value, field_names[1]);
-                            }}
-                        />
-                )
+                return (editRowId !== rowID ? <TextField
+                    variant="standard"
+                    value={params.value}
+                    InputProps={{
+                        disableUnderline: true, readOnly: true,
+                    }}
+                    sx={{width: columnWidth}}/> : <TextField
+                    variant="standard"
+                    value={fieldValues[field_names[1]]}
+                    error={inputError[field_names[1]]}
+                    sx={{width: editWidth}}
+                    onChange={(event) => {
+                        handleInputChange(event, event.target.value, field_names[1]);
+                    }}
+                />)
             },
         },
         {
             field: 'owner_name',
             headerName: 'Owner Name',
+            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
-                return (
-                    editRowId !== rowID ?
-                        <TextField
-                            variant="standard"
-                            value={params.value}
-                            InputProps={{
-                                disableUnderline: true,
-                                readOnly: true,
-                            }}
-                            sx={{width: columnWidth}}/> :
-                        <TextField
-                            variant="standard"
-                            value={fieldValues[field_names[2]]}
-                            sx={{width: editWidth}}
-                            onChange={(event) => {
-                                handleInputChange(event, event.target.value, field_names[2]);
-                            }}
-                        />
-                )
+                return (editRowId !== rowID ? <TextField
+                    variant="standard"
+                    value={params.value}
+                    InputProps={{
+                        disableUnderline: true, readOnly: true,
+                    }}
+                    sx={{width: columnWidth}}/> : <TextField
+                    variant="standard"
+                    value={fieldValues[field_names[2]]}
+                    sx={{width: editWidth}}
+                    onChange={(event) => {
+                        handleInputChange(event, event.target.value, field_names[2]);
+                    }}
+                />)
             },
         },
         {
             field: 'crop',
             headerName: 'Crop',
+            sortable: false,
             width: 300,
-            renderCell: (params, rowID = params.id) => (
-                <Autocomplete
-                    options={cropOptions}
-                    disableClearable
-                    readOnly={editRowId !== rowID}
-                    value={editRowId === rowID ? fieldValues[field_names[3]] : params.value}
-                    onChange={(event, value) => {
-                        handleInputChange(event, value, field_names[3]);
-                    }}
-                    renderInput={(params) => {
-                        return (
-                            editRowId !== rowID ?
-                                <TextField {...params} variant="standard"
-                                           InputProps={{disableUnderline: true}}
-                                           sx={{width: 300}}/> :
-                                <TextField {...params} variant="standard" error={inputError[field_names[3]]}
-                                           sx={{width: 280}}
-                                />
-                        )
-                    }}
-                />),
+            renderCell: (params, rowID = params.id) => (<Autocomplete
+                options={cropOptions}
+                disableClearable
+                readOnly={editRowId !== rowID}
+                value={editRowId === rowID ? fieldValues[field_names[3]] : params.value}
+                onChange={(event, value) => {
+                    handleInputChange(event, value, field_names[3]);
+                }}
+                renderInput={(params) => {
+                    return (editRowId !== rowID ? <TextField {...params} variant="standard"
+                                                             InputProps={{disableUnderline: true}}
+                                                             sx={{width: 300}}/> :
+                        <TextField {...params} variant="standard" error={inputError[field_names[3]]}
+                                   sx={{width: 280}}
+                        />)
+                }}
+            />),
         },
         {
             field: 'crop_year',
             headerName: 'Crop Year',
+            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
-                return (
-                    editRowId !== rowID ?
-                        <TextField
-                            variant="standard"
-                            value={params.value}
-                            InputProps={{
-                                disableUnderline: true,
-                                readOnly: true,
-                            }}
-                            sx={{width: columnWidth}}/> :
-                        <TextField
-                            variant="standard"
-                            value={fieldValues[field_names[4]]}
-                            sx={{width: editWidth}}
-                            onChange={(event) => {
-                                handleInputChange(event, event.target.value, field_names[4]);
-                            }}
-                        />
-                )
+                return (editRowId !== rowID ? <TextField
+                    variant="standard"
+                    value={params.value}
+                    InputProps={{
+                        disableUnderline: true, readOnly: true,
+                    }}
+                    sx={{width: columnWidth}}/> : <TextField
+                    variant="standard"
+                    value={fieldValues[field_names[4]]}
+                    sx={{width: editWidth}}
+                    onChange={(event) => {
+                        handleInputChange(event, event.target.value, field_names[4]);
+                    }}
+                />)
             },
         },
         {
             field: 'size',
             headerName: 'Size',
+            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
-                return (
-                    editRowId !== rowID ?
-                        <TextField
-                            variant="standard"
-                            value={params.value}
-                            InputProps={{
-                                disableUnderline: true,
-                                readOnly: true,
-                            }}
-                            sx={{width: columnWidth}}/> :
-                        <TextField
-                            variant="standard"
-                            value={fieldValues[field_names[5]]}
-                            sx={{width: editWidth}}
-                            onChange={(event) => {
-                                handleInputChange(event, event.target.value, field_names[5]);
-                            }}
-                        />
-                )
+                return (editRowId !== rowID ? <TextField
+                    variant="standard"
+                    value={params.value}
+                    InputProps={{
+                        disableUnderline: true, readOnly: true,
+                    }}
+                    sx={{width: columnWidth}}/> : <TextField
+                    variant="standard"
+                    value={fieldValues[field_names[5]]}
+                    sx={{width: editWidth}}
+                    onChange={(event) => {
+                        handleInputChange(event, event.target.value, field_names[5]);
+                    }}
+                />)
             },
         },
         {
             field: 'size_unit',
             headerName: 'Size Unit',
+            sortable: false,
             width: columnWidth,
-            renderCell: (params, rowID = params.id) => (
-                <Autocomplete
-                    options={unitOptions}
-                    disableClearable
-                    readOnly={editRowId !== rowID}
-                    value={editRowId === rowID ? fieldValues[field_names[6]] : params.value}
-                    onChange={(event, value) => {
-                        handleInputChange(event, value, field_names[6]);
-                    }}
-                    renderInput={(params) => {
-                        return (
-                            editRowId !== rowID ?
-                                <TextField {...params} variant="standard"
-                                           InputProps={{disableUnderline: true}}
-                                           sx={{width: columnWidth}}/> :
-                                <TextField {...params} variant="standard"
-                                           sx={{width: editWidth}}
-                                />
-                        )
-                    }}
-                />),
+            renderCell: (params, rowID = params.id) => (<Autocomplete
+                options={unitOptions}
+                disableClearable
+                readOnly={editRowId !== rowID}
+                value={editRowId === rowID ? fieldValues[field_names[6]] : params.value}
+                onChange={(event, value) => {
+                    handleInputChange(event, value, field_names[6]);
+                }}
+                renderInput={(params) => {
+                    return (editRowId !== rowID ? <TextField {...params} variant="standard"
+                                                             InputProps={{disableUnderline: true}}
+                                                             sx={{width: columnWidth}}/> :
+                        <TextField {...params} variant="standard"
+                                   sx={{width: editWidth}}
+                        />)
+                }}
+            />),
         },
         {
             field: 'gps',
             headerName: 'GPS',
+            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
-                return (
-                    editRowId !== rowID ?
-                        <TextField
-                            variant="standard"
-                            value={params.value}
-                            InputProps={{
-                                disableUnderline: true,
-                                readOnly: true,
-                            }}
-                            sx={{width: columnWidth}}/> :
-                        <TextField
-                            variant="standard"
-                            value={fieldValues[field_names[7]]}
-                            sx={{width: editWidth}}
-                            onChange={(event) => {
-                                handleInputChange(event, event.target.value, field_names[7]);
-                            }}
-                        />
-                )
+                return (editRowId !== rowID ? <TextField
+                    variant="standard"
+                    value={params.value}
+                    InputProps={{
+                        disableUnderline: true, readOnly: true,
+                    }}
+                    sx={{width: columnWidth}}/> : <TextField
+                    variant="standard"
+                    value={fieldValues[field_names[7]]}
+                    sx={{width: editWidth}}
+                    onChange={(event) => {
+                        handleInputChange(event, event.target.value, field_names[7]);
+                    }}
+                />)
             },
         },
         {
             field: 'gps_system',
             headerName: 'GPS System',
+            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
-                return (
-                    editRowId !== rowID ?
-                        <TextField
-                            variant="standard"
-                            value={params.value}
-                            InputProps={{
-                                disableUnderline: true,
-                                readOnly: true,
-                            }}
-                            sx={{width: columnWidth}}/> :
-                        <TextField
-                            variant="standard"
-                            value={fieldValues[field_names[8]]}
-                            sx={{width: editWidth}}
-                            onChange={(event) => {
-                                handleInputChange(event, event.target.value, field_names[8]);
-                            }}
-                        />
-                )
+                return (editRowId !== rowID ? <TextField
+                    variant="standard"
+                    value={params.value}
+                    InputProps={{
+                        disableUnderline: true, readOnly: true,
+                    }}
+                    sx={{width: columnWidth}}/> : <TextField
+                    variant="standard"
+                    value={fieldValues[field_names[8]]}
+                    sx={{width: editWidth}}
+                    onChange={(event) => {
+                        handleInputChange(event, event.target.value, field_names[8]);
+                    }}
+                />)
             },
         },
         {
             field: 'update_time',
             headerName: 'Update Time',
+            sortable: false,
             width: columnWidth,
         },
     ];
@@ -745,7 +735,7 @@ export default function Site(props) {
     }, [siteType, cropList, unit]);
 
     useEffect(() => {
-        SiteRootListGet(uid)
+        SiteListGet(uid)
     }, [refreshRecord]);
 
     return (<div>

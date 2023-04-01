@@ -1,142 +1,68 @@
-import React, {useState} from 'react';
-import Paper from '@mui/material/Paper';
-import {
-    TreeDataState,
-    CustomTreeData,
-} from '@devexpress/dx-react-grid';
-import {
-    Grid,
-    Table,
-    TableHeaderRow,
-    TableTreeColumn,
-    TableInlineCellEditing,
-} from '@devexpress/dx-react-grid-material-ui';
+import * as React from 'react';
+import {DataGrid, GridColDef} from '@mui/x-data-grid';
+import {TreeView, TreeItem} from '@mui/lab';
+import AddIcon from '@mui/icons-material/Add';
 
-import {
-    generateRows,
-    defaultColumnValues,
-} from './demo-data/generator';
+const columns = [
+    {field: 'id', headerName: 'ID', width: 150},
+    {field: 'name', headerName: 'Name', width: 200},
+    {field: 'type', headerName: 'Type', width: 150},
+    {field: 'size', headerName: 'Size', width: 100},
+    {field: 'crop', headerName: 'Crop', width: 150},
+];
 
-const getChildRows = (row, rootRows) => (row ? row.items : rootRows);
+const rows = [
+    {
+        id: 'SID-0978dda7-c711-4b81-9e9a-33b2fffd50aa',
+        name: 'grod farm',
+        type: 'Golf Course',
+        size: '12',
+        crop: {crop: 'Peach'},
+        children: [
+            {
+                id: 'SID-724612bd-b1ed-4249-939b-150ac8d2a45b',
+                name: 'berry',
+                type: 'Section',
+                size: '2',
+                children: [],
+            },
+            {
+                id: 'SID-abbb6b65-2d75-4b7a-8d3d-ec70e213e093',
+                name: 'asd',
+                type: 'Orchard',
+                children: [],
+            },
+        ],
+    },
+];
 
-const EditButton = ({onClick}) => (
-    <button onClick={onClick}>Edit</button>
-);
-
-const EditCell = ({value, onValueChange}) => {
-    const [tempValue, setTempValue] = useState(value);
-
-    const handleInputChange = (e) => {
-        setTempValue(e.target.value);
-    };
-
-    const handleSaveClick = () => {
-        onValueChange(tempValue);
-    };
-
-    return (
-        <>
-            <input type="text" value={tempValue} onChange={handleInputChange}/>
-            <button onClick={handleSaveClick}>Save</button>
-        </>
-    );
-};
-
-const EditCellComponent = ({column, row, value, onValueChange}) => {
-    const [editing, setEditing] = useState(false);
-
-    const handleEditClick = () => {
-        setEditing(true);
-    };
-
-    const handleSaveClick = (newValue) => {
-        onValueChange(row.id, column.name, newValue);
-        setEditing(false);
-    };
-
-    if (editing) {
+function renderTreeView(node) {
+    const {id, name, children} = node;
+    if (children) {
         return (
-            <EditCell value={value} onValueChange={handleSaveClick}/>
+            <TreeItem key={id} nodeId={id} label={name}>
+                {children.map((child) => renderTreeView(child))}
+            </TreeItem>
         );
     }
 
+    return <TreeItem key={id} nodeId={id} label={name}/>;
+}
+
+export default function App() {
     return (
-        <EditButton onClick={handleEditClick}/>
+        <DataGrid rows={rows} columns={columns}>
+            {(params) => {
+                const {id, name, type, size, crop} = params.row;
+                return (
+                    <TreeView
+                        defaultCollapseIcon={<AddIcon/>}
+                        defaultExpandIcon={<AddIcon/>}
+                    >
+                        {renderTreeView(params.row)}
+                    </TreeView>
+                );
+            }}
+        </DataGrid>
     );
-};
-
-const Cell = (props) => {
-    const {column, row, value} = props;
-
-    if (column.name === 'edit') {
-        return (
-            <EditCellComponent {...props} />
-        );
-    }
-
-    return (
-        <Table.Cell {...props} />
-    );
-};
-
-export default function Homepage() {
-    const [columns] = useState([
-        {name: 'name', title: 'Name'},
-        {name: 'gender', title: 'Gender'},
-        {name: 'city', title: 'City'},
-        {name: 'car', title: 'Car'},
-        {
-            name: 'edit',
-            title: '',
-            getCellValue: (row) => row.id,
-        },
-    ]);
-    const [data, setData] = useState(generateRows({
-        columnValues: {
-            ...defaultColumnValues,
-            items: ({random}) => (random() > 0.5
-                ? generateRows({
-                    columnValues: {
-                        ...defaultColumnValues,
-                        items: () => (random() > 0.5
-                            ? generateRows({
-                                columnValues: {
-                                    ...defaultColumnValues,
-                                },
-                                length: Math.trunc(random() * 5) + 1,
-                                random,
-                            })
-                            : null),
-                    },
-                    length: Math.trunc(random() * 3) + 1,
-                    random,
-                })
-                : null),
-        },
-        length: 3,
-    }));
-    const [tableColumnExtensions] = useState([
-        {columnName: 'name', width: 300},
-    ]);
-
-    return (
-        <Paper>
-            <Grid
-                rows={data}
-                columns={columns}
-            >
-                <TreeDataState/>
-                <CustomTreeData
-                    getChildRows={getChildRows}
-                />
-                <Table
-                    columnExtensions={tableColumnExtensions}
-                />
-                <TableHeaderRow/>
-                <TableTreeColumn
-                    for="name"
-                />
-            </Grid>
-        </Paper>
-    );
-};
+}
