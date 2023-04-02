@@ -53,7 +53,7 @@ class SiteListGetView(APIView):
         if uid:
             user = User.objects.filter(uid=uid).alive()
             if user:
-                site_list = Site.objects.filter(user_id=uid).alive()
+                site_list = Site.objects.filter(user_id=uid).alive().order_by('-update_time')
                 site_list = [SiteGetSerializer(site).data for site in site_list]
                 user_crop_list = Crop.objects.filter(user_id=uid).alive()
                 user_crop_list = [CropGetSerializer(crop).data for crop in user_crop_list]

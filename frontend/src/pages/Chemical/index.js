@@ -592,6 +592,7 @@ export default function Chemical(props) {
         {
             field: 'epa_reg_no',
             headerName: 'EAP REG NO.',
+            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
@@ -621,6 +622,7 @@ export default function Chemical(props) {
         {
             field: 'trade_name',
             headerName: 'Trade Name',
+            sortable: false,
             width: columnWidth,
             valueGetter: (params) => {
                 return (editRowId === params.id ? fieldValues[field_names[1]] : params.value)
@@ -629,6 +631,7 @@ export default function Chemical(props) {
         {
             field: 'restricted_use',
             headerName: 'Restricted Use',
+            sortable: false,
             width: columnWidth,
             valueGetter: (params) => {
                 return (editRowId === params.id ? fieldValues[field_names[2]] : params.value)
@@ -637,6 +640,7 @@ export default function Chemical(props) {
         {
             field: 'company',
             headerName: 'Company',
+            sortable: false,
             width: columnWidth,
             valueGetter: (params) => {
                 return (editRowId === params.id ? fieldValues[field_names[3]] : params.value)
@@ -645,6 +649,7 @@ export default function Chemical(props) {
         {
             field: 'active_ingredient',
             headerName: 'Active Ingredient',
+            sortable: false,
             width: columnWidth,
             valueGetter: (params) => {
                 return (editRowId === params.id ? fieldValues[field_names[4]] : params.value)
@@ -653,6 +658,7 @@ export default function Chemical(props) {
         {
             field: 'percent_ai',
             headerName: 'Active Ingredient Percent',
+            sortable: false,
             width: columnWidth,
             valueGetter: (params) => {
                 return (editRowId === params.id ? fieldValues[field_names[5]] : params.value)
@@ -661,6 +667,7 @@ export default function Chemical(props) {
         {
             field: 'type',
             headerName: 'Product Type',
+            sortable: false,
             width: columnWidth,
             valueGetter: (params) => {
                 return (editRowId === params.id ? fieldValues[field_names[6]] : params.value)
@@ -669,6 +676,7 @@ export default function Chemical(props) {
         {
             field: 'unit',
             headerName: 'Application Unit',
+            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
@@ -695,6 +703,7 @@ export default function Chemical(props) {
         {
             field: 'rei',
             headerName: 'REI',
+            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
                 return (
@@ -722,6 +731,7 @@ export default function Chemical(props) {
         {
             field: 'phi',
             headerName: 'PHI',
+            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
                 return (
@@ -749,6 +759,7 @@ export default function Chemical(props) {
         {
             field: 'labeled_crops',
             headerName: 'Labeled Crops',
+            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
                 return (
@@ -775,6 +786,7 @@ export default function Chemical(props) {
         {
             field: 'label_image',
             headerName: 'Labeled Image',
+            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
                 return (
@@ -801,6 +813,7 @@ export default function Chemical(props) {
         {
             field: 'imported_from',
             headerName: 'Imported From',
+            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
                 return (
@@ -827,6 +840,7 @@ export default function Chemical(props) {
         {
             field: 'validated_by',
             headerName: 'Validated By',
+            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
                 return (
@@ -853,6 +867,7 @@ export default function Chemical(props) {
         {
             field: 'entered_year',
             headerName: 'Entered Year',
+            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
                 return (
@@ -887,6 +902,7 @@ export default function Chemical(props) {
         {
             field: 'update_time',
             headerName: 'Update Time',
+            sortable: false,
             width: columnWidth,
         },
     ];

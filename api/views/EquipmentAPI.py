@@ -49,7 +49,7 @@ class EquipmentListGetView(APIView):
         if uid:
             user = User.objects.filter(uid=uid).alive()
             if user:
-                equipment_list = Equipment.objects.filter(user_id=uid).alive()
+                equipment_list = Equipment.objects.filter(user_id=uid).alive().order_by('-update_time')
                 data = []
                 for equipment in equipment_list:
                     data.append(EquipmentGetSerializer(equipment).data)

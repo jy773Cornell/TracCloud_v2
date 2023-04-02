@@ -58,7 +58,7 @@ class ChemicalListGetView(APIView):
         if uid:
             user = User.objects.filter(uid=uid).alive()
             if user:
-                chemical_list = Chemical.objects.filter(user_id=uid).alive()
+                chemical_list = Chemical.objects.filter(user_id=uid).alive().order_by('-update_time')
                 data = []
                 for chemical in chemical_list:
                     data.append(ChemicalGetSerializer(chemical).data)

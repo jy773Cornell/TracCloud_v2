@@ -342,6 +342,7 @@ export default function Equipment(props) {
         {
             field: 'name',
             headerName: 'Equipment Name',
+            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
                 return (
@@ -369,6 +370,7 @@ export default function Equipment(props) {
         {
             field: 'owner',
             headerName: 'Owner Name',
+            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
                 return (
@@ -396,6 +398,7 @@ export default function Equipment(props) {
         {
             field: 'code',
             headerName: 'Code',
+            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
                 return (
@@ -423,6 +426,7 @@ export default function Equipment(props) {
         {
             field: 'update_time',
             headerName: 'Update Time',
+            sortable: false,
             width: columnWidth,
         },
     ];

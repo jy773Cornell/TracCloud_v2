@@ -28,6 +28,10 @@ const editWidth = 180;
 
 const field_names = ["type", "name", "owner_name", "crop", "crop_year", "size", "size_unit", "gps", "gps_system"]
 
+const end_site_types = ["Rows", "Hole Code#", "Section", ""]
+
+const add_row_id = "create_add_row_data"
+
 function createAPIData(data) {
     const {type: type_id, crop: crop_id, size_unit: size_unit_id, ...rest} = data;
     return {type_id, crop_id, size_unit_id, ...rest};
@@ -47,6 +51,23 @@ function createRowData(record) {
         "gps_system": record.gps_system,
         "children": record.children,
         "update_time": record.update_time,
+    };
+}
+
+function createAddData() {
+    return {
+        "id": add_row_id,
+        "type": "",
+        "name": "",
+        "owner_name": "",
+        "crop": "",
+        "crop_year": "",
+        "size": "",
+        "size_unit": "",
+        "gps": "",
+        "gps_system": "",
+        "children": "",
+        "update_time": "",
     };
 }
 
@@ -343,7 +364,10 @@ export default function Site(props) {
         }
     };
 
-    const onCancelClicked = () => {
+    const onCancelClicked = (params) => {
+        if (params.id === add_row_id) {
+            deleteAddRow(params.id);
+        }
         setEditRowId(null);
         clearInputError();
     }
@@ -357,10 +381,16 @@ export default function Site(props) {
 
     const onExpandClicked = (params) => {
         const {id, children} = params.row;
+        const index = rows.findIndex(item => item.id === id);
         const newExpandedRows = {...expandedRows};
         newExpandedRows[id] = children.map((child) => child.sid);
         setExpandedRows(newExpandedRows);
-        setRows(rows.concat(children.map((child) => createRowData(child))))
+
+        setRows([
+            ...rows.slice(0, index + 1),
+            ...children.map((child) => createRowData(child)),
+            ...rows.slice(index + 1)
+        ])
     };
 
     const deleteExpandedChildren = (id) => {
@@ -377,10 +407,39 @@ export default function Site(props) {
         setExpandedRows(newExpandedRows);
     };
 
-
     const onExpandLessClicked = (params) => {
         deleteExpandedChildren(params.id);
     };
+
+    const deleteAddRow = (id) => {
+        const index = rows.findIndex(item => item.id === id);
+        setRows([...rows.slice(0, index), ...rows.slice(index + 1),]);
+    }
+
+    const onSubSiteAddClicked = (params) => {
+        const addDataIndex = rows.findIndex(item => item.id === add_row_id);
+        if (addDataIndex !== -1) {
+            const noneAddRows = [...rows.filter((item, idx) => idx !== addDataIndex)];
+            const index = noneAddRows.findIndex(item => item.id === params.id);
+            const newRows = [
+                ...noneAddRows.slice(0, index + 1),
+                createAddData(),
+                ...noneAddRows.slice(index + 1),
+            ];
+
+            setRows(newRows);
+        } else {
+            const index = rows.findIndex(item => item.id === params.id);
+            const newRows = [
+                ...rows.slice(0, index + 1),
+                createAddData(),
+                ...rows.slice(index + 1),
+            ];
+            setRows(newRows);
+        }
+        setEditRowId(add_row_id);
+    };
+
 
     const onDeleteClicked = (params) => {
         SiteRecordDelete(params.id);
@@ -448,9 +507,11 @@ export default function Site(props) {
                         }}>
                             <DeleteIcon/>
                         </IconButton>
-                        <IconButton>
-                            <AddCircleIcon/>
-                        </IconButton>
+                        {!end_site_types.includes(params.row.type) && (
+                            <IconButton>
+                                <AddCircleIcon onClick={() => onSubSiteAddClicked(params)}/>
+                            </IconButton>
+                        )}
                         {params.row.children.length > 0 && (
                             !(params.id in expandedRows) ? (
                                 <IconButton>
@@ -473,11 +534,11 @@ export default function Site(props) {
                     return (<>
                         <IconButton onClick={(event) => {
                             setAnchorEl(event.currentTarget);
-                            setPopoverRowId(params.id);
+                            setPopoverRowId(params);
                         }}>
                             <SaveIcon/>
                         </IconButton>
-                        <IconButton onClick={() => onCancelClicked()}>
+                        <IconButton onClick={() => onCancelClicked(params)}>
                             < CancelIcon/>
                         </IconButton>
                         {popoverRowId === params.id && <ConfirmPopover anchorEl={anchorEl}

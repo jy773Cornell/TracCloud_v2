@@ -51,7 +51,7 @@ class CropListGetView(APIView):
         if uid:
             user = User.objects.filter(uid=uid).alive()
             if user:
-                crop_list = Crop.objects.filter(user_id=uid).alive()
+                crop_list = Crop.objects.filter(user_id=uid).alive().order_by('-update_time')
                 data = []
                 for crop in crop_list:
                     data.append(CropGetSerializer(crop).data)
