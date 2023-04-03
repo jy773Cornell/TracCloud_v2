@@ -932,10 +932,10 @@ export default function Site(props) {
                 onClick={() => onAddClicked()}>
                 Add Site
             </AddButton>
-            {
-                showTree && (<SiteTreeView siteList={siteList}/>)
-            }
             <StyledContainer>
+                {
+                    showTree && (<SiteTreeView siteList={siteList}/>)
+                }
                 <Paper style={{height: 900, margin: '0px 15px'}}>
                     <DataGrid
                         columns={columns}
