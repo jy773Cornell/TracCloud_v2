@@ -28,7 +28,9 @@ const editWidth = 180;
 
 const field_names = ["type", "name", "owner_name", "crop", "crop_year", "size", "size_unit", "gps", "gps_system"]
 
-const end_site_types = ["Rows", "Hole Code#", "Section", ""]
+const end_site_types = ["Row", "Hole Code#", "Section", ""]
+
+const crop_level_type = ["Rows", "Hole Code#", "Section", "Blocks"]
 
 const add_row_id = "create_add_row_data"
 
@@ -92,25 +94,11 @@ function AddSiteRecord({
                            setIsSave,
                            inputError,
                            updateInputError,
+                           SiteRecordSave,
                            refreshRecord,
                            setRefreshRecord,
                        }) {
 
-    async function SiteRecordSave() {
-        const apiData = createAPIData(formData);
-        console.log(apiData);
-        const requestOptions = {
-            method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
-        };
-        await fetch("/api/site/create/", requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    setIsSave(true);
-                    setShowAddModal(false);
-                    setRefreshRecord(~refreshRecord);
-                }
-            })
-    }
 
     const handleSaveButtonPressed = () => {
         if ([fieldValues[field_names[0]], fieldValues[field_names[1]]].every(value => value !== "")) {
@@ -240,6 +228,7 @@ export default function Site(props) {
 
     const [showAddModal, setShowAddModal] = useState(false);
     const [isSave, setIsSave] = useState(false);
+    const [isSaveWarning, setIsSaveWarning] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
     const [inputError, setInputError] = useState([]);
     const [editRowId, setEditRowId] = useState(null);
@@ -257,7 +246,7 @@ export default function Site(props) {
                     response.json().then((data) => {
                         const record_list = data.data;
                         const record_row = record_list.map((record) => createRowData(record))
-                        setRows(record_row);
+                        updateRowData(record_row);
                     })
                 }
             })
@@ -305,6 +294,22 @@ export default function Site(props) {
             })
     }
 
+    async function SiteRecordSave() {
+        const apiData = createAPIData(formData);
+        console.log(apiData);
+        const requestOptions = {
+            method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
+        };
+        await fetch("/api/site/create/", requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    setIsSave(true);
+                    setShowAddModal(false);
+                    setRefreshRecord(~refreshRecord);
+                }
+            })
+    }
+
     async function SiteRecordUpdate() {
         const apiData = createAPIData(formData);
         console.log(apiData);
@@ -336,6 +341,34 @@ export default function Site(props) {
             })
     }
 
+    const setExpandedData = (record_row) => {
+        let newRows = record_row;
+        for (let expandID in expandedRows) {
+            const index = newRows.findIndex(item => item.id === expandID)
+            const children = newRows[index].children
+            newRows = [
+                ...newRows.slice(0, index + 1),
+                ...children.map((child) => createRowData(child)),
+                ...newRows.slice(index + 1),
+            ];
+        }
+        setRows(newRows);
+
+        let newExpandedRows = expandedRows;
+        for (let expandID in newExpandedRows) {
+            newExpandedRows[expandID] = newRows.find(item => item.id === expandID).children.map((child) => child.sid);
+        }
+        setExpandedRows(newExpandedRows);
+    }
+
+    const updateRowData = (record_row) => {
+        if (Object.keys(expandedRows).length === 0) {
+            setRows(record_row);
+        } else {
+            setExpandedData(record_row);
+        }
+    }
+
     const clearInputError = () => {
         setInputError(Object.fromEntries(field_names.map(item => [item, false])));
     }
@@ -355,10 +388,15 @@ export default function Site(props) {
     }
 
     const onSaveClicked = () => {
-        if (Object.values(fieldValues).every(value => value !== "")) {
-            SiteRecordUpdate();
-            const index = rows.findIndex(item => item.id === fieldValues.id);
-            setRows([...rows.slice(0, index), fieldValues, ...rows.slice(index + 1),]);
+        if ([fieldValues[field_names[0]], fieldValues[field_names[1]]].every(value => value !== "")) {
+            if (!("sid" in formData)) {
+                SiteRecordSave();
+                setRows((prevRows) => prevRows.filter((item) => item.id !== add_row_id))
+            } else {
+                SiteRecordUpdate();
+                const index = rows.findIndex(item => item.id === fieldValues.id);
+                setRows([...rows.slice(0, index), fieldValues, ...rows.slice(index + 1),]);
+            }
         } else {
             updateInputError();
         }
@@ -373,10 +411,15 @@ export default function Site(props) {
     }
 
     const onEditClicked = (params) => {
-        setFormData({"sid": params.id});
-        setFieldValues(params.row);
-        setEditRowId(params.id);
-        clearInputError();
+        if (rows.find(item => item.id === add_row_id)) {
+            setIsSaveWarning(true);
+        } else {
+            setFormData({"sid": params.id});
+            setFieldValues(params.row);
+            setEditRowId(params.id);
+            SiteTypeOptionsFresh(siteType.find(item => item.name === params.row.type).level)
+            clearInputError();
+        }
     };
 
     const onExpandClicked = (params) => {
@@ -386,28 +429,55 @@ export default function Site(props) {
         newExpandedRows[id] = children.map((child) => child.sid);
         setExpandedRows(newExpandedRows);
 
-        setRows([
-            ...rows.slice(0, index + 1),
+        setRows((prevRows) => [
+            ...prevRows.slice(0, index + 1),
             ...children.map((child) => createRowData(child)),
-            ...rows.slice(index + 1)
+            ...prevRows.slice(index + 1)
         ])
     };
 
     const deleteExpandedChildren = (id) => {
-        if (!expandedRows[id]) {
-            return;
-        }
+        let newExpandedRows = {...expandedRows};
+        let newRows = [...rows];
 
-        const newExpandedRows = {...expandedRows};
-        newExpandedRows[id].forEach((childId) => {
-            deleteExpandedChildren(childId);
-            setRows((prevRows) => prevRows.filter((item) => item.id !== childId));
-        });
-        delete newExpandedRows[id];
+        const deleteChildren = (id) => {
+            if (!newExpandedRows[id]) {
+                return;
+            }
+
+            newExpandedRows[id].forEach((childId) => {
+                deleteChildren(childId);
+                newRows = newRows.filter((item) => item.id !== childId);
+            });
+            delete newExpandedRows[id];
+        };
+
+        deleteChildren(id);
+
         setExpandedRows(newExpandedRows);
+        setRows(newRows);
     };
 
+    function searchAddRow(rowID) {
+        const index = rows.findIndex(item => item.id === rowID);
+        if (index + 1 < rows.length && rows[index + 1].id === add_row_id) {
+            return true;
+        }
+        if (rowID in expandedRows) {
+            for (let i = 0; i < expandedRows[rowID].length; i++) {
+                if (searchAddRow(expandedRows[rowID][i])) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     const onExpandLessClicked = (params) => {
+        if (searchAddRow(params.id)) {
+            setIsSaveWarning(true);
+            return;
+        }
         deleteExpandedChildren(params.id);
     };
 
@@ -417,34 +487,53 @@ export default function Site(props) {
     }
 
     const onSubSiteAddClicked = (params) => {
-        const addDataIndex = rows.findIndex(item => item.id === add_row_id);
-        if (addDataIndex !== -1) {
-            const noneAddRows = [...rows.filter((item, idx) => idx !== addDataIndex)];
-            const index = noneAddRows.findIndex(item => item.id === params.id);
-            const newRows = [
-                ...noneAddRows.slice(0, index + 1),
-                createAddData(),
-                ...noneAddRows.slice(index + 1),
-            ];
+        const {id, children} = params.row;
+        let index = rows.findIndex(item => item.id === id);
+        let prevRows = [];
 
-            setRows(newRows);
-        } else {
-            const index = rows.findIndex(item => item.id === params.id);
-            const newRows = [
-                ...rows.slice(0, index + 1),
-                createAddData(),
-                ...rows.slice(index + 1),
-            ];
-            setRows(newRows);
+        if (rows.find(item => item.id === add_row_id)) {
+            setIsSaveWarning(true);
+            return;
         }
+
+        const newExpandedRows = (id in expandedRows) ?
+            expandedRows : {...expandedRows, [id]: [...children.map((child) => child.sid)]};
+        setExpandedRows(newExpandedRows);
+
+        prevRows = (id in expandedRows) ?
+            [...rows] : [
+                ...rows.slice(0, index + 1),
+                ...children.map((child) => createRowData(child)),
+                ...rows.slice(index + 1)
+            ]
+
+        index = prevRows.findIndex(item => item.id === id);
+        const newRows = [
+            ...prevRows.slice(0, index + 1),
+            createAddData(),
+            ...prevRows.slice(index + 1),
+        ];
+        setRows(newRows);
+
+        const site_type = siteType.find(item => item.name === params.row.type)
+        SiteTypeOptionsFresh(site_type.level + 1)
+
+        setFormData({"user_id": uid, "parent_id": id});
+        setFieldValues(Object.fromEntries(field_names.map(item => [item, ""])));
         setEditRowId(add_row_id);
+        clearInputError();
     };
 
-
     const onDeleteClicked = (params) => {
+        if (rows.find(item => item.id === add_row_id)) {
+            setIsSaveWarning(true);
+            return;
+        }
+
         SiteRecordDelete(params.id);
         const index = rows.findIndex(item => item.id === params.id);
         setRows([...rows.slice(0, index), ...rows.slice(index + 1),]);
+
     };
 
     const onAddClicked = () => {
@@ -452,6 +541,7 @@ export default function Site(props) {
         setFieldValues(Object.fromEntries(field_names.map(item => [item, ""])));
         setEditRowId(null);
         setShowAddModal(true);
+        SiteTypeOptionsFresh(1);
         clearInputError();
     };
 
@@ -497,58 +587,64 @@ export default function Site(props) {
             disableClickEventBubbling: true,
             renderCell: (params) => {
                 if (editRowId !== params.id) {
-                    return (<>
-                        <IconButton onClick={() => onEditClicked(params)}>
-                            <EditIcon/>
-                        </IconButton>
-                        <IconButton onClick={(event) => {
-                            setAnchorEl(event.currentTarget);
-                            setPopoverRowId(params.id);
-                        }}>
-                            <DeleteIcon/>
-                        </IconButton>
-                        {!end_site_types.includes(params.row.type) && (
-                            <IconButton>
-                                <AddCircleIcon onClick={() => onSubSiteAddClicked(params)}/>
+                    return (
+                        <>
+                            <IconButton onClick={() => onEditClicked(params)}>
+                                <EditIcon/>
                             </IconButton>
-                        )}
-                        {params.row.children.length > 0 && (
-                            !(params.id in expandedRows) ? (
-                                <IconButton>
-                                    <ExpandMoreIcon onClick={() => onExpandClicked(params)}/>
-                                </IconButton>) : (
-                                <IconButton>
-                                    <ExpandLessIcon onClick={() => onExpandLessClicked(params)}/>
+                            <IconButton onClick={(event) => {
+                                setAnchorEl(event.currentTarget);
+                                setPopoverRowId(params.id);
+                            }}>
+                                <DeleteIcon/>
+                            </IconButton>
+                            {!end_site_types.includes(params.row.type) && (
+                                <IconButton onClick={() => {
+                                    onSubSiteAddClicked(params);
+                                }}>
+                                    <AddCircleIcon/>
                                 </IconButton>
-                            ))
-                        }
-                        {popoverRowId === params.id && <ConfirmPopover anchorEl={anchorEl}
-                                                                       setAnchorEl={setAnchorEl}
-                                                                       onDeleteClicked={onDeleteClicked}
-                                                                       params={params}
-                                                                       msg="Delete this record?"
-                                                                       type="delete"
-                        />}
-                    </>);
+                            )}
+                            {params.row.children.length > 0 && (
+                                !(params.id in expandedRows) ? (
+                                    <IconButton onClick={() => onExpandClicked(params)}>
+                                        <ExpandMoreIcon/>
+                                    </IconButton>) : (
+                                    <IconButton onClick={() => onExpandLessClicked(params)}>
+                                        <ExpandLessIcon/>
+                                    </IconButton>
+                                ))
+                            }
+                            {popoverRowId === params.id && <ConfirmPopover anchorEl={anchorEl}
+                                                                           setAnchorEl={setAnchorEl}
+                                                                           onDeleteClicked={onDeleteClicked}
+                                                                           params={params}
+                                                                           msg="Delete this record?"
+                                                                           type="delete"
+                            />}
+                        </>);
                 } else {
-                    return (<>
-                        <IconButton onClick={(event) => {
-                            setAnchorEl(event.currentTarget);
-                            setPopoverRowId(params);
-                        }}>
-                            <SaveIcon/>
-                        </IconButton>
-                        <IconButton onClick={() => onCancelClicked(params)}>
-                            < CancelIcon/>
-                        </IconButton>
-                        {popoverRowId === params.id && <ConfirmPopover anchorEl={anchorEl}
-                                                                       setAnchorEl={setAnchorEl}
-                                                                       onSaveClicked={onSaveClicked}
-                                                                       params={params}
-                                                                       msg="Update this record?"
-                                                                       type="update"
-                        />}
-                    </>)
+                    return (
+                        <>
+                            <IconButton onClick={(event) => {
+                                setAnchorEl(event.currentTarget);
+                                setPopoverRowId(params.id);
+                            }}>
+                                <SaveIcon/>
+                            </IconButton>
+                            <IconButton onClick={() => onCancelClicked(params)}>
+                                < CancelIcon/>
+                            </IconButton>
+                            {
+                                popoverRowId === params.id &&
+                                <ConfirmPopover anchorEl={anchorEl}
+                                                setAnchorEl={setAnchorEl}
+                                                onSaveClicked={onSaveClicked}
+                                                params={params}
+                                                msg="Update this record?"
+                                                type="update"
+                                />}
+                        </>)
                 }
             },
         },
@@ -629,6 +725,7 @@ export default function Site(props) {
                 options={cropOptions}
                 disableClearable
                 readOnly={editRowId !== rowID}
+                disabled={(editRowId === rowID) && !(siteTypeOptions.some(value => crop_level_type.includes(value.label)))}
                 value={editRowId === rowID ? fieldValues[field_names[3]] : params.value}
                 onChange={(event, value) => {
                     handleInputChange(event, value, field_names[3]);
@@ -637,7 +734,8 @@ export default function Site(props) {
                     return (editRowId !== rowID ? <TextField {...params} variant="standard"
                                                              InputProps={{disableUnderline: true}}
                                                              sx={{width: 300}}/> :
-                        <TextField {...params} variant="standard" error={inputError[field_names[3]]}
+                        <TextField {...params}
+                                   variant="standard"
                                    sx={{width: 280}}
                         />)
                 }}
@@ -653,10 +751,12 @@ export default function Site(props) {
                     variant="standard"
                     value={params.value}
                     InputProps={{
-                        disableUnderline: true, readOnly: true,
+                        disableUnderline: true,
+                        readOnly: true,
                     }}
                     sx={{width: columnWidth}}/> : <TextField
                     variant="standard"
+                    disabled={(editRowId === rowID) && !(siteTypeOptions.some(value => crop_level_type.includes(value.label)))}
                     value={fieldValues[field_names[4]]}
                     sx={{width: editWidth}}
                     onChange={(event) => {
@@ -774,13 +874,21 @@ export default function Site(props) {
         setIsSave,
         inputError,
         updateInputError,
+        SiteRecordSave,
         refreshRecord,
         setRefreshRecord,
     };
 
-    const saveProps = {open: isSave, setOpen: setIsSave, msg: "Site record is uploaded successfully!"};
+    const saveProps = {open: isSave, setOpen: setIsSave, msg: "Site record is uploaded successfully!", tag: "success"};
 
-    const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Site record has been deleted!"};
+    const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Site record has been deleted!", tag: "success"};
+
+    const alertProps = {
+        open: isSaveWarning,
+        setOpen: setIsSaveWarning,
+        msg: "Please complete the sub-site adding!",
+        tag: "warning"
+    };
 
     useEffect(() => {
         SiteTypeGet();
@@ -790,7 +898,6 @@ export default function Site(props) {
     }, []);
 
     useEffect(() => {
-        SiteTypeOptionsFresh(1);
         CropOptionsFresh();
         UnitOptionsFresh();
     }, [siteType, cropList, unit]);
@@ -821,5 +928,6 @@ export default function Site(props) {
         <AddSiteRecord {...addProps}/>
         <OperationSnackbars  {...saveProps}/>
         <OperationSnackbars  {...deleteProps}/>
+        <OperationSnackbars  {...alertProps}/>
     </div>);
 }
