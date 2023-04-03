@@ -12,7 +12,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ParkIcon from '@mui/icons-material/Park';
 import {Autocomplete, Button, Card, CardContent, Grid, Modal, Popover, TextField, Typography} from "@mui/material";
-import {AddButton, StyledContainer, TreeButton} from "./styles";
+import {AddButton, StyledContainer, StyledDataGrid, TreeButton} from "./styles";
 import OperationSnackbars from "../../components/Snackbars";
 import {
     DataGrid,
@@ -32,7 +32,7 @@ const field_names = ["type", "name", "owner_name", "crop", "crop_year", "size", 
 
 const end_site_types = ["Row", "Hole Code#", "Section", ""]
 
-const crop_level_type = ["Rows", "Hole Code#", "Section", "Blocks"]
+const crop_level_type = ["Row", "Hole Code#", "Section", "Blocks"]
 
 const add_row_id = "create_add_row_data"
 
@@ -937,12 +937,13 @@ export default function Site(props) {
                     showTree && (<SiteTreeView siteList={siteList}/>)
                 }
                 <Paper style={{height: 900, margin: '0px 15px'}}>
-                    <DataGrid
+                    <StyledDataGrid
                         columns={columns}
                         rows={rows}
                         disableRowSelectionOnClick={true}
                         disableClickEdit={true}
                         rowSelection={false}
+                        getRowClassName={(params) => `site-type-level--${siteType.find(item => item.name === params.row.type).level}`}
                         slots={{
                             toolbar: CustomToolbar,
                         }}

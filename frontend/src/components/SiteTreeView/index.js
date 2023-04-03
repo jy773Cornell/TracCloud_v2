@@ -35,8 +35,8 @@ export default function SiteTreeView(props) {
     );
 
     return (
-        <Paper style={{height: 400, width: 250, marginLeft: "15px"}}>
-            <Box sx={{height: 400, flexGrow: 1, width: 250, overflowY: 'auto'}}>
+        <Paper sx={{height: "100%", width: 250, marginLeft: "15px"}}>
+            <Box sx={{maxHeight: 400, flexGrow: 1, width: 250, overflowY: 'auto'}}>
                 <Box sx={{mb: 1, margin: "0px"}}>
                     <Button onClick={handleExpandClick}>
                         {expanded.length === 0 ? 'Expand all' : 'Collapse all'}
@@ -50,7 +50,7 @@ export default function SiteTreeView(props) {
                     defaultEndIcon={<CloseSquare/>}
                     expanded={expanded}
                     onNodeToggle={handleToggle}
-                    sx={{height: 400, flexGrow: 1, width: 250, overflowY: 'auto'}}
+                    sx={{flexGrow: 1, width: 250}}
                 >
                     {props.siteList.map((node) => renderTree(node))}
                 </TreeView>
