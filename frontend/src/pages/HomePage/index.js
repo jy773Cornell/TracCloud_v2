@@ -1,68 +1,48 @@
 import * as React from 'react';
-import {DataGrid, GridColDef} from '@mui/x-data-grid';
-import {TreeView, TreeItem} from '@mui/lab';
-import AddIcon from '@mui/icons-material/Add';
+import TreeView from '@mui/lab/TreeView';
+import {Button} from "@mui/material";
+import {Box} from "@mui/system";
+import {CloseSquare, MinusSquare, PlusSquare, StyledTreeItem} from "./styles";
 
-const columns = [
-    {field: 'id', headerName: 'ID', width: 150},
-    {field: 'name', headerName: 'Name', width: 200},
-    {field: 'type', headerName: 'Type', width: 150},
-    {field: 'size', headerName: 'Size', width: 100},
-    {field: 'crop', headerName: 'Crop', width: 150},
-];
 
-const rows = [
-    {
-        id: 'SID-0978dda7-c711-4b81-9e9a-33b2fffd50aa',
-        name: 'grod farm',
-        type: 'Golf Course',
-        size: '12',
-        crop: {crop: 'Peach'},
-        children: [
-            {
-                id: 'SID-724612bd-b1ed-4249-939b-150ac8d2a45b',
-                name: 'berry',
-                type: 'Section',
-                size: '2',
-                children: [],
-            },
-            {
-                id: 'SID-abbb6b65-2d75-4b7a-8d3d-ec70e213e093',
-                name: 'asd',
-                type: 'Orchard',
-                children: [],
-            },
-        ],
-    },
-];
+export default function SiteTreeView(props) {
+    const [expanded, setExpanded] = React.useState([]);
 
-function renderTreeView(node) {
-    const {id, name, children} = node;
-    if (children) {
-        return (
-            <TreeItem key={id} nodeId={id} label={name}>
-                {children.map((child) => renderTreeView(child))}
-            </TreeItem>
+    const handleToggle = (event, nodeIds) => {
+        setExpanded(nodeIds);
+    };
+
+    const handleExpandClick = () => {
+        setExpanded((oldExpanded) =>
+            oldExpanded.length === 0 ? ['1', '3', '7'] : [],
         );
-    }
+    };
 
-    return <TreeItem key={id} nodeId={id} label={name}/>;
-}
+    const renderTree = (nodes) => (
+        <StyledTreeItem key={nodes.sid} nodeId={nodes.sid.toString()} label={nodes.type + " - " + nodes.name}>
+            {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
+        </StyledTreeItem>
+    );
 
-export default function App() {
     return (
-        <DataGrid rows={rows} columns={columns}>
-            {(params) => {
-                const {id, name, type, size, crop} = params.row;
-                return (
-                    <TreeView
-                        defaultCollapseIcon={<AddIcon/>}
-                        defaultExpandIcon={<AddIcon/>}
-                    >
-                        {renderTreeView(params.row)}
-                    </TreeView>
-                );
-            }}
-        </DataGrid>
+        <Box sx={{height: 270, flexGrow: 1, maxWidth: 400, overflowY: 'auto'}}>
+            <Box sx={{mb: 1}}>
+                <Button onClick={handleExpandClick}>
+                    {expanded.length === 0 ? 'Expand all' : 'Collapse all'}
+                </Button>
+            </Box>
+            <TreeView
+                aria-label="customized"
+                defaultExpanded={[]}
+                defaultCollapseIcon={<MinusSquare/>}
+                defaultExpandIcon={<PlusSquare/>}
+                defaultEndIcon={<CloseSquare/>}
+                expanded={expanded}
+                onNodeToggle={handleToggle}
+                sx={{height: 400, flexGrow: 1, maxWidth: 250, overflowY: 'auto'}}
+            >
+                {props.data.map((node) => renderTree(node))}
+            </TreeView>
+        </Box>
     );
 }

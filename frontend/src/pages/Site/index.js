@@ -10,8 +10,9 @@ import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ParkIcon from '@mui/icons-material/Park';
 import {Autocomplete, Button, Card, CardContent, Grid, Modal, Popover, TextField, Typography} from "@mui/material";
-import {AddButton} from "./styles";
+import {AddButton, StyledContainer, TreeButton} from "./styles";
 import OperationSnackbars from "../../components/Snackbars";
 import {
     DataGrid,
@@ -22,6 +23,7 @@ import {
     GridToolbarFilterButton,
 } from "@mui/x-data-grid";
 import ConfirmPopover from "../../components/ConfirmPopover";
+import SiteTreeView from "../../components/SiteTreeView";
 
 const columnWidth = 200;
 const editWidth = 180;
@@ -214,6 +216,7 @@ function AddSiteRecord({
 
 export default function Site(props) {
     const uid = props.uid;
+    const [siteList, setSiteList] = useState([]);
     const [siteType, setSiteType] = useState([]);
     const [cropList, setCropList] = useState([]);
     const [unit, setUnit] = useState([]);
@@ -227,6 +230,7 @@ export default function Site(props) {
     const [unitOptions, setUnitOptions] = useState([]);
 
     const [showAddModal, setShowAddModal] = useState(false);
+    const [showTree, setShowTree] = useState(false);
     const [isSave, setIsSave] = useState(false);
     const [isSaveWarning, setIsSaveWarning] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
@@ -245,6 +249,7 @@ export default function Site(props) {
                 if (response.ok) {
                     response.json().then((data) => {
                         const record_list = data.data;
+                        setSiteList(record_list);
                         const record_row = record_list.map((record) => createRowData(record))
                         updateRowData(record_row);
                     })
@@ -345,20 +350,26 @@ export default function Site(props) {
         let newRows = record_row;
         for (let expandID in expandedRows) {
             const index = newRows.findIndex(item => item.id === expandID)
-            const children = newRows[index].children
-            newRows = [
-                ...newRows.slice(0, index + 1),
-                ...children.map((child) => createRowData(child)),
-                ...newRows.slice(index + 1),
-            ];
+            if (index !== -1) {
+                const children = newRows[index].children
+                newRows = [
+                    ...newRows.slice(0, index + 1),
+                    ...children.map((child) => createRowData(child)),
+                    ...newRows.slice(index + 1),
+                ];
+            }
         }
         setRows(newRows);
 
-        let newExpandedRows = expandedRows;
-        for (let expandID in newExpandedRows) {
-            newExpandedRows[expandID] = newRows.find(item => item.id === expandID).children.map((child) => child.sid);
-        }
+        const newExpandedRows = Object.keys(expandedRows).reduce((result, expandID) => {
+            const row = newRows.find(item => item.id === expandID);
+            if (row) {
+                result[expandID] = row.children.map(child => child.sid);
+            }
+            return result;
+        }, {});
         setExpandedRows(newExpandedRows);
+
     }
 
     const updateRowData = (record_row) => {
@@ -531,9 +542,6 @@ export default function Site(props) {
         }
 
         SiteRecordDelete(params.id);
-        const index = rows.findIndex(item => item.id === params.id);
-        setRows([...rows.slice(0, index), ...rows.slice(index + 1),]);
-
     };
 
     const onAddClicked = () => {
@@ -544,6 +552,10 @@ export default function Site(props) {
         SiteTypeOptionsFresh(1);
         clearInputError();
     };
+
+    const onTreeClicked = () => {
+        setShowTree(prevState => !prevState);
+    }
 
     const SiteTypeOptionsFresh = (level) => {
         setSiteTypeOptions(siteType.filter(item => item.level === level).map(item => ({
@@ -906,28 +918,40 @@ export default function Site(props) {
         SiteListGet(uid)
     }, [refreshRecord]);
 
-    return (<div>
-        <AddButton
-            variant="contained"
-            startIcon={<AddIcon/>}
-            onClick={() => onAddClicked()}>
-            Add Site
-        </AddButton>
-        <Paper style={{height: 900, margin: '0px 15px'}}>
-            <DataGrid
-                columns={columns}
-                rows={rows}
-                disableRowSelectionOnClick={true}
-                disableClickEdit={true}
-                rowSelection={false}
-                slots={{
-                    toolbar: CustomToolbar,
-                }}
-            />
-        </Paper>
-        <AddSiteRecord {...addProps}/>
-        <OperationSnackbars  {...saveProps}/>
-        <OperationSnackbars  {...deleteProps}/>
-        <OperationSnackbars  {...alertProps}/>
-    </div>);
+    return (
+        <div>
+            <TreeButton
+                variant="contained"
+                startIcon={<ParkIcon/>}
+                onClick={() => onTreeClicked()}>
+                Tree Structure
+            </TreeButton>
+            <AddButton
+                variant="contained"
+                startIcon={<AddIcon/>}
+                onClick={() => onAddClicked()}>
+                Add Site
+            </AddButton>
+            {
+                showTree && (<SiteTreeView siteList={siteList}/>)
+            }
+            <StyledContainer>
+                <Paper style={{height: 900, margin: '0px 15px'}}>
+                    <DataGrid
+                        columns={columns}
+                        rows={rows}
+                        disableRowSelectionOnClick={true}
+                        disableClickEdit={true}
+                        rowSelection={false}
+                        slots={{
+                            toolbar: CustomToolbar,
+                        }}
+                    />
+                </Paper>
+            </StyledContainer>
+            <AddSiteRecord {...addProps}/>
+            <OperationSnackbars  {...saveProps}/>
+            <OperationSnackbars  {...deleteProps}/>
+            <OperationSnackbars  {...alertProps}/>
+        </div>);
 }
