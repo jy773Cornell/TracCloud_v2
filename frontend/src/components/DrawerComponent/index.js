@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {DrawerHeader, drawerWidth, StyledDrawer} from "./styles";
 import {Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText} from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
@@ -10,12 +10,21 @@ import ScienceIcon from "@mui/icons-material/Science";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import SummarizeIcon from "@mui/icons-material/Summarize";
 import ConstructionIcon from "@mui/icons-material/Construction";
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import AgricultureIcon from '@mui/icons-material/Agriculture';
+import WaterfallChartIcon from '@mui/icons-material/WaterfallChart';
 import {Box} from "@mui/system";
 import {useLocation, useNavigate} from "react-router-dom";
+import Collapse from "@mui/material/Collapse";
+import {grey} from "@mui/material/colors";
 
 export default function LayoutDrawer(props) {
     const navigate = useNavigate();
     const location = useLocation();
+
+    const [recordOpen, setRecordOpen] = useState(false);
 
     const handleMenuButtonPressed = (url) => {
         navigate(url);
@@ -87,219 +96,61 @@ export default function LayoutDrawer(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/record')}
-                                selected={location.pathname === "/record"}>
+                <ListItemButton onClick={() => setRecordOpen(!recordOpen)}>
                     <ListItemIcon>
                         <PostAddIcon/>
                     </ListItemIcon>
                     <ListItemText primary="Records"/>
+                    {recordOpen ? <ExpandLess/> : <ExpandMore/>}
                 </ListItemButton>
             </ListItem>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/report')}
-                                selected={location.pathname === "/report"}>
-                    <ListItemIcon>
-                        <SummarizeIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Reports"/>
-                </ListItemButton>
-            </ListItem>
-        </List>
-    )
-    const ApplicatorList = () => (
-        <List>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/home')}
-                                selected={location.pathname === "/home"}>
-                    <ListItemIcon>
-                        <HomeIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Home"/>
-                </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/profile')}
-                                selected={location.pathname === "/profile"}>
-                    <ListItemIcon>
-                        <AccountBoxIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Profile"/>
-                </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/network')}
-                                selected={location.pathname === "/network"}>
-                    <ListItemIcon>
-                        <PeopleIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Network"/>
-                </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/equipment')}
-                                selected={location.pathname === "/equipment"}>
-                    <ListItemIcon>
-                        <ConstructionIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Equipment"/>
-                </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/record')}
-                                selected={location.pathname === "/record"}>
-                    <ListItemIcon>
-                        <PostAddIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Records"/>
-                </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/report')}
-                                selected={location.pathname === "/report"}>
-                    <ListItemIcon>
-                        <SummarizeIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Reports"/>
-                </ListItemButton>
-            </ListItem>
-        </List>
-    )
-    const FoodProcessorList = () => (
-        <List>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/home')}
-                                selected={location.pathname === "/home"}>
-                    <ListItemIcon>
-                        <HomeIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Home"/>
-                </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/profile')}
-                                selected={location.pathname === "/profile"}>
-                    <ListItemIcon>
-                        <AccountBoxIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Profile"/>
-                </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/network')}
-                                selected={location.pathname === "/network"}>
-                    <ListItemIcon>
-                        <PeopleIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Network"/>
-                </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/record')}
-                                selected={location.pathname === "/record"}>
-                    <ListItemIcon>
-                        <PostAddIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Records"/>
-                </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/report')}
-                                selected={location.pathname === "/report"}>
-                    <ListItemIcon>
-                        <SummarizeIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Reports"/>
-                </ListItemButton>
-            </ListItem>
-        </List>
-    )
-    const FoodDistributorList = () => (
-        <List>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/home')}
-                                selected={location.pathname === "/home"}>
-                    <ListItemIcon>
-                        <HomeIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Home"/>
-                </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/profile')}
-                                selected={location.pathname === "/profile"}>
-                    <ListItemIcon>
-                        <AccountBoxIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Profile"/>
-                </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/network')}
-                                selected={location.pathname === "/network"}>
-                    <ListItemIcon>
-                        <PeopleIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Network"/>
-                </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/record')}
-                                selected={location.pathname === "/record"}>
-                    <ListItemIcon>
-                        <PostAddIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Records"/>
-                </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/report')}
-                                selected={location.pathname === "/report"}>
-                    <ListItemIcon>
-                        <SummarizeIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Reports"/>
-                </ListItemButton>
-            </ListItem>
-        </List>
-    )
-    const FoodRetailerList = () => (
-        <List>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/home')}
-                                selected={location.pathname === "/home"}>
-                    <ListItemIcon>
-                        <HomeIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Home"/>
-                </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/profile')}
-                                selected={location.pathname === "/profile"}>
-                    <ListItemIcon>
-                        <AccountBoxIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Profile"/>
-                </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/network')}
-                                selected={location.pathname === "/network"}>
-                    <ListItemIcon>
-                        <PeopleIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Network"/>
-                </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/record')}
-                                selected={location.pathname === "/record"}>
-                    <ListItemIcon>
-                        <PostAddIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Records"/>
-                </ListItemButton>
-            </ListItem>
+            <Collapse in={recordOpen} timeout="auto" unmountOnExit>
+                <ListItem disablePadding>
+                    <ListItemButton
+                        sx={{
+                            pl: 4,
+                            backgroundColor: grey[100],
+                            '&:hover': {backgroundColor: grey[100],},
+                        }}
+                        onClick={() => handleMenuButtonPressed('/record/spray')}
+                        selected={location.pathname === "/record/spray"}>
+                        <ListItemIcon>
+                            <WaterfallChartIcon/>
+                        </ListItemIcon>
+                        <ListItemText primary="Spray"/>
+                    </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                    <ListItemButton
+                        sx={{
+                            pl: 4,
+                            backgroundColor: grey[100],
+                            '&:hover': {backgroundColor: grey[100],},
+                        }}
+                        onClick={() => handleMenuButtonPressed('/record/harvest')}
+                        selected={location.pathname === "/record/harvest"}>
+                        <ListItemIcon>
+                            <AgricultureIcon/>
+                        </ListItemIcon>
+                        <ListItemText primary="Harvest"/>
+                    </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                    <ListItemButton
+                        sx={{
+                            pl: 4,
+                            backgroundColor: grey[100],
+                            '&:hover': {backgroundColor: grey[100],},
+                        }}
+                        onClick={() => handleMenuButtonPressed('/record/purchase')}
+                        selected={location.pathname === "/record/purchase"}>
+                        <ListItemIcon>
+                            <ShoppingCartIcon/>
+                        </ListItemIcon>
+                        <ListItemText primary="Purchase"/>
+                    </ListItemButton>
+                </ListItem>
+            </Collapse>
             <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/report')}
                                 selected={location.pathname === "/report"}>
@@ -318,11 +169,7 @@ export default function LayoutDrawer(props) {
                 Trac Cloud
             </DrawerHeader>
             <Divider/>
-            {props.userType === "Grower" ? GrowerList() : null}
-            {props.userType === "Applicator" ? ApplicatorList() : null}
-            {props.userType === "Food Processor" ? FoodProcessorList() : null}
-            {props.userType === "Food Distributor" ? FoodDistributorList() : null}
-            {props.userType === "Food Retailer" ? FoodRetailerList() : null}
+            {GrowerList()}
         </Box>
     );
 

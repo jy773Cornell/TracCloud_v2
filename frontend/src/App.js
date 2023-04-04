@@ -11,6 +11,7 @@ const Crop = lazy(() => import('./pages/Crop'))
 const Chemical = lazy(() => import('./pages/Chemical'))
 const Site = lazy(() => import('./pages/Site'))
 const Equipment = lazy(() => import('./pages/Equipment'))
+const SprayRecord = lazy(() => import('./pages/SprayRecord'))
 
 function App() {
     const [uid, setUID] = useState("")
@@ -34,7 +35,9 @@ function App() {
                         <Route path="site" element={<Site uid={uid}/>}/>
                         <Route path="chemical" element={<Chemical uid={uid}/>}/>
                         <Route path="equipment" element={<Equipment uid={uid}/>}/>
-                        <Route path="record" element={<UserProfile/>}/>
+                        <Route path="record/spray" element={<SprayRecord uid={uid}/>}/>
+                        <Route path="record/harvest" element={<UserProfile/>}/>
+                        <Route path="record/purchase" element={<UserProfile/>}/>
                         <Route path="report" element={<UserProfile/>}/>
                     </Route>
                     <Route path='*' element={<Navigate to="home" replace/>}/>
