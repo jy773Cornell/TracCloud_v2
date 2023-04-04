@@ -264,7 +264,7 @@ class OperationAdmin(admin.ModelAdmin):
 
 
 class OperationTypeAdmin(admin.ModelAdmin):
-    list_display = ('optid', 'name', 'multiple_records', 'is_active', 'create_time',)
+    list_display = ('optid', 'name', 'multiple_records', 'is_active', 'refresh_time',)
 
     list_filter = ('is_active',)
 
@@ -332,7 +332,7 @@ class ApplicationRecordAdmin(admin.ModelAdmin):
 
 
 class ApplicationTypeAdmin(admin.ModelAdmin):
-    list_display = ('atid', 'name', 'is_active', 'create_time',)
+    list_display = ('atid', 'name', 'is_active', 'refresh_time',)
 
     list_filter = ('is_active',)
 
@@ -349,7 +349,7 @@ class ApplicationTypeAdmin(admin.ModelAdmin):
 
 
 class DecisionSupportAdmin(admin.ModelAdmin):
-    list_display = ('dsid', 'name', 'is_active', 'create_time',)
+    list_display = ('dsid', 'name', 'is_active', 'refresh_time',)
 
     list_filter = ('is_active',)
 
@@ -365,8 +365,8 @@ class DecisionSupportAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-class PestsDiseasesAdmin(admin.ModelAdmin):
-    list_display = ('pdid', 'name', 'is_active', 'create_time',)
+class ApplicationTargetAdmin(admin.ModelAdmin):
+    list_display = ('attid', 'name', 'code', 'is_active', 'refresh_time',)
 
     list_filter = ('is_active',)
 
@@ -374,11 +374,11 @@ class PestsDiseasesAdmin(admin.ModelAdmin):
 
     list_editable = ('name', 'is_active',)
 
-    exclude = ["pdid"]
+    exclude = ["attid"]
 
     def save_model(self, request, obj, form, change):
         if not change:
-            obj.pdid = gen_uuid("PDID")
+            obj.attid = gen_uuid("ATTID")
         super().save_model(request, obj, form, change)
 
 
@@ -425,6 +425,6 @@ admin.site.register(HarvestRecord, HarvestRecordAdmin)
 admin.site.register(ApplicationRecord, ApplicationRecordAdmin)
 admin.site.register(ApplicationType, ApplicationTypeAdmin)
 admin.site.register(DecisionSupport, DecisionSupportAdmin)
-admin.site.register(PestsDiseases, PestsDiseasesAdmin)
+admin.site.register(ApplicationTarget, ApplicationTargetAdmin)
 
 admin.site.register(Unit, UnitAdmin)

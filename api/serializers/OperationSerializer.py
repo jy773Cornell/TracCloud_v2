@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from api.models import User, Chemical, Crop, Site, SiteType, Unit, Operation, OperationType, PurchaseRecord, \
-    HarvestRecord, ApplicationRecord, ApplicationType, DecisionSupport, PestsDiseases, CropGrowthStage
+from api.models import *
 
 
 class OperationCreateSerializer(serializers.ModelSerializer):
@@ -112,7 +111,7 @@ class ApplicationCreateSerializer(serializers.ModelSerializer):
     operator_id = serializers.PrimaryKeyRelatedField(source='operator', queryset=User.objects.filter(is_active=True))
     type_id = serializers.PrimaryKeyRelatedField(source='type', queryset=ApplicationType.objects.filter(is_active=True))
     target_id = serializers.PrimaryKeyRelatedField(source='target',
-                                                   queryset=PestsDiseases.objects.filter(is_active=True))
+                                                   queryset=ApplicationTarget.objects.filter(is_active=True))
     chemical_id = serializers.PrimaryKeyRelatedField(source='chemical',
                                                      queryset=Chemical.objects.filter(is_active=True))
     water_unit_id = serializers.PrimaryKeyRelatedField(source='water_unit',
@@ -166,7 +165,7 @@ class ApplicationGetSerializer(serializers.ModelSerializer):
 class ApplicationUpdateSerializer(serializers.ModelSerializer):
     type_id = serializers.PrimaryKeyRelatedField(source='type', queryset=ApplicationType.objects.filter(is_active=True))
     target_id = serializers.PrimaryKeyRelatedField(source='target',
-                                                   queryset=PestsDiseases.objects.filter(is_active=True))
+                                                   queryset=ApplicationTarget.objects.filter(is_active=True))
     chemical_id = serializers.PrimaryKeyRelatedField(source='chemical',
                                                      queryset=Chemical.objects.filter(is_active=True))
     water_unit_id = serializers.PrimaryKeyRelatedField(source='water_unit',
