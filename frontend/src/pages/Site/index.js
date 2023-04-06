@@ -32,7 +32,7 @@ const field_names = ["type", "name", "owner_name", "crop", "crop_year", "size", 
 
 const end_site_types = ["Row", "Hole Code#", "Section", ""]
 
-const crop_level_type = ["Row", "Hole Code#", "Section", "Blocks"]
+const crop_level_type = ["Row", "Hole Code#", "Section", "Block"]
 
 const add_row_id = "create_add_row_data"
 

@@ -147,6 +147,7 @@ class ApplicationGetSerializer(serializers.ModelSerializer):
     area_unit = serializers.SerializerMethodField()
     target = serializers.SerializerMethodField()
     decision_support = serializers.SerializerMethodField()
+    update_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
 
     class Meta:
         model = ApplicationRecord

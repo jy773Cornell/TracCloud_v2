@@ -19,15 +19,32 @@ import {
     GridToolbarFilterButton
 } from "@mui/x-data-grid";
 import ConfirmPopover from "../../components/ConfirmPopover";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
+import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
+import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 
 const columnWidth = 200;
 const editWidth = 180;
 
 const field_names = [
-    "crop", "site", "app_datetime", "target", "decision_support", "chemical", "operator", "equipment",
+    "crop", "site", "applied_area", "area_unit", "app_datetime", "target", "decision_support", "chemical", "operator", "equipment",
     "water_use", "water_unit", "application_rate", "rate_unit", "total_amount", "amount_unit", "total_cost",
-    "applied_area", "area_unit", "wind_speed", "wind_direction", "average_temp", "customer"
+    "wind_speed", "wind_direction", "average_temp", "customer"
 ]
+
+const end_site_types = ["Row", "Hole Code#", "Section", "Block"]
+
+const windDirections = [
+    'North',
+    'Northeast',
+    'East',
+    'Southeast',
+    'South',
+    'Southwest',
+    'West',
+    'Northwest'
+];
 
 function createAPIData(data) {
     const {
@@ -55,6 +72,7 @@ function createRowData(record) {
         "id": record.arid,
         "crop": record.crop,
         "site": record.site,
+        "applied_area": record.applied_area,
         "app_datetime": record.app_datetime,
         "target": record.target,
         "decision_support": record.decision_support,
@@ -65,7 +83,6 @@ function createRowData(record) {
         "application_rate": record.application_rate,
         "total_amount": record.total_amount,
         "total_cost": record.total_cost,
-        "applied_area": record.applied_area,
         "wind_speed": record.wind_speed,
         "wind_direction": record.wind_direction,
         "average_temp": record.average_temp,
@@ -87,9 +104,6 @@ function AddSprayRecord({
                             fieldValues,
                             formData,
                             columns,
-                            cropCategoryOptions,
-                            cropVarietyOptions,
-                            cropGrowthStageOptions,
                             handleInputChange,
                             showAddModal,
                             setShowAddModal,
@@ -211,19 +225,23 @@ function AddSprayRecord({
 
 export default function SprayRecord(props) {
     const uid = props.uid;
-    const [sprayApplicationList, setSprayApplicationList] = useState({});
+    const [sprayApplicationList, setSprayApplicationList] = useState([]);
     const [cropList, setCropList] = useState([]);
     const [siteList, setSiteList] = useState([]);
     const [chemicalList, setChemicalList] = useState([]);
     const [equipmentList, setEquipmentList] = useState([]);
-    const [cropCategory, setCropCategory] = useState([]);
-    const [cropVariety, setCropVariety] = useState([]);
-    const [cropGrowthStage, setCropGrowthStage] = useState([]);
     const [siteType, setSiteType] = useState([]);
     const [applicationType, setApplicationType] = useState([]);
     const [applicationTarget, setApplicationTarget] = useState([]);
     const [decisionSupport, setDecisionSupport] = useState([]);
     const [unit, setUnit] = useState([]);
+
+    const [siteOptions, setSiteOptions] = useState([]);
+    const [applicationTargetOptions, setApplicationTargetOptions] = useState([]);
+    const [decisionSupportOptions, setDecisionSupportOptions] = useState([]);
+    const [chemicalOptions, setChemicalOptions] = useState([]);
+    const [equipmentOptions, setEquipmentOptions] = useState([]);
+    const [windDirectionOptions] = useState(windDirections);
 
     const [rows, setRows] = useState([]);
     const [formData, setFormData] = useState({});
@@ -295,48 +313,6 @@ export default function SprayRecord(props) {
             })
     }
 
-    async function CropCategoryGet() {
-        const requestOptions = {
-            method: "GET", headers: {"Content-Type": "application/json"},
-        };
-        await fetch("/api/crop/category/", requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        setCropCategory(data.data);
-                    })
-                }
-            })
-    }
-
-    async function CropVarietyGet() {
-        const requestOptions = {
-            method: "GET", headers: {"Content-Type": "application/json"},
-        };
-        await fetch("/api/crop/variety/", requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        setCropVariety(data.data);
-                    })
-                }
-            })
-    }
-
-    async function CropGrowthStageGet() {
-        const requestOptions = {
-            method: "GET", headers: {"Content-Type": "application/json"},
-        };
-        await fetch("/api/crop/growthstage/", requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        setCropGrowthStage(data.data);
-                    })
-                }
-            })
-    }
-
     async function SiteTypeGet() {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
@@ -355,7 +331,7 @@ export default function SprayRecord(props) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/application/type/", requestOptions)
+        await fetch("/api/operation/application/type/", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
@@ -369,7 +345,7 @@ export default function SprayRecord(props) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/application/target/", requestOptions)
+        await fetch("/api/operation/application/target/", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
@@ -383,7 +359,7 @@ export default function SprayRecord(props) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/application/desicisionsupport/", requestOptions)
+        await fetch("/api/operation/application/desicisionsupport/", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
@@ -415,7 +391,7 @@ export default function SprayRecord(props) {
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        const sprayList = data.data.filter(item => item[0].type === applicationType.find(item => item.name === "Spray").atid)
+                        const sprayList = data.data.filter(item => item.type === applicationType.find(item => item.name === "Spray").atid)
                         setSprayApplicationList(sprayList);
                     })
                 }
@@ -455,9 +431,9 @@ export default function SprayRecord(props) {
 
     const updateRowData = () => {
         if (isExpended) {
-
+            setRows(createRowData(sprayApplicationList));
         } else {
-
+            console.log(1);
         }
     }
 
@@ -481,7 +457,7 @@ export default function SprayRecord(props) {
 
     const onSaveClicked = () => {
         if (Object.values(fieldValues).every(value => value !== "")) {
-            CropRecordUpdate();
+            ApplicationRecordUpdate();
             const index = rows.findIndex(item => item.id === fieldValues.id);
             setRows([...rows.slice(0, index), fieldValues, ...rows.slice(index + 1),]);
         } else {
@@ -503,7 +479,7 @@ export default function SprayRecord(props) {
     };
 
     const onDeleteClicked = (params) => {
-        CropRecordDelete(params.id);
+        ApplicationRecordDelete(params.id);
         const index = rows.findIndex(item => item.id === params.id);
         setRows([...rows.slice(0, index), ...rows.slice(index + 1),]);
     };
@@ -535,137 +511,461 @@ export default function SprayRecord(props) {
         }
     };
 
-    const columns = [{
-        field: 'operations',
-        headerName: 'Operations',
-        sortable: false,
-        width: 150,
-        disableColumnMenu: true,
-        disableClickEventBubbling: true,
-        renderCell: (params) => {
-            if (editRowId !== params.id) {
-                return (<>
-                    <IconButton onClick={() => onEditClicked(params)}>
-                        <EditIcon/>
-                    </IconButton>
-                    <IconButton onClick={(event) => {
-                        setAnchorEl(event.currentTarget);
-                        setPopoverRowId(params.id);
-                    }}>
-                        <DeleteIcon/>
-                    </IconButton>
-                    {popoverRowId === params.id && <ConfirmPopover anchorEl={anchorEl}
-                                                                   setAnchorEl={setAnchorEl}
-                                                                   onDeleteClicked={onDeleteClicked}
-                                                                   params={params}
-                                                                   msg="Delete this record?"
-                                                                   type="delete"
-                    />}
-                </>);
-            } else {
-                return (<>
-                    <IconButton onClick={(event) => {
-                        setAnchorEl(event.currentTarget);
-                        setPopoverRowId(params.id);
-                    }}>
-                        <SaveIcon/>
-                    </IconButton>
-                    <IconButton onClick={() => onCancelClicked()}>
-                        < CancelIcon/>
-                    </IconButton>
-                    {popoverRowId === params.id && <ConfirmPopover anchorEl={anchorEl}
-                                                                   setAnchorEl={setAnchorEl}
-                                                                   onSaveClicked={onSaveClicked}
-                                                                   params={params}
-                                                                   msg="Update this record?"
-                                                                   type="update"
-                    />}
-                </>)
+    const SiteOptionsFresh = () => {
+        const endSiteList = siteList.filter(item => end_site_types.includes(item.type))
+        let options = [];
+        endSiteList.map(item => {
+            let site = item;
+            let optionStr = site.name;
+            while (site.parent) {
+                site = siteList.find(item => item.sid === site.parent)
+                optionStr = `${site.name} - ${optionStr}`;
+            }
+            options.push(optionStr);
+        })
+        setSiteOptions(options);
+    };
+
+    const ApplicationTargeOptionsFresh = () => {
+        setApplicationTargetOptions(applicationTarget.map(item => ({
+            label: item.name, id: item.attid
+        })))
+    };
+
+    const DecisionSupportOptionsFresh = () => {
+        setDecisionSupportOptions(decisionSupport.map(item => ({
+            label: item.name, id: item.dsid
+        })))
+    };
+
+    const ChemicalOptionsFresh = () => {
+        setChemicalOptions(chemicalList.map(item => ({
+            label: item.trade_name, id: item.chemid
+        })))
+    };
+
+    const EquipmentOptionsFresh = () => {
+        setEquipmentOptions(equipmentList.map(item => ({
+            label: item.name, id: item.eid
+        })))
+    };
+
+    const columns = [
+        {
+            field: 'operations',
+            headerName: 'Operations',
+            sortable: false,
+            width: 150,
+            disableColumnMenu: true,
+            disableClickEventBubbling: true,
+            renderCell: (params) => {
+                if (editRowId !== params.id) {
+                    return (<>
+                        <IconButton onClick={() => onEditClicked(params)}>
+                            <EditIcon/>
+                        </IconButton>
+                        <IconButton onClick={(event) => {
+                            setAnchorEl(event.currentTarget);
+                            setPopoverRowId(params.id);
+                        }}>
+                            <DeleteIcon/>
+                        </IconButton>
+                        <IconButton>
+                            <AddCircleIcon/>
+                        </IconButton>
+                        {popoverRowId === params.id &&
+                            <ConfirmPopover anchorEl={anchorEl}
+                                            setAnchorEl={setAnchorEl}
+                                            onDeleteClicked={onDeleteClicked}
+                                            params={params}
+                                            msg="Delete this record?"
+                                            type="delete"
+                            />}
+                    </>);
+                } else {
+                    return (<>
+                        <IconButton onClick={(event) => {
+                            setAnchorEl(event.currentTarget);
+                            setPopoverRowId(params.id);
+                        }}>
+                            <SaveIcon/>
+                        </IconButton>
+                        <IconButton onClick={() => onCancelClicked()}>
+                            < CancelIcon/>
+                        </IconButton>
+                        {popoverRowId === params.id && <ConfirmPopover anchorEl={anchorEl}
+                                                                       setAnchorEl={setAnchorEl}
+                                                                       onSaveClicked={onSaveClicked}
+                                                                       params={params}
+                                                                       msg="Update this record?"
+                                                                       type="update"
+                        />}
+                    </>)
+                }
+            },
+        },
+        {
+            field: 'crop',
+            headerName: 'Crop',
+            sortable: false,
+            width: columnWidth,
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues[field_names[0]] : params.value)
             }
         },
-    }, {
-        field: 'crop',
-        headerName: 'Crop',
-        sortable: false,
-        width: columnWidth,
-        renderCell: (params, rowID = params.id) => (<Autocomplete
-            options={cropCategoryOptions}
-            disableClearable
-            readOnly={editRowId !== rowID}
-            value={editRowId === rowID ? fieldValues[field_names[0]] : params.value}
-            onChange={(event, value) => {
-                handleInputChange(event, value, field_names[0]);
-            }}
-            renderInput={(params) => {
-                return (editRowId !== rowID ? <TextField {...params} variant="standard"
-                                                         InputProps={{disableUnderline: true}}
-                                                         sx={{width: columnWidth}}/> :
-                    <TextField {...params} variant="standard" error={inputError[field_names[0]]}
-                               sx={{width: editWidth}}
-                    />)
-            }}
-        />),
-    }, {
-        field: 'variety',
-        headerName: 'Variety',
-        sortable: false,
-        width: columnWidth,
-        renderCell: (params, rowID = params.id) => (<Autocomplete
-            options={cropVarietyOptions}
-            disableClearable
-            readOnly={editRowId !== rowID}
-            value={editRowId === rowID ? fieldValues[field_names[1]] : params.value}
-            onChange={(event, value) => {
-                handleInputChange(event, value, field_names[1]);
-            }}
-            renderInput={(params) => {
-                return (editRowId !== rowID ? <TextField {...params} variant="standard"
-                                                         InputProps={{disableUnderline: true}}
-                                                         sx={{width: columnWidth}}/> :
-                    <TextField {...params} variant="standard" sx={{width: editWidth}}
-                               error={inputError[field_names[1]]}/>)
-            }}
-        />),
-    }, {
-        field: 'crop_code', headerName: 'Crop Code', sortable: false, width: columnWidth, valueGetter: (params) => {
-            return (editRowId === params.id ? fieldValues[field_names[2]] : params.value)
+        {
+            field: 'site',
+            headerName: 'Site',
+            sortable: false,
+            width: columnWidth,
+            renderCell: (params, rowID = params.id) => (<Autocomplete
+                options={siteOptions}
+                disableClearable
+                readOnly={editRowId !== rowID}
+                value={editRowId === rowID ? fieldValues[field_names[1]] : params.value}
+                onChange={(event, value) => {
+                    handleInputChange(event, value, field_names[1]);
+                }}
+                renderInput={(params) => {
+                    return (editRowId !== rowID ? <TextField {...params} variant="standard"
+                                                             InputProps={{disableUnderline: true}}
+                                                             sx={{width: columnWidth}}/> :
+                        <TextField {...params} variant="standard" sx={{width: editWidth}}
+                                   error={inputError[field_names[1]]}/>)
+                }}
+            />),
         },
-    }, {
-        field: 'category', headerName: 'Category', sortable: false, width: columnWidth, valueGetter: (params) => {
-            return (editRowId === params.id ? fieldValues[field_names[3]] : params.value)
+        {
+            field: 'applied_area',
+            headerName: 'Applied Area',
+            sortable: false,
+            width: columnWidth,
+            renderCell: (params, rowID = params.id) => {
+                return (editRowId !== rowID ? <TextField
+                    variant="standard"
+                    value={params.value}
+                    InputProps={{
+                        disableUnderline: true, readOnly: true,
+                    }}
+                    sx={{width: columnWidth}}/> : <TextField
+                    variant="standard"
+                    value={fieldValues[field_names[4]]}
+                    sx={{width: editWidth}}
+                    onChange={(event) => {
+                        handleInputChange(event, event.target.value, field_names[4]);
+                    }}
+                />)
+            },
         },
-    }, {
-        field: 'growth_stage',
-        headerName: 'Growth Stage',
-        sortable: false,
-        width: columnWidth,
-        renderCell: (params, rowID = params.id) => (<Autocomplete
-            options={cropGrowthStageOptions}
-            disableClearable
-            readOnly={editRowId !== rowID}
-            value={editRowId === rowID ? fieldValues[field_names[4]] : params.value}
-            onChange={(event, value) => {
-                handleInputChange(event, value, field_names[4]);
-            }}
-            renderInput={(params) => {
-                return (editRowId !== rowID ? <TextField {...params} variant="standard"
-                                                         InputProps={{disableUnderline: true}}
-                                                         sx={{width: columnWidth}}/> :
-                    <TextField {...params} variant="standard" sx={{width: editWidth}}
-                               error={inputError[field_names[4]]}/>)
-            }}
-        />),
-    }, {
-        field: 'update_time', headerName: 'Update Time', sortable: false, width: columnWidth,
-    },];
+        {
+            field: 'app_datetime',
+            headerName: 'Application Datetime',
+            sortable: false,
+            width: columnWidth,
+            renderCell: (params, rowID = params.id) => {
+                return (
+                    editRowId !== rowID ?
+                        <TextField
+                            variant="standard"
+                            value={params.value}
+                            InputProps={{
+                                disableUnderline: true,
+                                readOnly: true,
+                            }}
+                            sx={{width: columnWidth}}/> :
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                                variant="standard"
+                                sx={{width: editWidth}}
+                                views={["year"]}
+                                slotProps={{
+                                    textField: {
+                                        variant: "standard",
+                                        placeholder: fieldValues[field_names[2]],
+                                    },
+                                }}
+                                onChange={(event) => {
+                                    handleInputChange(event, event.$y, field_names[2]);
+                                }}
+                            />
+                        </LocalizationProvider>
+                )
+            },
+        },
+        {
+            field: 'target',
+            headerName: 'Application Target',
+            sortable: false,
+            width: columnWidth,
+            renderCell: (params, rowID = params.id) => (
+                <Autocomplete
+                    options={applicationTargetOptions}
+                    disableClearable
+                    readOnly={editRowId !== rowID}
+                    value={editRowId === rowID ? fieldValues[field_names[5]] : params.value}
+                    onChange={(event, value) => {
+                        handleInputChange(event, value, field_names[5]);
+                    }}
+                    renderInput={(params) => {
+                        return (editRowId !== rowID ? <TextField {...params} variant="standard"
+                                                                 InputProps={{disableUnderline: true}}
+                                                                 sx={{width: columnWidth}}/> :
+                            <TextField {...params} variant="standard" sx={{width: editWidth}}
+                                       error={inputError[field_names[5]]}/>)
+                    }}
+                />),
+        },
+        {
+            field: 'decision_support',
+            headerName: 'Decision Support',
+            sortable: false,
+            width: columnWidth,
+            renderCell: (params, rowID = params.id) => (
+                <Autocomplete
+                    options={decisionSupportOptions}
+                    disableClearable
+                    readOnly={editRowId !== rowID}
+                    value={editRowId === rowID ? fieldValues[field_names[6]] : params.value}
+                    onChange={(event, value) => {
+                        handleInputChange(event, value, field_names[6]);
+                    }}
+                    renderInput={(params) => {
+                        return (editRowId !== rowID ? <TextField {...params} variant="standard"
+                                                                 InputProps={{disableUnderline: true}}
+                                                                 sx={{width: columnWidth}}/> :
+                            <TextField {...params} variant="standard" sx={{width: editWidth}}
+                                       error={inputError[field_names[6]]}/>)
+                    }}
+                />),
+        },
+        {
+            field: 'chemical',
+            headerName: 'Chemical',
+            sortable: false,
+            width: columnWidth,
+            renderCell: (params, rowID = params.id) => (
+                <Autocomplete
+                    options={chemicalOptions}
+                    disableClearable
+                    readOnly={editRowId !== rowID}
+                    value={editRowId === rowID ? fieldValues[field_names[7]] : params.value}
+                    onChange={(event, value) => {
+                        handleInputChange(event, value, field_names[7]);
+                    }}
+                    renderInput={(params) => {
+                        return (editRowId !== rowID ? <TextField {...params} variant="standard"
+                                                                 InputProps={{disableUnderline: true}}
+                                                                 sx={{width: columnWidth}}/> :
+                            <TextField {...params} variant="standard" sx={{width: editWidth}}
+                                       error={inputError[field_names[7]]}/>)
+                    }}
+                />),
+        },
+        {
+            field: 'operator',
+            headerName: 'Operator',
+            sortable: false,
+            width: columnWidth,
+            renderCell: (params, rowID = params.id) => {
+                return (editRowId !== rowID ? <TextField
+                    variant="standard"
+                    value={params.value}
+                    InputProps={{
+                        disableUnderline: true, readOnly: true,
+                    }}
+                    sx={{width: columnWidth}}/> : <TextField
+                    variant="standard"
+                    value={fieldValues[field_names[8]]}
+                    sx={{width: editWidth}}
+                    onChange={(event) => {
+                        handleInputChange(event, event.target.value, field_names[8]);
+                    }}
+                />)
+            },
+        },
+        {
+            field: 'equipment',
+            headerName: 'Equipment',
+            sortable: false,
+            width: columnWidth,
+            renderCell: (params, rowID = params.id) => (
+                <Autocomplete
+                    options={equipmentOptions}
+                    disableClearable
+                    readOnly={editRowId !== rowID}
+                    value={editRowId === rowID ? fieldValues[field_names[9]] : params.value}
+                    onChange={(event, value) => {
+                        handleInputChange(event, value, field_names[9]);
+                    }}
+                    renderInput={(params) => {
+                        return (editRowId !== rowID ? <TextField {...params} variant="standard"
+                                                                 InputProps={{disableUnderline: true}}
+                                                                 sx={{width: columnWidth}}/> :
+                            <TextField {...params} variant="standard" sx={{width: editWidth}}
+                                       error={inputError[field_names[9]]}/>)
+                    }}
+                />),
+        },
+        {
+            field: 'water_use',
+            headerName: 'Water Use',
+            sortable: false,
+            width: columnWidth,
+            renderCell: (params, rowID = params.id) => {
+                return (editRowId !== rowID ? <TextField
+                    variant="standard"
+                    value={params.value}
+                    InputProps={{
+                        disableUnderline: true, readOnly: true,
+                    }}
+                    sx={{width: columnWidth}}/> : <TextField
+                    variant="standard"
+                    value={fieldValues[field_names[10]]}
+                    sx={{width: editWidth}}
+                    onChange={(event) => {
+                        handleInputChange(event, event.target.value, field_names[10]);
+                    }}
+                />)
+            },
+        },
+        {
+            field: 'application_rate',
+            headerName: 'Application Rate',
+            sortable: false,
+            width: columnWidth,
+            renderCell: (params, rowID = params.id) => {
+                return (editRowId !== rowID ? <TextField
+                    variant="standard"
+                    value={params.value}
+                    InputProps={{
+                        disableUnderline: true, readOnly: true,
+                    }}
+                    sx={{width: columnWidth}}/> : <TextField
+                    variant="standard"
+                    value={fieldValues[field_names[12]]}
+                    sx={{width: editWidth}}
+                    onChange={(event) => {
+                        handleInputChange(event, event.target.value, field_names[12]);
+                    }}
+                />)
+            },
+        },
+        {
+            field: 'total_amount',
+            headerName: 'Total Amount',
+            sortable: false,
+            width: columnWidth,
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues[field_names[14]] : params.value)
+            },
+        },
+        {
+            field: 'total_cost',
+            headerName: 'Total Cost',
+            sortable: false,
+            width: columnWidth,
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues[field_names[16]] : params.value)
+            },
+        },
+        {
+            field: 'wind_speed',
+            headerName: 'Wind Speed',
+            sortable: false,
+            width: columnWidth,
+            renderCell: (params, rowID = params.id) => {
+                return (editRowId !== rowID ? <TextField
+                    variant="standard"
+                    value={params.value}
+                    InputProps={{
+                        disableUnderline: true, readOnly: true,
+                    }}
+                    sx={{width: columnWidth}}/> : <TextField
+                    variant="standard"
+                    value={fieldValues[field_names[17]]}
+                    sx={{width: editWidth}}
+                    onChange={(event) => {
+                        handleInputChange(event, event.target.value, field_names[17]);
+                    }}
+                />)
+            },
+        },
+        {
+            field: 'wind_direction',
+            headerName: 'Wind Direction',
+            sortable: false,
+            width: columnWidth,
+            renderCell: (params, rowID = params.id) => (
+                <Autocomplete
+                    options={windDirectionOptions}
+                    disableClearable
+                    readOnly={editRowId !== rowID}
+                    value={editRowId === rowID ? fieldValues[field_names[18]] : params.value}
+                    onChange={(event, value) => {
+                        handleInputChange(event, value, field_names[18]);
+                    }}
+                    renderInput={(params) => {
+                        return (editRowId !== rowID ? <TextField {...params} variant="standard"
+                                                                 InputProps={{disableUnderline: true}}
+                                                                 sx={{width: columnWidth}}/> :
+                            <TextField {...params} variant="standard" sx={{width: editWidth}}
+                                       error={inputError[field_names[18]]}/>)
+                    }}
+                />),
+        },
+        {
+            field: 'average_temp',
+            headerName: 'Average Temperature',
+            sortable: false,
+            width: columnWidth,
+            renderCell: (params, rowID = params.id) => {
+                return (editRowId !== rowID ? <TextField
+                    variant="standard"
+                    value={params.value}
+                    InputProps={{
+                        disableUnderline: true, readOnly: true,
+                    }}
+                    sx={{width: columnWidth}}/> : <TextField
+                    variant="standard"
+                    value={fieldValues[field_names[19]]}
+                    sx={{width: editWidth}}
+                    onChange={(event) => {
+                        handleInputChange(event, event.target.value, field_names[19]);
+                    }}
+                />)
+            },
+        },
+        {
+            field: 'customer',
+            headerName: 'Customer',
+            sortable: false,
+            width: columnWidth,
+            renderCell: (params, rowID = params.id) => {
+                return (editRowId !== rowID ? <TextField
+                    variant="standard"
+                    value={params.value}
+                    InputProps={{
+                        disableUnderline: true, readOnly: true,
+                    }}
+                    sx={{width: columnWidth}}/> : <TextField
+                    variant="standard"
+                    value={fieldValues[field_names[20]]}
+                    sx={{width: editWidth}}
+                    onChange={(event) => {
+                        handleInputChange(event, event.target.value, field_names[20]);
+                    }}
+                />)
+            },
+        },
+        {
+            field: 'update_time', headerName: 'Update Time', sortable: false, width: columnWidth,
+        },
+    ]
 
     const addProps = {
         fieldValues,
         formData,
         columns,
-        cropCategoryOptions,
-        cropVarietyOptions,
-        cropGrowthStageOptions,
         handleInputChange,
         showAddModal,
         setShowAddModal,
@@ -685,9 +985,6 @@ export default function SprayRecord(props) {
         SiteListGet(uid);
         ChemicalListGet(uid);
         EquipmentListGet(uid);
-        CropCategoryGet();
-        CropVarietyGet();
-        CropGrowthStageGet();
         SiteTypeGet();
         ApplicationTypeGet();
         ApplicationTargetGet();
@@ -697,11 +994,34 @@ export default function SprayRecord(props) {
     }, []);
 
     useEffect(() => {
-    }, [formData.crop]);
+        SiteOptionsFresh();
+    }, [siteList]);
 
     useEffect(() => {
-        SprayApplicationListGet();
-    }, [refreshRecord]);
+        ApplicationTargeOptionsFresh();
+    }, [applicationTarget]);
+
+    useEffect(() => {
+        DecisionSupportOptionsFresh();
+    }, [decisionSupport]);
+
+    useEffect(() => {
+        ChemicalOptionsFresh();
+    }, [chemicalList]);
+
+    useEffect(() => {
+        EquipmentOptionsFresh();
+    }, [equipmentList]);
+
+    useEffect(() => {
+        updateRowData();
+    }, [sprayApplicationList]);
+
+    useEffect(() => {
+        if (Object.keys(applicationType).length !== 0) {
+            SprayApplicationListGet();
+        }
+    }, [refreshRecord, applicationType]);
 
     return (<div>
         <AddButton

@@ -309,10 +309,13 @@ class Operation(models.Model):
     datetime = models.DateTimeField(verbose_name="Operation Datetime", auto_now=True)
 
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
+    update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
 
     def __str__(self):
         return "{} Record ({})".format(self.type, self.datetime)
+
+    objects = MyModelManager()
 
 
 class OperationType(models.Model):
@@ -383,15 +386,18 @@ class ApplicationRecord(models.Model):
     user = models.ForeignKey(verbose_name="User", to="User", to_field="uid", related_name="ar_user",
                              null=True, blank=True, on_delete=models.SET_NULL)
     opid = models.ForeignKey(verbose_name="OPID", to="Operation", to_field="opid", related_name="ar_op",
-                             null=True, blank=True, on_delete=models.SET_NULL)
+                             null=True, blank=True, on_delete=models.CASCADE)
     type = models.ForeignKey(verbose_name="Application Type", to="ApplicationType", to_field="atid",
                              related_name="ar_type", null=True, blank=True, on_delete=models.SET_NULL)
     crop = models.ForeignKey(verbose_name="Crop", to="Crop", to_field="cid", related_name="ar_crop",
                              null=True, blank=True, on_delete=models.SET_NULL)
     site = models.ForeignKey(verbose_name="Site", to="Site", to_field="sid", related_name="ar_site",
                              null=True, blank=True, on_delete=models.SET_NULL)
+    applied_area = models.CharField(verbose_name="Applied Area", max_length=32)
+    area_unit = models.ForeignKey(verbose_name="Amount Unit", to="Unit", to_field="unitid", related_name="ar_area_unit",
+                                  null=True, blank=True, on_delete=models.SET_NULL)
     app_datetime = models.CharField(verbose_name="Application Datetime", null=True, blank=True, max_length=64)
-    target = models.ForeignKey(verbose_name="Pests/Diseases", to="ApplicationTarget", to_field="attid",
+    target = models.ForeignKey(verbose_name="Application Target", to="ApplicationTarget", to_field="attid",
                                related_name="ar_pd", null=True, blank=True, on_delete=models.SET_NULL)
     decision_support = models.ForeignKey(verbose_name="Decision Support", to="DecisionSupport", to_field="dsid",
                                          related_name="ar_decision_support", null=True, blank=True,
@@ -411,9 +417,6 @@ class ApplicationRecord(models.Model):
     amount_unit = models.ForeignKey(verbose_name="Amount Unit", to="Unit", to_field="unitid",
                                     related_name="ar_amount_opu", null=True, blank=True, on_delete=models.SET_NULL)
     total_cost = models.CharField(verbose_name="Total Cost", max_length=32)
-    applied_area = models.CharField(verbose_name="Applied Area", max_length=32)
-    area_unit = models.ForeignKey(verbose_name="Amount Unit", to="Unit", to_field="unitid", related_name="ar_area_unit",
-                                  null=True, blank=True, on_delete=models.SET_NULL)
     wind_speed = models.CharField(verbose_name="Wind Speed", null=True, blank=True, max_length=32)
     wind_direction = models.CharField(verbose_name="Wind Direction", null=True, blank=True, max_length=32)
     average_temp = models.CharField(verbose_name="Average Temperature", null=True, blank=True, max_length=32)
