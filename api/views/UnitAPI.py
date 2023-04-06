@@ -11,6 +11,7 @@ class UnitGetView(APIView):
         usage = request.GET.get(self.lookup_url_kwarg)
         if usage:
             data = [unit for unit in cache.get("Unit") if unit["usage"] == usage]
-            return Response({'Succeeded': 'Unit Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
+        else:
+            data = cache.get("Unit")
 
-        return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'Succeeded': 'Unit Info Fetched.', 'data': data}, status=status.HTTP_200_OK)

@@ -259,8 +259,8 @@ class ApplicationCreateView(APIView):
     @csrf_exempt
     def post(self, request, format=None):
         data = request_data_transform(request.data)
-        fields = ["user_id", "type_id", "chemid", "site_list"]
-        if all(field in list(data.keys()) for field in fields):
+        required_fields = ["user_id", "type_id", "chemid", "site_list"]
+        if all(field in list(data.keys()) for field in required_fields):
             opid = gen_uuid("OPID")
             operation_type = cache.get("OperationType").find(name="Application")["optid"]
             Operation(opid=opid, user_id=data.get("user_id"), type_id=operation_type).save()
@@ -309,21 +309,21 @@ class ApplicationListGetView(APIView):
     def get(self, request, format=None):
         uid = request.GET.get(self.lookup_url_kwarg)
         if uid:
-            user = User.objects.filter(uid=uid, is_active=True)
+            user = User.objects.filter(uid=uid).alive()
             if user:
                 op_application_list = Operation.objects.filter(
                     user_id=uid,
-                    type=OperationType.objects.filter(name="Application", is_active=True).first(),
-                    is_active=True)
+                    type_id=cache.get("OperationType").find(name="Application")["optid"]
+                ).alive()
+                application_list = ApplicationRecord.objects.filter(user_id=uid).alive()
 
                 data = {}
                 for op_application in op_application_list:
                     opid = op_application.opid
-                    op_str = op_application.__str__()
-                    data[op_str] = []
-                    application_list = ApplicationRecord.objects.filter(opid=opid, is_active=True)
+                    data[opid] = []
                     for application in application_list:
-                        data[op_str].append(ApplicationGetSerializer(application).data)
+                        if application.opid == opid:
+                            data[opid].append(ApplicationGetSerializer(application).data)
                 return Response({'Succeeded': 'Application Record List Info Fetched.', 'data': data},
                                 status=status.HTTP_200_OK)
 
@@ -340,7 +340,7 @@ class ApplicationUpdateView(APIView):
         data = request_data_transform(request.data)
         arid = data.pop("arid")
         if arid:
-            application = ApplicationRecord.objects.filter(arid=arid, is_active=True)
+            application = ApplicationRecord.objects.filter(arid=arid).alive()
             if application:
                 application.update(**data)
                 return Response({'Succeeded': 'Application record info has been updated.'}, status=status.HTTP_200_OK)
@@ -357,18 +357,18 @@ class ApplicationOperationDeleteView(APIView):
     def put(self, request, format=None):
         opid = request.data.get("opid")
         uid = request.data.get("user")
-        operation_type = OperationType.objects.filter(name="Application", is_active=True).first()
+        operation_type_id = cache.get("OperationType").find(name="Application")["optid"]
 
         if opid and uid:
-            operation = Operation.objects.filter(opid=opid, user_id=uid, type=operation_type, is_active=True)
-            application = ApplicationRecord.objects.filter(opid_id=opid, user_id=uid, is_active=True)
+            operation = Operation.objects.filter(opid=opid, user_id=uid, type_id=operation_type_id).alive()
+            application = ApplicationRecord.objects.filter(opid_id=opid, user_id=uid).alive()
             if operation:
-                model_delete(operation)
+                operation.delete()
                 if application:
-                    model_delete(application)
+                    application.delete()
                 return Response({'Succeeded': 'Application operation have been deleted.'}, status=status.HTTP_200_OK)
 
-            return Response({'Failed': 'Invalid opid'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'Failed': 'Invalid post data'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class ApplicationDeleteView(APIView):
@@ -380,9 +380,27 @@ class ApplicationDeleteView(APIView):
         arid = request.data.get("arid")
 
         if uid and arid:
-            application = ApplicationRecord.objects.filter(arid=arid, user_id=uid, is_active=True)
+            application = ApplicationRecord.objects.filter(arid=arid, user_id=uid).alive()
             if application:
                 model_delete(application)
                 return Response({'Succeeded': 'Application record have been deleted.'}, status=status.HTTP_200_OK)
 
             return Response({'Failed': 'Invalid arid'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class ApplicationTypeGetView(APIView):
+    def get(self, request, format=None):
+        data = cache.get("ApplicationType")
+        return Response({'Succeeded': 'Application Type Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
+
+
+class DecisionSupportGetView(APIView):
+    def get(self, request, format=None):
+        data = cache.get("DecisionSupport")
+        return Response({'Succeeded': 'Decision Support Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
+
+
+class ApplicationTargetGetView(APIView):
+    def get(self, request, format=None):
+        data = cache.get("ApplicationTarget")
+        return Response({'Succeeded': 'Application Target Info Fetched.', 'data': data}, status=status.HTTP_200_OK)

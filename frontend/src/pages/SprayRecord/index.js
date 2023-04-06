@@ -23,21 +23,53 @@ import ConfirmPopover from "../../components/ConfirmPopover";
 const columnWidth = 200;
 const editWidth = 180;
 
-const field_names = ["crop", "variety", "crop_code", "category", "growth_stage"]
+const field_names = [
+    "crop", "site", "app_datetime", "target", "decision_support", "chemical", "operator", "equipment",
+    "water_use", "water_unit", "application_rate", "rate_unit", "total_amount", "amount_unit", "total_cost",
+    "applied_area", "area_unit", "wind_speed", "wind_direction", "average_temp", "customer"
+]
 
 function createAPIData(data) {
-    const {crop: crop_id, variety: variety_id, growth_stage: growth_stage_id, ...rest} = data;
-    return {crop_id, variety_id, growth_stage_id, ...rest};
+    const {
+        crop: crop_id, site: site_id, target: target_id, decision_support: decision_support_id,
+        chemical: chemical_id, equipment: equipment_id, water_unit: water_unit_id, rate_unit: rate_unit_id,
+        amount_unit: amount_unit_id, area_unit: area_unit_id, ...rest
+    } = data;
+    return {
+        crop_id,
+        site_id,
+        target_id,
+        decision_support_id,
+        chemical_id,
+        equipment_id,
+        water_unit_id,
+        rate_unit_id,
+        amount_unit_id,
+        area_unit_id,
+        ...rest
+    };
 }
 
 function createRowData(record) {
     return {
-        "id": record.cid,
+        "id": record.arid,
         "crop": record.crop,
-        "variety": record.variety,
-        "crop_code": record.crop_code,
-        "category": record.category,
-        "growth_stage": record.growth_stage,
+        "site": record.site,
+        "app_datetime": record.app_datetime,
+        "target": record.target,
+        "decision_support": record.decision_support,
+        "chemical": record.chemical,
+        "operator": record.operator,
+        "equipment": record.equipment,
+        "water_use": record.water_use,
+        "application_rate": record.application_rate,
+        "total_amount": record.total_amount,
+        "total_cost": record.total_cost,
+        "applied_area": record.applied_area,
+        "wind_speed": record.wind_speed,
+        "wind_direction": record.wind_direction,
+        "average_temp": record.average_temp,
+        "customer": record.customer,
         "update_time": record.update_time
     };
 }
@@ -52,21 +84,21 @@ function CustomToolbar() {
 }
 
 function AddSprayRecord({
-                           fieldValues,
-                           formData,
-                           columns,
-                           cropCategoryOptions,
-                           cropVarietyOptions,
-                           cropGrowthStageOptions,
-                           handleInputChange,
-                           showAddModal,
-                           setShowAddModal,
-                           setIsSave,
-                           inputError,
-                           updateInputError,
-                           refreshRecord,
-                           setRefreshRecord,
-                       }) {
+                            fieldValues,
+                            formData,
+                            columns,
+                            cropCategoryOptions,
+                            cropVarietyOptions,
+                            cropGrowthStageOptions,
+                            handleInputChange,
+                            showAddModal,
+                            setShowAddModal,
+                            setIsSave,
+                            inputError,
+                            updateInputError,
+                            refreshRecord,
+                            setRefreshRecord,
+                        }) {
 
     async function CropRecordSave() {
         const apiData = createAPIData(formData);
@@ -133,8 +165,7 @@ function AddSprayRecord({
                         <TextField
                             value={fieldValues[field_names[2]]}
                             InputLabelProps={{
-                                shrink: true,
-                                readOnly: true,
+                                shrink: true, readOnly: true,
                             }}
                             variant="outlined"
                             label={columns[3].headerName}
@@ -144,8 +175,7 @@ function AddSprayRecord({
                         <TextField
                             value={fieldValues[field_names[3]]}
                             InputLabelProps={{
-                                shrink: true,
-                                readOnly: true,
+                                shrink: true, readOnly: true,
                             }}
                             variant="outlined"
                             label={columns[4].headerName}
@@ -181,20 +211,28 @@ function AddSprayRecord({
 
 export default function SprayRecord(props) {
     const uid = props.uid;
+    const [sprayApplicationList, setSprayApplicationList] = useState({});
+    const [cropList, setCropList] = useState([]);
+    const [siteList, setSiteList] = useState([]);
+    const [chemicalList, setChemicalList] = useState([]);
+    const [equipmentList, setEquipmentList] = useState([]);
     const [cropCategory, setCropCategory] = useState([]);
     const [cropVariety, setCropVariety] = useState([]);
     const [cropGrowthStage, setCropGrowthStage] = useState([]);
+    const [siteType, setSiteType] = useState([]);
+    const [applicationType, setApplicationType] = useState([]);
+    const [applicationTarget, setApplicationTarget] = useState([]);
+    const [decisionSupport, setDecisionSupport] = useState([]);
+    const [unit, setUnit] = useState([]);
 
     const [rows, setRows] = useState([]);
     const [formData, setFormData] = useState({});
     const [fieldValues, setFieldValues] = useState({});
-    const [cropCategoryOptions, setCropCategoryOptions] = useState([]);
-    const [cropVarietyOptions, setCropVarietyOptions] = useState([]);
-    const [cropGrowthStageOptions, setCropGrowthStageOptions] = useState([]);
 
     const [showAddModal, setShowAddModal] = useState(false);
     const [isSave, setIsSave] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
+    const [isExpended, setIsExpended] = useState(true);
     const [inputError, setInputError] = useState([]);
     const [editRowId, setEditRowId] = useState(null);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -209,9 +247,49 @@ export default function SprayRecord(props) {
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        const record_list = data.data;
-                        const record_row = record_list.map((record) => createRowData(record))
-                        setRows(record_row);
+                        setCropList(data.data);
+                    })
+                }
+            })
+    }
+
+    async function SiteListGet(uid) {
+        const requestOptions = {
+            method: "GET", headers: {"Content-Type": "application/json"},
+        };
+        await fetch("/api/site/list/get/" + "?uid=" + uid, requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    response.json().then((data) => {
+                        setSiteList(data.data);
+                    })
+                }
+            })
+    }
+
+    async function ChemicalListGet(uid) {
+        const requestOptions = {
+            method: "GET", headers: {"Content-Type": "application/json"},
+        };
+        await fetch("/api/chemical/list/get/" + "?uid=" + uid, requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    response.json().then((data) => {
+                        setChemicalList(data.data);
+                    })
+                }
+            })
+    }
+
+    async function EquipmentListGet(uid) {
+        const requestOptions = {
+            method: "GET", headers: {"Content-Type": "application/json"},
+        };
+        await fetch("/api/equipment/list/get/" + "?uid=" + uid, requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    response.json().then((data) => {
+                        setEquipmentList(data.data);
                     })
                 }
             })
@@ -259,13 +337,98 @@ export default function SprayRecord(props) {
             })
     }
 
-    async function CropRecordUpdate() {
+    async function SiteTypeGet() {
+        const requestOptions = {
+            method: "GET", headers: {"Content-Type": "application/json"},
+        };
+        await fetch("/api/site/type/", requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    response.json().then((data) => {
+                        setSiteType(data.data);
+                    })
+                }
+            })
+    }
+
+    async function ApplicationTypeGet() {
+        const requestOptions = {
+            method: "GET", headers: {"Content-Type": "application/json"},
+        };
+        await fetch("/api/application/type/", requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    response.json().then((data) => {
+                        setApplicationType(data.data);
+                    })
+                }
+            })
+    }
+
+    async function ApplicationTargetGet() {
+        const requestOptions = {
+            method: "GET", headers: {"Content-Type": "application/json"},
+        };
+        await fetch("/api/application/target/", requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    response.json().then((data) => {
+                        setApplicationTarget(data.data);
+                    })
+                }
+            })
+    }
+
+    async function DecisionSupportGet() {
+        const requestOptions = {
+            method: "GET", headers: {"Content-Type": "application/json"},
+        };
+        await fetch("/api/application/desicisionsupport/", requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    response.json().then((data) => {
+                        setDecisionSupport(data.data);
+                    })
+                }
+            })
+    }
+
+    async function UnitGet() {
+        const requestOptions = {
+            method: "GET", headers: {"Content-Type": "application/json"},
+        };
+        await fetch("/api/unit/", requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    response.json().then((data) => {
+                        setUnit(data.data);
+                    })
+                }
+            })
+    }
+
+    async function SprayApplicationListGet() {
+        const requestOptions = {
+            method: "GET", headers: {"Content-Type": "application/json"},
+        };
+        await fetch("/api/operation/application/list/get/?" + "uid=" + uid, requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    response.json().then((data) => {
+                        const sprayList = data.data.filter(item => item[0].type === applicationType.find(item => item.name === "Spray").atid)
+                        setSprayApplicationList(sprayList);
+                    })
+                }
+            })
+    }
+
+    async function ApplicationRecordUpdate() {
         const apiData = createAPIData(formData);
         console.log(apiData);
         const requestOptions = {
             method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
         };
-        await fetch("/api/crop/update/", requestOptions)
+        await fetch("/api/application/update/", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     setIsSave(true);
@@ -275,19 +438,27 @@ export default function SprayRecord(props) {
             })
     }
 
-    async function CropRecordDelete(cid) {
-        const apiData = {"user": uid, "cid": cid}
+    async function ApplicationRecordDelete(arid) {
+        const apiData = {"user": uid, "arid": arid}
         console.log(apiData);
         const requestOptions = {
             method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
         };
-        await fetch("/api/crop/delete/", requestOptions)
+        await fetch("/api/application/delete/", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     setIsDelete(true);
                     setRefreshRecord(~refreshRecord);
                 }
             })
+    }
+
+    const updateRowData = () => {
+        if (isExpended) {
+
+        } else {
+
+        }
     }
 
     const clearInputError = () => {
@@ -298,13 +469,11 @@ export default function SprayRecord(props) {
         Object.keys(fieldValues).forEach(key => {
             if (fieldValues[key] === "") {
                 setInputError((prevInputError) => ({
-                    ...prevInputError,
-                    [key]: true
+                    ...prevInputError, [key]: true
                 }));
             } else {
                 setInputError((prevInputError) => ({
-                    ...prevInputError,
-                    [key]: false
+                    ...prevInputError, [key]: false
                 }));
             }
         });
@@ -314,11 +483,7 @@ export default function SprayRecord(props) {
         if (Object.values(fieldValues).every(value => value !== "")) {
             CropRecordUpdate();
             const index = rows.findIndex(item => item.id === fieldValues.id);
-            setRows([
-                ...rows.slice(0, index),
-                fieldValues,
-                ...rows.slice(index + 1),
-            ]);
+            setRows([...rows.slice(0, index), fieldValues, ...rows.slice(index + 1),]);
         } else {
             updateInputError();
         }
@@ -340,10 +505,7 @@ export default function SprayRecord(props) {
     const onDeleteClicked = (params) => {
         CropRecordDelete(params.id);
         const index = rows.findIndex(item => item.id === params.id);
-        setRows([
-            ...rows.slice(0, index),
-            ...rows.slice(index + 1),
-        ]);
+        setRows([...rows.slice(0, index), ...rows.slice(index + 1),]);
     };
 
     const onAddClicked = () => {
@@ -352,24 +514,6 @@ export default function SprayRecord(props) {
         setEditRowId(null);
         setShowAddModal(true);
         clearInputError();
-    };
-
-    const CropCategoryOptionsFresh = () => {
-        setCropCategoryOptions(cropCategory.map(item => ({
-            label: item.name, id: item.ccid, crop_code: item.crop_code, category: item.category,
-        })));
-    };
-
-    const CropVarietyOptionsFresh = (crop_id) => {
-        setCropVarietyOptions(cropVariety.filter(item => item.crop_id === crop_id).map(item => ({
-            label: item.name, id: item.cvid
-        })))
-    };
-
-    const CropGrowthStageOptionsFresh = (crop_id) => {
-        setCropGrowthStageOptions(cropGrowthStage.filter(item => item.crop_id === crop_id).map(item => ({
-            label: item.name, id: item.cgsid
-        })))
     };
 
     const handleInputChange = (event, value, field) => {
@@ -391,166 +535,129 @@ export default function SprayRecord(props) {
         }
     };
 
-    const columns = [
-        {
-            field: 'operations',
-            headerName: 'Operations',
-            sortable: false,
-            width: 150,
-            disableColumnMenu: true,
-            disableClickEventBubbling: true,
-            renderCell: (params) => {
-                if (editRowId !== params.id) {
-                    return (<>
-                        <IconButton onClick={() => onEditClicked(params)}>
-                            <EditIcon/>
-                        </IconButton>
-                        <IconButton onClick={(event) => {
-                            setAnchorEl(event.currentTarget);
-                            setPopoverRowId(params.id);
-                        }}>
-                            <DeleteIcon/>
-                        </IconButton>
-                        {popoverRowId === params.id &&
-                            <ConfirmPopover anchorEl={anchorEl}
-                                            setAnchorEl={setAnchorEl}
-                                            onDeleteClicked={onDeleteClicked}
-                                            params={params}
-                                            msg="Delete this record?"
-                                            type="delete"
-                            />
-                        }
-                    </>);
-                } else {
-                    return (
-                        <>
-                            <IconButton onClick={(event) => {
-                                setAnchorEl(event.currentTarget);
-                                setPopoverRowId(params.id);
-                            }}>
-                                <SaveIcon/>
-                            </IconButton>
-                            <IconButton onClick={() => onCancelClicked()}>
-                                < CancelIcon/>
-                            </IconButton>
-                            {popoverRowId === params.id &&
-                                <ConfirmPopover anchorEl={anchorEl}
-                                                setAnchorEl={setAnchorEl}
-                                                onSaveClicked={onSaveClicked}
-                                                params={params}
-                                                msg="Update this record?"
-                                                type="update"
-                                />
-                            }
-                        </>
-                    )
-                }
-            },
+    const columns = [{
+        field: 'operations',
+        headerName: 'Operations',
+        sortable: false,
+        width: 150,
+        disableColumnMenu: true,
+        disableClickEventBubbling: true,
+        renderCell: (params) => {
+            if (editRowId !== params.id) {
+                return (<>
+                    <IconButton onClick={() => onEditClicked(params)}>
+                        <EditIcon/>
+                    </IconButton>
+                    <IconButton onClick={(event) => {
+                        setAnchorEl(event.currentTarget);
+                        setPopoverRowId(params.id);
+                    }}>
+                        <DeleteIcon/>
+                    </IconButton>
+                    {popoverRowId === params.id && <ConfirmPopover anchorEl={anchorEl}
+                                                                   setAnchorEl={setAnchorEl}
+                                                                   onDeleteClicked={onDeleteClicked}
+                                                                   params={params}
+                                                                   msg="Delete this record?"
+                                                                   type="delete"
+                    />}
+                </>);
+            } else {
+                return (<>
+                    <IconButton onClick={(event) => {
+                        setAnchorEl(event.currentTarget);
+                        setPopoverRowId(params.id);
+                    }}>
+                        <SaveIcon/>
+                    </IconButton>
+                    <IconButton onClick={() => onCancelClicked()}>
+                        < CancelIcon/>
+                    </IconButton>
+                    {popoverRowId === params.id && <ConfirmPopover anchorEl={anchorEl}
+                                                                   setAnchorEl={setAnchorEl}
+                                                                   onSaveClicked={onSaveClicked}
+                                                                   params={params}
+                                                                   msg="Update this record?"
+                                                                   type="update"
+                    />}
+                </>)
+            }
         },
-        {
-            field: 'crop',
-            headerName: 'Crop',
-            sortable: false,
-            width: columnWidth,
-            renderCell: (params, rowID = params.id) => (
-                <Autocomplete
-                    options={cropCategoryOptions}
-                    disableClearable
-                    readOnly={editRowId !== rowID}
-                    value={editRowId === rowID ? fieldValues[field_names[0]] : params.value}
-                    onChange={(event, value) => {
-                        handleInputChange(event, value, field_names[0]);
-                    }}
-                    renderInput={(params) => {
-                        return (
-                            editRowId !== rowID ?
-                                <TextField {...params} variant="standard"
-                                           InputProps={{disableUnderline: true}}
-                                           sx={{width: columnWidth}}/> :
-                                <TextField {...params} variant="standard" error={inputError[field_names[0]]}
-                                           sx={{width: editWidth}}
-                                />
-                        )
-                    }}
-                />),
+    }, {
+        field: 'crop',
+        headerName: 'Crop',
+        sortable: false,
+        width: columnWidth,
+        renderCell: (params, rowID = params.id) => (<Autocomplete
+            options={cropCategoryOptions}
+            disableClearable
+            readOnly={editRowId !== rowID}
+            value={editRowId === rowID ? fieldValues[field_names[0]] : params.value}
+            onChange={(event, value) => {
+                handleInputChange(event, value, field_names[0]);
+            }}
+            renderInput={(params) => {
+                return (editRowId !== rowID ? <TextField {...params} variant="standard"
+                                                         InputProps={{disableUnderline: true}}
+                                                         sx={{width: columnWidth}}/> :
+                    <TextField {...params} variant="standard" error={inputError[field_names[0]]}
+                               sx={{width: editWidth}}
+                    />)
+            }}
+        />),
+    }, {
+        field: 'variety',
+        headerName: 'Variety',
+        sortable: false,
+        width: columnWidth,
+        renderCell: (params, rowID = params.id) => (<Autocomplete
+            options={cropVarietyOptions}
+            disableClearable
+            readOnly={editRowId !== rowID}
+            value={editRowId === rowID ? fieldValues[field_names[1]] : params.value}
+            onChange={(event, value) => {
+                handleInputChange(event, value, field_names[1]);
+            }}
+            renderInput={(params) => {
+                return (editRowId !== rowID ? <TextField {...params} variant="standard"
+                                                         InputProps={{disableUnderline: true}}
+                                                         sx={{width: columnWidth}}/> :
+                    <TextField {...params} variant="standard" sx={{width: editWidth}}
+                               error={inputError[field_names[1]]}/>)
+            }}
+        />),
+    }, {
+        field: 'crop_code', headerName: 'Crop Code', sortable: false, width: columnWidth, valueGetter: (params) => {
+            return (editRowId === params.id ? fieldValues[field_names[2]] : params.value)
         },
-        {
-            field: 'variety',
-            headerName: 'Variety',
-            sortable: false,
-            width: columnWidth,
-            renderCell: (params, rowID = params.id) => (
-                <Autocomplete
-                    options={cropVarietyOptions}
-                    disableClearable
-                    readOnly={editRowId !== rowID}
-                    value={editRowId === rowID ? fieldValues[field_names[1]] : params.value}
-                    onChange={(event, value) => {
-                        handleInputChange(event, value, field_names[1]);
-                    }}
-                    renderInput={(params) => {
-                        return (
-                            editRowId !== rowID ?
-                                <TextField {...params} variant="standard"
-                                           InputProps={{disableUnderline: true}}
-                                           sx={{width: columnWidth}}/> :
-                                <TextField {...params} variant="standard" sx={{width: editWidth}}
-                                           error={inputError[field_names[1]]}/>
-                        )
-                    }}
-                />),
+    }, {
+        field: 'category', headerName: 'Category', sortable: false, width: columnWidth, valueGetter: (params) => {
+            return (editRowId === params.id ? fieldValues[field_names[3]] : params.value)
         },
-        {
-            field: 'crop_code',
-            headerName: 'Crop Code',
-            sortable: false,
-            width: columnWidth,
-            valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[2]] : params.value)
-            },
-        },
-        {
-            field: 'category',
-            headerName: 'Category',
-            sortable: false,
-            width: columnWidth,
-            valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[3]] : params.value)
-            },
-        },
-        {
-            field: 'growth_stage',
-            headerName: 'Growth Stage',
-            sortable: false,
-            width: columnWidth,
-            renderCell: (params, rowID = params.id) => (
-                <Autocomplete
-                    options={cropGrowthStageOptions}
-                    disableClearable
-                    readOnly={editRowId !== rowID}
-                    value={editRowId === rowID ? fieldValues[field_names[4]] : params.value}
-                    onChange={(event, value) => {
-                        handleInputChange(event, value, field_names[4]);
-                    }}
-                    renderInput={(params) => {
-                        return (
-                            editRowId !== rowID ?
-                                <TextField {...params} variant="standard"
-                                           InputProps={{disableUnderline: true}}
-                                           sx={{width: columnWidth}}/> :
-                                <TextField {...params} variant="standard" sx={{width: editWidth}}
-                                           error={inputError[field_names[4]]}/>
-                        )
-                    }}
-                />),
-        },
-        {
-            field: 'update_time',
-            headerName: 'Update Time',
-            sortable: false,
-            width: columnWidth,
-        },
-    ];
+    }, {
+        field: 'growth_stage',
+        headerName: 'Growth Stage',
+        sortable: false,
+        width: columnWidth,
+        renderCell: (params, rowID = params.id) => (<Autocomplete
+            options={cropGrowthStageOptions}
+            disableClearable
+            readOnly={editRowId !== rowID}
+            value={editRowId === rowID ? fieldValues[field_names[4]] : params.value}
+            onChange={(event, value) => {
+                handleInputChange(event, value, field_names[4]);
+            }}
+            renderInput={(params) => {
+                return (editRowId !== rowID ? <TextField {...params} variant="standard"
+                                                         InputProps={{disableUnderline: true}}
+                                                         sx={{width: columnWidth}}/> :
+                    <TextField {...params} variant="standard" sx={{width: editWidth}}
+                               error={inputError[field_names[4]]}/>)
+            }}
+        />),
+    }, {
+        field: 'update_time', headerName: 'Update Time', sortable: false, width: columnWidth,
+    },];
 
     const addProps = {
         fieldValues,
@@ -574,23 +681,26 @@ export default function SprayRecord(props) {
     const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Crop record has been deleted!"};
 
     useEffect(() => {
+        CropListGet(uid);
+        SiteListGet(uid);
+        ChemicalListGet(uid);
+        EquipmentListGet(uid);
         CropCategoryGet();
         CropVarietyGet();
         CropGrowthStageGet();
+        SiteTypeGet();
+        ApplicationTypeGet();
+        ApplicationTargetGet();
+        DecisionSupportGet();
+        UnitGet();
         clearInputError();
     }, []);
 
     useEffect(() => {
-        CropCategoryOptionsFresh();
-    }, [cropCategory]);
-
-    useEffect(() => {
-        CropVarietyOptionsFresh(formData.crop);
-        CropGrowthStageOptionsFresh(formData.crop);
     }, [formData.crop]);
 
     useEffect(() => {
-        CropListGet(uid);
+        SprayApplicationListGet();
     }, [refreshRecord]);
 
     return (<div>
@@ -598,7 +708,7 @@ export default function SprayRecord(props) {
             variant="contained"
             startIcon={<AddIcon/>}
             onClick={() => onAddClicked()}>
-            Add Crop
+            Add Spray Record
         </AddButton>
         <Paper style={{height: 900, margin: '0px 15px'}}>
             <DataGrid
@@ -612,7 +722,7 @@ export default function SprayRecord(props) {
                 }}
             />
         </Paper>
-        <AddSprayRecord {...addProps}/>
+        {/*<AddSprayRecord {...addProps}/>*/}
         <OperationSnackbars  {...saveProps}/>
         <OperationSnackbars  {...deleteProps}/>
     </div>);

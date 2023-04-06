@@ -93,6 +93,9 @@ urlpatterns = [
     path('operation/application/update/', ApplicationUpdateView.as_view()),
     path('operation/application/operation/delete/', ApplicationOperationDeleteView.as_view()),
     path('operation/application/delete/', ApplicationDeleteView.as_view()),
+    path('operation/application/type/', ApplicationTypeGetView.as_view()),
+    path('operation/application/target/', ApplicationTargetGetView.as_view()),
+    path('operation/application/desicisionsupport/', DecisionSupportGetView.as_view()),
 
     # UnitAPI
     path('unit/', UnitGetView.as_view()),

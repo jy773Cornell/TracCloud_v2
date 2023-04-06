@@ -384,17 +384,24 @@ class ApplicationRecord(models.Model):
                              null=True, blank=True, on_delete=models.SET_NULL)
     opid = models.ForeignKey(verbose_name="OPID", to="Operation", to_field="opid", related_name="ar_op",
                              null=True, blank=True, on_delete=models.SET_NULL)
-    app_datetime = models.CharField(verbose_name="Application Datetime", null=True, blank=True, max_length=64)
-    # operator = models.ForeignKey(verbose_name="Operator", to="User", to_field="uid", related_name="ar_op_user",
-    #                              null=True, blank=True, on_delete=models.SET_NULL)
-    operator = models.CharField(verbose_name="Operator", null=True, blank=True, max_length=64)
     type = models.ForeignKey(verbose_name="Application Type", to="ApplicationType", to_field="atid",
                              related_name="ar_type", null=True, blank=True, on_delete=models.SET_NULL)
+    crop = models.ForeignKey(verbose_name="Crop", to="Crop", to_field="cid", related_name="ar_crop",
+                             null=True, blank=True, on_delete=models.SET_NULL)
+    site = models.ForeignKey(verbose_name="Site", to="Site", to_field="sid", related_name="ar_site",
+                             null=True, blank=True, on_delete=models.SET_NULL)
+    app_datetime = models.CharField(verbose_name="Application Datetime", null=True, blank=True, max_length=64)
     target = models.ForeignKey(verbose_name="Pests/Diseases", to="ApplicationTarget", to_field="attid",
                                related_name="ar_pd", null=True, blank=True, on_delete=models.SET_NULL)
+    decision_support = models.ForeignKey(verbose_name="Decision Support", to="DecisionSupport", to_field="dsid",
+                                         related_name="ar_decision_support", null=True, blank=True,
+                                         on_delete=models.SET_NULL)
     chemical = models.ForeignKey(verbose_name="Chemical", to="Chemical", to_field="chemid",
                                  related_name="ar_chem", null=True, blank=True, on_delete=models.SET_NULL)
-    water_use = models.CharField(verbose_name="Water Use", default="N", max_length=16)
+    operator = models.CharField(verbose_name="Operator", null=True, blank=True, max_length=64)
+    equipment = models.ForeignKey(verbose_name="Equipment", to="Equipment", to_field="eid",
+                                  related_name="ar_equipment", null=True, blank=True, on_delete=models.SET_NULL)
+    water_use = models.CharField(verbose_name="Water Use", null=True, blank=True, max_length=32)
     water_unit = models.ForeignKey(verbose_name="Water Unit", to="Unit", to_field="unitid",
                                    related_name="ar_water_unit", null=True, blank=True, on_delete=models.SET_NULL)
     application_rate = models.CharField(verbose_name="Application Rate", max_length=32)
@@ -404,22 +411,13 @@ class ApplicationRecord(models.Model):
     amount_unit = models.ForeignKey(verbose_name="Amount Unit", to="Unit", to_field="unitid",
                                     related_name="ar_amount_opu", null=True, blank=True, on_delete=models.SET_NULL)
     total_cost = models.CharField(verbose_name="Total Cost", max_length=32)
-    site = models.ForeignKey(verbose_name="Site", to="Site", to_field="sid", related_name="ar_site",
-                             null=True, blank=True, on_delete=models.SET_NULL)
     applied_area = models.CharField(verbose_name="Applied Area", max_length=32)
     area_unit = models.ForeignKey(verbose_name="Amount Unit", to="Unit", to_field="unitid", related_name="ar_area_unit",
                                   null=True, blank=True, on_delete=models.SET_NULL)
-    crop = models.ForeignKey(verbose_name="Crop", to="Crop", to_field="cid", related_name="ar_crop",
-                             null=True, blank=True, on_delete=models.SET_NULL)
-    decision_support = models.ForeignKey(verbose_name="Decision Support", to="DecisionSupport", to_field="dsid",
-                                         related_name="ar_decision_support", null=True, blank=True,
-                                         on_delete=models.SET_NULL)
-    # customer = models.ForeignKey(verbose_name="Customer", to="User", to_field="uid", related_name="ar_customer_user",
-    #                              null=True, blank=True, on_delete=models.SET_NULL)
-    customer = models.CharField(verbose_name="Customer", null=True, blank=True, max_length=64)
     wind_speed = models.CharField(verbose_name="Wind Speed", null=True, blank=True, max_length=32)
     wind_direction = models.CharField(verbose_name="Wind Direction", null=True, blank=True, max_length=32)
     average_temp = models.CharField(verbose_name="Average Temperature", null=True, blank=True, max_length=32)
+    customer = models.CharField(verbose_name="Customer", null=True, blank=True, max_length=64)
 
     note = models.TextField(verbose_name="Note", null=True, blank=True)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
