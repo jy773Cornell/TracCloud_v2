@@ -289,7 +289,7 @@ class ApplicationGetView(APIView):
     def get(self, request, format=None):
         opid = request.GET.get(self.lookup_url_kwarg)
         if opid:
-            application_list = ApplicationRecord.objects.filter(opid=opid, is_active=True)
+            application_list = ApplicationRecord.objects.filter(opid=opid).alive()
             if application_list:
                 data = []
                 for application in application_list:

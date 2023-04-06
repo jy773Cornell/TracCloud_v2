@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from rest_framework import serializers
 from api.models import *
 
@@ -137,25 +138,20 @@ class ApplicationCreateSerializer(serializers.ModelSerializer):
 
 
 class ApplicationGetSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-    opid = serializers.StringRelatedField()
-    operator = serializers.StringRelatedField()
     type = serializers.StringRelatedField()
     target = serializers.StringRelatedField()
-    chemical = serializers.StringRelatedField()
     water_unit = serializers.StringRelatedField()
     rate_unit = serializers.StringRelatedField()
     amount_unit = serializers.StringRelatedField()
-    site = serializers.StringRelatedField()
     area_unit = serializers.StringRelatedField()
-    crop = serializers.StringRelatedField()
-    growth_stage = serializers.StringRelatedField()
     decision_support = serializers.StringRelatedField()
-    customer = serializers.StringRelatedField()
 
     class Meta:
         model = ApplicationRecord
         fields = "__all__"
+
+    def get_type(self, obj):
+        return next((item['name'] for item in cache.get("ApplicationType") if item['atid'] == obj.type_id), None)
 
 
 class ApplicationUpdateSerializer(serializers.ModelSerializer):
