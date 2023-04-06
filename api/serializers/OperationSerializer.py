@@ -108,12 +108,11 @@ class HarvestDeleteSerializer(serializers.ModelSerializer):
 class ApplicationCreateSerializer(serializers.ModelSerializer):
     user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=User.objects.filter(is_active=True))
     opid_id = serializers.PrimaryKeyRelatedField(source='opid', queryset=Operation.objects.filter(is_active=True))
-    operator_id = serializers.PrimaryKeyRelatedField(source='operator', queryset=User.objects.filter(is_active=True))
     type_id = serializers.PrimaryKeyRelatedField(source='type', queryset=ApplicationType.objects.filter(is_active=True))
     target_id = serializers.PrimaryKeyRelatedField(source='target',
                                                    queryset=ApplicationTarget.objects.filter(is_active=True))
-    chemical_id = serializers.PrimaryKeyRelatedField(source='chemical',
-                                                     queryset=Chemical.objects.filter(is_active=True))
+    chemid = serializers.PrimaryKeyRelatedField(source='chemical',
+                                                queryset=Chemical.objects.filter(is_active=True))
     water_unit_id = serializers.PrimaryKeyRelatedField(source='water_unit',
                                                        queryset=Unit.objects.filter(usage=2, is_active=True))
     rate_unit_id = serializers.PrimaryKeyRelatedField(source='rate_unit',
@@ -127,17 +126,14 @@ class ApplicationCreateSerializer(serializers.ModelSerializer):
     area_unit_id = serializers.PrimaryKeyRelatedField(source='area_unit',
                                                       queryset=Unit.objects.filter(usage=1, is_active=True))
     crop_id = serializers.PrimaryKeyRelatedField(source='crop', queryset=Crop.objects.filter(is_active=True))
-    growth_stage_id = serializers.PrimaryKeyRelatedField(source='growth_stage',
-                                                         queryset=CropGrowthStage.objects.filter(is_active=True))
+
     decision_support_id = serializers.PrimaryKeyRelatedField(source='decision_support',
                                                              queryset=DecisionSupport.objects.filter(is_active=True))
-    customer_id = serializers.PrimaryKeyRelatedField(source='user', queryset=User.objects.filter(is_active=True))
 
     class Meta:
         model = ApplicationRecord
-        exclude = ("arid", "user", "opid", "operator", "type", "target", "chemical", "water_unit", "rate_unit",
-                   "amount_unit", "site", "area_unit", "crop", "growth_stage", "decision_support", "customer",
-                   "is_active", "create_time",)
+        exclude = ("arid", "user", "opid", "type", "target", "chemical", "water_unit", "rate_unit",
+                   "amount_unit", "site", "area_unit", "crop", "decision_support", "is_active", "create_time",)
 
 
 class ApplicationGetSerializer(serializers.ModelSerializer):

@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.views import APIView
@@ -251,24 +252,6 @@ class HarvestDeleteView(APIView):
 
 
 # ApplicationRecord
-class ApplicationOperationCreateView(APIView):
-    serializer_class = OperationCreateSerializer
-
-    @csrf_exempt
-    def post(self, request, format=None):
-        uid = request.data.get("user")
-        operation_type = OperationType.objects.filter(name="Application", is_active=True).first()
-        if uid:
-            user = User.objects.filter(uid=uid, is_active=True)
-            if user:
-                opid = gen_uuid("OPID")
-                Operation(opid=opid, user_id=uid, type=operation_type).save()
-                return Response({'Succeeded': 'Application operation created.'}, status=status.HTTP_200_OK)
-
-            return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
-
-        return Response({'Bad Request': 'Invalid POST parameter'}, status=status.HTTP_400_BAD_REQUEST)
-
 
 class ApplicationCreateView(APIView):
     serializer_class = ApplicationCreateSerializer
@@ -276,12 +259,24 @@ class ApplicationCreateView(APIView):
     @csrf_exempt
     def post(self, request, format=None):
         data = request_data_transform(request.data)
-        fields = ["user_id", "opid_id", "operator_id", "type_id", "crop_id", "site_id", "app_datetime", "applied_area",
-                  "area_unit_id"]
+        fields = ["user_id", "type_id", "chemid", "site_list"]
         if all(field in list(data.keys()) for field in fields):
-            arid = gen_uuid("ARID")
-            data["arid"] = arid
-            ApplicationRecord(**data).save()
+            opid = gen_uuid("OPID")
+            operation_type = cache.get("OperationType").find(name="Application")["optid"]
+            Operation(opid=opid, user_id=data.get("user_id"), type_id=operation_type).save()
+
+            site_list = data.pop("site_list")
+            user_site_list = Site.objects.filter(uid=data.get("user_id")).alive().values()
+            for site_id in site_list:
+                save_data = data
+                arid = gen_uuid("ARID")
+                save_data.update(
+                    {"opid_id": opid,
+                     "arid": arid,
+                     "site_id": site_id,
+                     "crop_id": user_site_list.find(sid=site_id)["crop"],
+                     })
+                ApplicationRecord(**data).save()
             return Response({'Succeeded': 'Application record create.'}, status=status.HTTP_201_CREATED)
 
         return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)

@@ -385,8 +385,9 @@ class ApplicationRecord(models.Model):
     opid = models.ForeignKey(verbose_name="OPID", to="Operation", to_field="opid", related_name="ar_op",
                              null=True, blank=True, on_delete=models.SET_NULL)
     app_datetime = models.CharField(verbose_name="Application Datetime", null=True, blank=True, max_length=64)
-    operator = models.ForeignKey(verbose_name="Operator", to="User", to_field="uid", related_name="ar_op_user",
-                                 null=True, blank=True, on_delete=models.SET_NULL)
+    # operator = models.ForeignKey(verbose_name="Operator", to="User", to_field="uid", related_name="ar_op_user",
+    #                              null=True, blank=True, on_delete=models.SET_NULL)
+    operator = models.CharField(verbose_name="Operator", null=True, blank=True, max_length=64)
     type = models.ForeignKey(verbose_name="Application Type", to="ApplicationType", to_field="atid",
                              related_name="ar_type", null=True, blank=True, on_delete=models.SET_NULL)
     target = models.ForeignKey(verbose_name="Pests/Diseases", to="ApplicationTarget", to_field="attid",
@@ -410,13 +411,12 @@ class ApplicationRecord(models.Model):
                                   null=True, blank=True, on_delete=models.SET_NULL)
     crop = models.ForeignKey(verbose_name="Crop", to="Crop", to_field="cid", related_name="ar_crop",
                              null=True, blank=True, on_delete=models.SET_NULL)
-    growth_stage = models.ForeignKey(verbose_name="Growth Stage", to="CropGrowthStage", to_field="cgsid",
-                                     related_name="ar_growth_stage", null=True, blank=True, on_delete=models.SET_NULL)
     decision_support = models.ForeignKey(verbose_name="Decision Support", to="DecisionSupport", to_field="dsid",
                                          related_name="ar_decision_support", null=True, blank=True,
                                          on_delete=models.SET_NULL)
-    customer = models.ForeignKey(verbose_name="Customer", to="User", to_field="uid", related_name="ar_customer_user",
-                                 null=True, blank=True, on_delete=models.SET_NULL)
+    # customer = models.ForeignKey(verbose_name="Customer", to="User", to_field="uid", related_name="ar_customer_user",
+    #                              null=True, blank=True, on_delete=models.SET_NULL)
+    customer = models.CharField(verbose_name="Customer", null=True, blank=True, max_length=64)
     wind_speed = models.CharField(verbose_name="Wind Speed", null=True, blank=True, max_length=32)
     wind_direction = models.CharField(verbose_name="Wind Direction", null=True, blank=True, max_length=32)
     average_temp = models.CharField(verbose_name="Average Temperature", null=True, blank=True, max_length=32)
