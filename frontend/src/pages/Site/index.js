@@ -15,7 +15,6 @@ import {Autocomplete, Button, Card, CardContent, Grid, Modal, Popover, TextField
 import {AddButton, StyledContainer, StyledDataGrid, TreeButton} from "./styles";
 import OperationSnackbars from "../../components/Snackbars";
 import {
-    DataGrid,
     GridToolbarColumnsButton,
     GridToolbarContainer,
     GridToolbarDensitySelector,

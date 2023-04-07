@@ -7,7 +7,20 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
-import {Autocomplete, Button, Card, CardContent, Grid, Modal, Popover, TextField, Typography} from "@mui/material";
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import {
+    Autocomplete,
+    Button,
+    Card,
+    CardContent,
+    Checkbox,
+    Grid,
+    Modal,
+    Popover,
+    TextField,
+    Typography
+} from "@mui/material";
 import {AddButton} from "./styles";
 import OperationSnackbars from "../../components/Snackbars";
 import {
@@ -25,6 +38,7 @@ import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 
 const columnWidth = 200;
+
 const editWidth = 180;
 
 const field_names = [
@@ -48,12 +62,11 @@ const windDirections = [
 
 function createAPIData(data) {
     const {
-        crop: crop_id, site: site_id, target: target_id, decision_support: decision_support_id,
+        site: site_id, target: target_id, decision_support: decision_support_id,
         chemical: chemical_id, equipment: equipment_id, water_unit: water_unit_id, rate_unit: rate_unit_id,
         amount_unit: amount_unit_id, area_unit: area_unit_id, ...rest
     } = data;
     return {
-        crop_id,
         site_id,
         target_id,
         decision_support_id,
@@ -101,6 +114,8 @@ function CustomToolbar() {
 }
 
 function AddSprayRecord({
+                            cropOptions,
+                            siteOptions,
                             fieldValues,
                             formData,
                             columns,
@@ -114,13 +129,13 @@ function AddSprayRecord({
                             setRefreshRecord,
                         }) {
 
-    async function CropRecordSave() {
+    async function OperationApplicationRecordSave() {
         const apiData = createAPIData(formData);
         console.log(apiData);
         const requestOptions = {
             method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
         };
-        await fetch("/api/crop/create/", requestOptions)
+        await fetch("/api/operation/application/create/", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     setIsSave(true);
@@ -132,11 +147,14 @@ function AddSprayRecord({
 
     const handleSaveButtonPressed = () => {
         if (Object.values(fieldValues).every(value => value !== "")) {
-            CropRecordSave();
+            OperationApplicationRecordSave();
         } else {
             updateInputError();
         }
     };
+
+    const icon = <CheckBoxOutlineBlankIcon fontSize="small"/>;
+    const checkedIcon = <CheckBoxIcon fontSize="small"/>;
 
     return (<Modal
         open={showAddModal}
@@ -145,66 +163,64 @@ function AddSprayRecord({
             display: 'flex', justifyContent: 'center', alignItems: 'center',
         }}
     >
-        <Card sx={{width: 400}}>
+        <Card sx={{width: 1000}}>
             <CardContent>
                 <Grid container justifyContent="center" spacing={2}>
                     <Grid item xs={12} sx={{textAlign: 'center'}}>
                         <h1>Add Crop Record</h1>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={6}>
                         <Autocomplete
+                            multiple
+                            limitTags={1}
+                            getOptionLabel={(option) => option.label}
                             value={fieldValues[field_names[0]]}
-                            options={cropCategoryOptions}
+                            options={cropOptions}
+                            disableCloseOnSelect
                             onChange={(event, value) => {
                                 handleInputChange(event, value, field_names[0]);
                             }}
+                            renderOption={(props, option, {selected}) => (
+                                <li {...props}>
+                                    <Checkbox
+                                        icon={icon}
+                                        checkedIcon={checkedIcon}
+                                        style={{marginRight: 8}}
+                                        checked={selected}
+                                    />
+                                    {option.label}
+                                </li>
+                            )}
                             renderInput={(params) => (
                                 <TextField {...params} required variant="outlined" label={columns[1].headerName}
                                            error={inputError[field_names[0]]}/>)}
                         />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={6}>
                         <Autocomplete
+                            multiple
+                            limitTags={1}
+                            getOptionLabel={(option) => option.label}
                             value={fieldValues[field_names[1]]}
-                            options={cropVarietyOptions}
+                            options={siteOptions}
+                            disableCloseOnSelect
                             onChange={(event, value) => {
                                 handleInputChange(event, value, field_names[1]);
                             }}
+                            renderOption={(props, option, {selected}) => (
+                                <li {...props}>
+                                    <Checkbox
+                                        icon={icon}
+                                        checkedIcon={checkedIcon}
+                                        style={{marginRight: 8}}
+                                        checked={selected}
+                                    />
+                                    {option.label}
+                                </li>
+                            )}
                             renderInput={(params) => (
                                 <TextField {...params} required variant="outlined" label={columns[2].headerName}
                                            error={inputError[field_names[1]]}/>)}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            value={fieldValues[field_names[2]]}
-                            InputLabelProps={{
-                                shrink: true, readOnly: true,
-                            }}
-                            variant="outlined"
-                            label={columns[3].headerName}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            value={fieldValues[field_names[3]]}
-                            InputLabelProps={{
-                                shrink: true, readOnly: true,
-                            }}
-                            variant="outlined"
-                            label={columns[4].headerName}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Autocomplete
-                            value={fieldValues[field_names[4]]}
-                            options={cropGrowthStageOptions}
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[4]);
-                            }}
-                            renderInput={(params) => (
-                                <TextField {...params} required variant="outlined" label={columns[5].headerName}
-                                           error={inputError[field_names[4]]}/>)}
                         />
                     </Grid>
                     <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
@@ -236,6 +252,7 @@ export default function SprayRecord(props) {
     const [decisionSupport, setDecisionSupport] = useState([]);
     const [unit, setUnit] = useState([]);
 
+    const [cropOptions, setCropOptions] = useState([]);
     const [siteOptions, setSiteOptions] = useState([]);
     const [applicationTargetOptions, setApplicationTargetOptions] = useState([]);
     const [decisionSupportOptions, setDecisionSupportOptions] = useState([]);
@@ -279,7 +296,7 @@ export default function SprayRecord(props) {
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        setSiteList(data.data);
+                        setSiteList(flatten(data.data));
                     })
                 }
             })
@@ -429,6 +446,20 @@ export default function SprayRecord(props) {
             })
     }
 
+    const flatten = (data) => {
+        let result = [];
+        for (let i = 0; i < data.length; i++) {
+            let obj = {};
+            obj = {...data[i]};
+            delete obj.children;
+            result.push(obj);
+            if (data[i].children) {
+                result = result.concat(flatten(data[i].children));
+            }
+        }
+        return result;
+    }
+
     const updateRowData = () => {
         if (isExpended) {
             setRows(createRowData(sprayApplicationList));
@@ -486,7 +517,12 @@ export default function SprayRecord(props) {
 
     const onAddClicked = () => {
         setFormData({"user_id": uid,});
-        setFieldValues(Object.fromEntries(field_names.map(item => [item, ""])));
+        setFieldValues(Object.fromEntries(
+            field_names.map((item, index) => [
+                item,
+                index === 0 || index === 1 ? [] : "",
+            ])
+        ));
         setEditRowId(null);
         setShowAddModal(true);
         clearInputError();
@@ -496,14 +532,42 @@ export default function SprayRecord(props) {
         if (field === field_names[0]) {
             setFieldValues({
                 ...fieldValues,
-                [field]: value.label,
-                [field_names[1]]: "",
-                [field_names[2]]: value.crop_code,
-                [field_names[3]]: value.category,
-                [field_names[4]]: "",
+                [field]: value,
+                [field_names[1]]: value.reduce((acc, crop) => {
+                    const foundSites = siteOptions.filter(site => site.cid === crop.id);
+                    if (foundSites.length) {
+                        foundSites.forEach(foundSite => {
+                            acc.push({...foundSite});
+                        });
+                    }
+                    return acc;
+                }, []),
             });
             setFormData({
-                ...formData, [field]: value.id, [field_names[1]]: null, [field_names[4]]: null
+                ...formData, ["site_list"]: value.reduce((acc, crop) => {
+                    const foundSites = siteOptions.filter(site => site.cid === crop.id);
+                    if (foundSites.length) {
+                        foundSites.forEach(foundSite => {
+                            acc.push({...foundSite.id});
+                        });
+                    }
+                    return acc;
+                }, []),
+            });
+        } else if (field === field_names[1]) {
+            setFieldValues({
+                ...fieldValues,
+                [field]: value,
+                [field_names[0]]: value.reduce((acc, site) => {
+                    const foundCrop = cropOptions.find(crop => crop.id === site.cid);
+                    if (foundCrop && !acc.some(crop => crop.id === foundCrop.id)) {
+                        acc.push({...foundCrop});
+                    }
+                    return acc;
+                }, []),
+            });
+            setFormData({
+                ...formData, ["site_list"]: value.map(item => item.id),
             });
         } else {
             setFieldValues({...fieldValues, [field]: value.label});
@@ -517,14 +581,25 @@ export default function SprayRecord(props) {
         endSiteList.map(item => {
             let site = item;
             let optionStr = site.name;
+            const sid = site.sid;
+            const cid = site.crop.cid;
             while (site.parent) {
                 site = siteList.find(item => item.sid === site.parent)
                 optionStr = `${site.name} - ${optionStr}`;
             }
-            options.push(optionStr);
+            options.push({label: optionStr, cid: cid, id: sid});
         })
         setSiteOptions(options);
     };
+
+    const CropOptionsFresh = () => {
+        let options = [];
+        cropList.map(item => {
+            let optionStr = `${item.crop} (${item.variety}, ${item.growth_stage})`;
+            options.push({label: optionStr, id: item.cid})
+        })
+        setCropOptions(options);
+    }
 
     const ApplicationTargeOptionsFresh = () => {
         setApplicationTargetOptions(applicationTarget.map(item => ({
@@ -963,6 +1038,8 @@ export default function SprayRecord(props) {
     ]
 
     const addProps = {
+        cropOptions,
+        siteOptions,
         fieldValues,
         formData,
         columns,
@@ -992,6 +1069,10 @@ export default function SprayRecord(props) {
         UnitGet();
         clearInputError();
     }, []);
+
+    useEffect(() => {
+        CropOptionsFresh();
+    }, [cropList]);
 
     useEffect(() => {
         SiteOptionsFresh();
@@ -1042,7 +1123,7 @@ export default function SprayRecord(props) {
                 }}
             />
         </Paper>
-        {/*<AddSprayRecord {...addProps}/>*/}
+        <AddSprayRecord {...addProps}/>
         <OperationSnackbars  {...saveProps}/>
         <OperationSnackbars  {...deleteProps}/>
     </div>);
