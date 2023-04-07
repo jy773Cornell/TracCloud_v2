@@ -1,4 +1,6 @@
 import * as React from 'react';
+import {format} from 'date-fns';
+import dayjs from 'dayjs';
 import Paper from '@mui/material/Paper';
 import {useEffect, useState} from "react";
 import IconButton from "@mui/material/IconButton";
@@ -17,9 +19,7 @@ import {
     Checkbox,
     Grid,
     Modal,
-    Popover,
     TextField,
-    Typography
 } from "@mui/material";
 import {AddButton} from "./styles";
 import OperationSnackbars from "../../components/Snackbars";
@@ -42,7 +42,7 @@ const columnWidth = 200;
 const editWidth = 180;
 
 const field_names = [
-    "crop", "site", "applied_area", "area_unit", "app_datetime", "target", "decision_support", "chemical", "operator", "equipment",
+    "crop", "site", "applied_area", "area_unit", "app_datetime", "operator", "target", "decision_support", "chemical", "equipment",
     "water_use", "water_unit", "application_rate", "rate_unit", "total_amount", "amount_unit", "total_cost",
     "wind_speed", "wind_direction", "average_temp", "customer"
 ]
@@ -116,6 +116,10 @@ function CustomToolbar() {
 function AddSprayRecord({
                             cropOptions,
                             siteOptions,
+                            siteUnitOptions,
+                            applicationTargetOptions,
+                            decisionSupportOptions,
+                            chemicalUnitOptions,
                             fieldValues,
                             formData,
                             columns,
@@ -156,87 +160,147 @@ function AddSprayRecord({
     const icon = <CheckBoxOutlineBlankIcon fontSize="small"/>;
     const checkedIcon = <CheckBoxIcon fontSize="small"/>;
 
-    return (<Modal
-        open={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        sx={{
-            display: 'flex', justifyContent: 'center', alignItems: 'center',
-        }}
-    >
-        <Card sx={{width: 1000}}>
-            <CardContent>
-                <Grid container justifyContent="center" spacing={2}>
-                    <Grid item xs={12} sx={{textAlign: 'center'}}>
-                        <h1>Add Crop Record</h1>
+    return (
+        <Modal
+            open={showAddModal}
+            onClose={() => setShowAddModal(false)}
+            sx={{
+                display: 'flex', justifyContent: 'center', alignItems: 'center',
+            }}
+        >
+            <Card sx={{width: 1000}}>
+                <CardContent>
+                    <Grid container justifyContent="center" spacing={2}>
+                        <Grid item xs={12} sx={{textAlign: 'center'}}>
+                            <h1>Add Spray Record</h1>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Autocomplete
+                                readOnly
+                                multiple
+                                getOptionLabel={(option) => option.label}
+                                value={fieldValues[field_names[0]]}
+                                options={cropOptions}
+                                disableCloseOnSelect
+                                renderInput={(params) => (
+                                    <TextField {...params} required variant="outlined" label={columns[1].headerName}
+                                               error={inputError[field_names[0]]}/>)}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Autocomplete
+                                multiple
+                                getOptionLabel={(option) => option.label}
+                                value={fieldValues[field_names[1]]}
+                                options={siteOptions}
+                                disableCloseOnSelect
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[1]);
+                                }}
+                                renderOption={(props, option, {selected}) => (
+                                    <li {...props}>
+                                        <Checkbox
+                                            icon={icon}
+                                            checkedIcon={checkedIcon}
+                                            style={{marginRight: 8}}
+                                            checked={selected}
+                                        />
+                                        {option.label}
+                                    </li>
+                                )}
+                                renderInput={(params) => (
+                                    <TextField {...params} required variant="outlined" label={columns[2].headerName}
+                                               error={inputError[field_names[1]]}/>)}
+                            />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <TextField
+                                variant="outlined"
+                                fullWidth
+                                required
+                                label={columns[3].headerName}
+                                value={fieldValues[field_names[2]]}
+                                onChange={(event) => {
+                                    handleInputChange(event, event.target.value, field_names[2]);
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <Autocomplete
+                                value={fieldValues[field_names[3]]}
+                                options={siteUnitOptions}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[3]);
+                                }}
+                                renderInput={(params) => (
+                                    <TextField {...params} required variant="outlined" label={"Area Unit"}
+                                               error={inputError[field_names[3]]}/>)}
+                            />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                    variant="outlined"
+                                    label={columns[4].headerName}
+                                    onChange={(event) => {
+                                        handleInputChange(event, dayjs(event).format('YYYY-MM-DD'), field_names[4]);
+                                    }}
+                                    sx={{width: '100%'}}
+                                />
+                            </LocalizationProvider>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <TextField
+                                variant="outlined"
+                                fullWidth
+                                required
+                                label={columns[5].headerName}
+                                value={fieldValues[field_names[5]]}
+                                onChange={(event) => {
+                                    handleInputChange(event, event.target.value, field_names[5]);
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Autocomplete
+                                value={fieldValues[field_names[6]]}
+                                options={applicationTargetOptions}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[6]);
+                                }}
+                                renderInput={(params) => (
+                                    <TextField {...params} required variant="outlined" label={columns[6].headerName}
+                                               error={inputError[field_names[6]]}/>)}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Autocomplete
+                                value={fieldValues[field_names[7]]}
+                                options={decisionSupportOptions}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[7]);
+                                }}
+                                renderInput={(params) => (
+                                    <TextField {...params} required variant="outlined" label={columns[7].headerName}
+                                               error={inputError[field_names[7]]}/>)}
+                            />
+                        </Grid>
+                        <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
+                            <Button variant="contained" color="success" onClick={() => handleSaveButtonPressed()}>
+                                Save
+                            </Button>
+                        </Grid>
+                        <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
+                            <Button variant="contained" color="secondary" onClick={() => setShowAddModal(false)}>
+                                Cancel
+                            </Button>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={6}>
-                        <Autocomplete
-                            multiple
-                            limitTags={1}
-                            getOptionLabel={(option) => option.label}
-                            value={fieldValues[field_names[0]]}
-                            options={cropOptions}
-                            disableCloseOnSelect
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[0]);
-                            }}
-                            renderOption={(props, option, {selected}) => (
-                                <li {...props}>
-                                    <Checkbox
-                                        icon={icon}
-                                        checkedIcon={checkedIcon}
-                                        style={{marginRight: 8}}
-                                        checked={selected}
-                                    />
-                                    {option.label}
-                                </li>
-                            )}
-                            renderInput={(params) => (
-                                <TextField {...params} required variant="outlined" label={columns[1].headerName}
-                                           error={inputError[field_names[0]]}/>)}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <Autocomplete
-                            multiple
-                            limitTags={1}
-                            getOptionLabel={(option) => option.label}
-                            value={fieldValues[field_names[1]]}
-                            options={siteOptions}
-                            disableCloseOnSelect
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[1]);
-                            }}
-                            renderOption={(props, option, {selected}) => (
-                                <li {...props}>
-                                    <Checkbox
-                                        icon={icon}
-                                        checkedIcon={checkedIcon}
-                                        style={{marginRight: 8}}
-                                        checked={selected}
-                                    />
-                                    {option.label}
-                                </li>
-                            )}
-                            renderInput={(params) => (
-                                <TextField {...params} required variant="outlined" label={columns[2].headerName}
-                                           error={inputError[field_names[1]]}/>)}
-                        />
-                    </Grid>
-                    <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
-                        <Button variant="contained" color="success" onClick={() => handleSaveButtonPressed()}>
-                            Save
-                        </Button>
-                    </Grid>
-                    <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
-                        <Button variant="contained" color="secondary" onClick={() => setShowAddModal(false)}>
-                            Cancel
-                        </Button>
-                    </Grid>
-                </Grid>
-            </CardContent>
-        </Card>
-    </Modal>);
+                </CardContent>
+            </Card>
+        </Modal>
+    )
+        ;
 }
 
 export default function SprayRecord(props) {
@@ -259,6 +323,8 @@ export default function SprayRecord(props) {
     const [chemicalOptions, setChemicalOptions] = useState([]);
     const [equipmentOptions, setEquipmentOptions] = useState([]);
     const [windDirectionOptions] = useState(windDirections);
+    const [siteUnitOptions, setSiteUnitOptions] = useState([]);
+    const [chemicalUnitOptions, setChemicalUnitOptions] = useState([]);
 
     const [rows, setRows] = useState([]);
     const [formData, setFormData] = useState({});
@@ -529,35 +595,9 @@ export default function SprayRecord(props) {
     };
 
     const handleInputChange = (event, value, field) => {
-        if (field === field_names[0]) {
+        if (field === field_names[1]) {
             setFieldValues({
                 ...fieldValues,
-                [field]: value,
-                [field_names[1]]: value.reduce((acc, crop) => {
-                    const foundSites = siteOptions.filter(site => site.cid === crop.id);
-                    if (foundSites.length) {
-                        foundSites.forEach(foundSite => {
-                            acc.push({...foundSite});
-                        });
-                    }
-                    return acc;
-                }, []),
-            });
-            setFormData({
-                ...formData, ["site_list"]: value.reduce((acc, crop) => {
-                    const foundSites = siteOptions.filter(site => site.cid === crop.id);
-                    if (foundSites.length) {
-                        foundSites.forEach(foundSite => {
-                            acc.push({...foundSite.id});
-                        });
-                    }
-                    return acc;
-                }, []),
-            });
-        } else if (field === field_names[1]) {
-            setFieldValues({
-                ...fieldValues,
-                [field]: value,
                 [field_names[0]]: value.reduce((acc, site) => {
                     const foundCrop = cropOptions.find(crop => crop.id === site.cid);
                     if (foundCrop && !acc.some(crop => crop.id === foundCrop.id)) {
@@ -565,6 +605,7 @@ export default function SprayRecord(props) {
                     }
                     return acc;
                 }, []),
+                [field]: value,
             });
             setFormData({
                 ...formData, ["site_list"]: value.map(item => item.id),
@@ -623,6 +664,15 @@ export default function SprayRecord(props) {
         setEquipmentOptions(equipmentList.map(item => ({
             label: item.name, id: item.eid
         })))
+    };
+
+    const UnitOptionsFresh = () => {
+        setSiteUnitOptions(unit.filter(item => item.usage === "site").map(item => ({
+            label: item.name, id: item.unitid
+        })));
+        setChemicalUnitOptions(unit.filter(item => item.usage === "chemical").map(item => ({
+            label: item.name, id: item.unitid
+        })));
     };
 
     const columns = [
@@ -768,6 +818,28 @@ export default function SprayRecord(props) {
             },
         },
         {
+            field: 'operator',
+            headerName: 'Operator',
+            sortable: false,
+            width: columnWidth,
+            renderCell: (params, rowID = params.id) => {
+                return (editRowId !== rowID ? <TextField
+                    variant="standard"
+                    value={params.value}
+                    InputProps={{
+                        disableUnderline: true, readOnly: true,
+                    }}
+                    sx={{width: columnWidth}}/> : <TextField
+                    variant="standard"
+                    value={fieldValues[field_names[8]]}
+                    sx={{width: editWidth}}
+                    onChange={(event) => {
+                        handleInputChange(event, event.target.value, field_names[8]);
+                    }}
+                />)
+            },
+        },
+        {
             field: 'target',
             headerName: 'Application Target',
             sortable: false,
@@ -835,28 +907,6 @@ export default function SprayRecord(props) {
                                        error={inputError[field_names[7]]}/>)
                     }}
                 />),
-        },
-        {
-            field: 'operator',
-            headerName: 'Operator',
-            sortable: false,
-            width: columnWidth,
-            renderCell: (params, rowID = params.id) => {
-                return (editRowId !== rowID ? <TextField
-                    variant="standard"
-                    value={params.value}
-                    InputProps={{
-                        disableUnderline: true, readOnly: true,
-                    }}
-                    sx={{width: columnWidth}}/> : <TextField
-                    variant="standard"
-                    value={fieldValues[field_names[8]]}
-                    sx={{width: editWidth}}
-                    onChange={(event) => {
-                        handleInputChange(event, event.target.value, field_names[8]);
-                    }}
-                />)
-            },
         },
         {
             field: 'equipment',
@@ -1040,6 +1090,10 @@ export default function SprayRecord(props) {
     const addProps = {
         cropOptions,
         siteOptions,
+        siteUnitOptions,
+        applicationTargetOptions,
+        decisionSupportOptions,
+        chemicalUnitOptions,
         fieldValues,
         formData,
         columns,
@@ -1093,6 +1147,10 @@ export default function SprayRecord(props) {
     useEffect(() => {
         EquipmentOptionsFresh();
     }, [equipmentList]);
+
+    useEffect(() => {
+        UnitOptionsFresh();
+    }, [unit]);
 
     useEffect(() => {
         updateRowData();

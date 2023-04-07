@@ -22,6 +22,7 @@ import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 import ConfirmPopover from "../../components/ConfirmPopover";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 
 const columnWidth = 200;
 const editWidth = 180;
@@ -885,14 +886,14 @@ export default function Chemical(props) {
                                 variant="standard"
                                 sx={{width: editWidth}}
                                 views={["year"]}
+                                value={dayjs(fieldValues[field_names[14]])}
                                 slotProps={{
                                     textField: {
                                         variant: "standard",
-                                        placeholder: fieldValues[field_names[14]],
                                     },
                                 }}
                                 onChange={(event) => {
-                                    handleInputChange(event, event.$y, field_names[14]);
+                                    handleInputChange(event, dayjs(event).format('YYYY'), field_names[14]);
                                 }}
                             />
                         </LocalizationProvider>

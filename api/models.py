@@ -394,9 +394,10 @@ class ApplicationRecord(models.Model):
     site = models.ForeignKey(verbose_name="Site", to="Site", to_field="sid", related_name="ar_site",
                              null=True, blank=True, on_delete=models.SET_NULL)
     applied_area = models.CharField(verbose_name="Applied Area", max_length=32)
-    area_unit = models.ForeignKey(verbose_name="Amount Unit", to="Unit", to_field="unitid", related_name="ar_area_unit",
+    area_unit = models.ForeignKey(verbose_name="Area Unit", to="Unit", to_field="unitid", related_name="ar_area_unit",
                                   null=True, blank=True, on_delete=models.SET_NULL)
     app_datetime = models.CharField(verbose_name="Application Datetime", null=True, blank=True, max_length=64)
+    operator = models.CharField(verbose_name="Operator", null=True, blank=True, max_length=64)
     target = models.ForeignKey(verbose_name="Application Target", to="ApplicationTarget", to_field="attid",
                                related_name="ar_pd", null=True, blank=True, on_delete=models.SET_NULL)
     decision_support = models.ForeignKey(verbose_name="Decision Support", to="DecisionSupport", to_field="dsid",
@@ -404,7 +405,6 @@ class ApplicationRecord(models.Model):
                                          on_delete=models.SET_NULL)
     chemical = models.ForeignKey(verbose_name="Chemical", to="Chemical", to_field="chemid",
                                  related_name="ar_chem", null=True, blank=True, on_delete=models.SET_NULL)
-    operator = models.CharField(verbose_name="Operator", null=True, blank=True, max_length=64)
     equipment = models.ForeignKey(verbose_name="Equipment", to="Equipment", to_field="eid",
                                   related_name="ar_equipment", null=True, blank=True, on_delete=models.SET_NULL)
     water_use = models.CharField(verbose_name="Water Use", null=True, blank=True, max_length=32)
