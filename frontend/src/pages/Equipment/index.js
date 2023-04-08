@@ -445,9 +445,9 @@ export default function Equipment(props) {
         setRefreshRecord,
     };
 
-    const saveProps = {open: isSave, setOpen: setIsSave, msg: "Equipment record is uploaded successfully!"};
+    const saveProps = {open: isSave, setOpen: setIsSave, msg: "Equipment record is uploaded successfully!", tag: "success"};
 
-    const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Equipment record has been deleted!"};
+    const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Equipment record has been deleted!", tag: "success"};
 
     useEffect(() => {
         clearInputError();

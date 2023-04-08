@@ -330,9 +330,8 @@ class ApplicationListGetView(APIView):
 
                 data = []
                 for op_application in op_application_list:
-                    opid = op_application.opid
                     for application in application_list:
-                        if application.opid == opid:
+                        if application.opid == op_application:
                             data.append(ApplicationGetSerializer(application).data)
                 return Response({'Succeeded': 'Application Record List Info Fetched.', 'data': data},
                                 status=status.HTTP_200_OK)

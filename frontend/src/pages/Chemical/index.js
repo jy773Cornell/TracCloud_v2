@@ -115,7 +115,9 @@ function AddChemicalRecord({
     }
 
     const handleSaveButtonPressed = () => {
-        if (Object.values(fieldValues).slice(0, 10).every(value => value !== "")) {
+        if (Object.keys(fieldValues)
+            .filter(key => field_names.slice(0, 10).includes(key))
+            .filter(key => fieldValues[key] === "").length === 0) {
             ChemicalRecordSave();
         } else {
             updateInputError();
@@ -925,9 +927,19 @@ export default function Chemical(props) {
         setRefreshRecord,
     };
 
-    const saveProps = {open: isSave, setOpen: setIsSave, msg: "Chemical record is uploaded successfully!"};
+    const saveProps = {
+        open: isSave,
+        setOpen: setIsSave,
+        msg: "Chemical record is uploaded successfully!",
+        tag: "success"
+    };
 
-    const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Chemical record has been deleted!"};
+    const deleteProps = {
+        open: isDelete,
+        setOpen: setIsDelete,
+        msg: "Chemical record has been deleted!",
+        tag: "success"
+    };
 
     useEffect(() => {
         UnitGet();

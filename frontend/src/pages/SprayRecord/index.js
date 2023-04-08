@@ -75,7 +75,8 @@ function createAddAPIData(data) {
         water_unit_id,
         rate_unit_id,
         amount_unit_id,
-        area_unit_id, ...rest
+        area_unit_id,
+        ...rest
     };
 }
 
@@ -105,26 +106,26 @@ function createAPIData(data) {
     };
 }
 
-function createRowData(record) {
+function createExpandedRowData(record) {
     return {
         "id": record.arid,
         "crop": record.crop,
         "site": record.site,
         "applied_area": record.applied_area,
         "app_datetime": record.app_datetime,
+        "operator": record.operator,
         "target": record.target,
         "decision_support": record.decision_support,
         "chemical": record.chemical,
-        "operator": record.operator,
         "equipment": record.equipment,
         "water_use": record.water_use,
         "application_rate": record.application_rate,
         "total_amount": record.total_amount,
         "total_cost": record.total_cost,
+        "customer": record.customer,
         "wind_speed": record.wind_speed,
         "wind_direction": record.wind_direction,
         "average_temp": record.average_temp,
-        "customer": record.customer,
         "update_time": record.update_time
     };
 }
@@ -178,9 +179,9 @@ function AddSprayRecord({
     }
 
     const handleSaveButtonPressed = () => {
-        if (Object.values(fieldValues).filter((value, index) => {
-            return ![17, 18, 19, 20].includes(index) && value.length > 0;
-        })) {
+        if (Object.keys(fieldValues)
+            .filter(key => !field_names.slice(17, 21).includes(key))
+            .filter(key => fieldValues[key].length === 0).length === 0) {
             OperationApplicationRecordSave();
         } else {
             updateInputError();
@@ -404,7 +405,7 @@ function AddSprayRecord({
                                     </InputAdornment>,
                             }}
                             label={columns[11].headerName}
-                            error={inputError[field_names[11]]}
+                            error={inputError[field_names[12]]}
                             onChange={(event) => {
                                 handleAddInputChange(event, event.target.value, field_names[12]);
                             }}
@@ -689,7 +690,7 @@ export default function SprayRecord(props) {
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        const sprayList = data.data.filter(item => item.type === applicationType.find(item => item.name === "Spray").atid)
+                        const sprayList = data.data.filter(item => item.type === "Spray")
                         setSprayApplicationList(sprayList);
                     })
                 }
@@ -743,7 +744,7 @@ export default function SprayRecord(props) {
 
     const updateRowData = () => {
         if (isExpended) {
-            setRows(createRowData(sprayApplicationList));
+            setRows(sprayApplicationList.map((record) => createExpandedRowData(record)));
         } else {
             console.log(1);
         }
@@ -755,7 +756,7 @@ export default function SprayRecord(props) {
 
     const updateInputError = () => {
         Object.keys(fieldValues).forEach(key => {
-            if (fieldValues[key] === "") {
+            if (fieldValues[key].length === 0) {
                 setInputError((prevInputError) => ({
                     ...prevInputError, [key]: true
                 }));
@@ -1418,9 +1419,9 @@ export default function SprayRecord(props) {
         setRefreshRecord,
     };
 
-    const saveProps = {open: isSave, setOpen: setIsSave, msg: "Crop record is uploaded successfully!"};
+    const saveProps = {open: isSave, setOpen: setIsSave, msg: "Crop record is uploaded successfully!", tag: "success"};
 
-    const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Crop record has been deleted!"};
+    const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Crop record has been deleted!", tag: "success"};
 
     useEffect(() => {
         CropListGet(uid);

@@ -11,7 +11,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ParkIcon from '@mui/icons-material/Park';
-import {Autocomplete, Button, Card, CardContent, Grid, Modal, Popover, TextField, Typography} from "@mui/material";
+import {Autocomplete, Button, Card, CardContent, Grid, Modal, TextField} from "@mui/material";
 import {AddButton, StyledContainer, StyledDataGrid, TreeButton} from "./styles";
 import OperationSnackbars from "../../components/Snackbars";
 import {
@@ -942,7 +942,10 @@ export default function Site(props) {
                         disableRowSelectionOnClick={true}
                         disableClickEdit={true}
                         rowSelection={false}
-                        getRowClassName={(params) => `site-type-level--${siteType.find(item => item.name === params.row.type).level}`}
+                        getRowClassName={
+                            (params) => params.id !== add_row_id ?
+                                `site-type-level--${siteType.find(item => item.name === params.row.type).level}` : null
+                        }
                         slots={{
                             toolbar: CustomToolbar,
                         }}
