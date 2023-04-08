@@ -261,42 +261,31 @@ class ApplicationCreateView(APIView):
     def post(self, request, format=None):
         data = request_data_transform(request.data)
         if data.get("opid_id"):
-            required_fields = ["user_id", "type_id", "chemid", "site_id"]
+            required_fields = ["user_id", "type_id", "crop_id", "site_id", "chemical_id"]
             if all(field in list(data.keys()) for field in required_fields):
                 operation = Operation.objects.filter(opid_id=data.get("opid_id"), user_id=data.get("user_id")).alive()
-                user_site_list = Site.objects.filter(uid=data.get("user_id")).alive().values()
-
-                data.update(
-                    {
-                        "arid": gen_uuid("ARID"),
-                        "crop_id": next((site["crop"] for site in user_site_list if site["sid"] == data.get("site_id")),
-                                        None),
-                    })
+                data.update({"arid": gen_uuid("ARID"), })
                 ApplicationRecord(**data).save()
                 operation.update(updatetime=timezone.now())
                 return Response({'Succeeded': 'Application record create.'}, status=status.HTTP_201_CREATED)
 
             return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            required_fields = ["user_id", "type_id", "chemid", "site_list"]
+            required_fields = ["user_id", "type_id", "crop_id", "site_list", "chemical_id"]
             if all(field in list(data.keys()) for field in required_fields):
                 opid = gen_uuid("OPID")
                 operation_type = next((op_type["optid"] for op_type in cache.get("OperationType") if
                                        op_type["name"] == "Application"), None)
                 Operation(opid=opid, user_id=data.get("user_id"), type_id=operation_type).save()
-
                 site_list = data.pop("site_list")
-                user_site_list = Site.objects.filter(uid=data.get("user_id")).alive().values()
+
                 for site_id in site_list:
                     save_data = data
-                    save_data.update(
-                        {"opid_id": opid,
-                         "arid": gen_uuid("ARID"),
-                         "site_id": site_id,
-                         "crop_id": next(
-                             (site["crop"] for site in user_site_list if site["sid"] == data.get("site_id")),
-                             None),
-                         })
+                    save_data.update({
+                        "opid_id": opid,
+                        "arid": gen_uuid("ARID"),
+                        "site_id": site_id,
+                    })
                     ApplicationRecord(**save_data).save()
                 return Response({'Succeeded': 'Application record create.'}, status=status.HTTP_201_CREATED)
 
