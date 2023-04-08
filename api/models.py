@@ -417,10 +417,10 @@ class ApplicationRecord(models.Model):
     amount_unit = models.ForeignKey(verbose_name="Amount Unit", to="Unit", to_field="unitid",
                                     related_name="ar_amount_opu", null=True, blank=True, on_delete=models.SET_NULL)
     total_cost = models.CharField(verbose_name="Total Cost", max_length=32)
+    customer = models.CharField(verbose_name="Customer", null=True, blank=True, max_length=64)
     wind_speed = models.CharField(verbose_name="Wind Speed", null=True, blank=True, max_length=32)
     wind_direction = models.CharField(verbose_name="Wind Direction", null=True, blank=True, max_length=32)
     average_temp = models.CharField(verbose_name="Average Temperature", null=True, blank=True, max_length=32)
-    customer = models.CharField(verbose_name="Customer", null=True, blank=True, max_length=64)
 
     note = models.TextField(verbose_name="Note", null=True, blank=True)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
