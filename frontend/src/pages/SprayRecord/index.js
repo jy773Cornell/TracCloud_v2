@@ -29,8 +29,10 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
+import {a} from "@react-spring/web";
 
 const columnWidth = 200;
+const columnLongWidth = 350;
 
 const editWidth = 180;
 
@@ -103,30 +105,6 @@ function createAPIData(data) {
         rate_unit_id,
         amount_unit_id,
         area_unit_id, ...rest
-    };
-}
-
-function createExpandedRowData(record) {
-    return {
-        "id": record.arid,
-        "crop": record.crop,
-        "site": record.site,
-        "applied_area": record.applied_area,
-        "app_datetime": record.app_datetime,
-        "operator": record.operator,
-        "target": record.target,
-        "decision_support": record.decision_support,
-        "chemical": record.chemical,
-        "equipment": record.equipment,
-        "water_use": record.water_use,
-        "application_rate": record.application_rate,
-        "total_amount": record.total_amount,
-        "total_cost": record.total_cost,
-        "customer": record.customer,
-        "wind_speed": record.wind_speed,
-        "wind_direction": record.wind_direction,
-        "average_temp": record.average_temp,
-        "update_time": record.update_time
     };
 }
 
@@ -532,6 +510,7 @@ export default function SprayRecord(props) {
     const [formData, setFormData] = useState({});
     const [fieldValues, setFieldValues] = useState({});
 
+    const [mounted, setMounted] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
     const [isSave, setIsSave] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
@@ -740,6 +719,39 @@ export default function SprayRecord(props) {
             }
         }
         return result;
+    }
+
+    const createExpandedRowData = (record) => {
+        const crop = cropList.find(item => item.cid === record.crop);
+
+        let site = siteList.find(item => item.sid === record.site);
+        let siteStr = site.name;
+        while (site.parent) {
+            site = siteList.find(item => item.sid === site.parent)
+            siteStr = `${site.name} - ${siteStr}`;
+        }
+
+        return {
+            "id": record.arid,
+            "crop": `${crop.crop} (${crop.variety}, ${crop.growth_stage})`,
+            "site": siteStr,
+            "applied_area": record.applied_area,
+            "app_datetime": record.app_datetime,
+            "operator": record.operator,
+            "target": record.target,
+            "decision_support": record.decision_support,
+            "chemical": record.chemical,
+            "equipment": record.equipment,
+            "water_use": record.water_use,
+            "application_rate": record.application_rate,
+            "total_amount": record.total_amount,
+            "total_cost": record.total_cost,
+            "customer": record.customer,
+            "wind_speed": record.wind_speed,
+            "wind_direction": record.wind_direction,
+            "average_temp": record.average_temp,
+            "update_time": record.update_time
+        };
     }
 
     const updateRowData = () => {
@@ -1054,7 +1066,7 @@ export default function SprayRecord(props) {
             },
         },
         {
-            field: 'crop', headerName: 'Crop', sortable: false, width: columnWidth, valueGetter: (params) => {
+            field: 'crop', headerName: 'Crop', sortable: false, width: columnLongWidth, valueGetter: (params) => {
                 return (editRowId === params.id ? fieldValues[field_names[0]] : params.value)
             }
         },
@@ -1062,7 +1074,7 @@ export default function SprayRecord(props) {
             field: 'site',
             headerName: 'Site',
             sortable: false,
-            width: columnWidth,
+            width: columnLongWidth,
             renderCell: (params, rowID = params.id) => (<Autocomplete
                 options={siteOptions}
                 disableClearable
@@ -1074,7 +1086,7 @@ export default function SprayRecord(props) {
                 renderInput={(params) => {
                     return (editRowId !== rowID ? <TextField {...params} variant="standard"
                                                              InputProps={{disableUnderline: true}}
-                                                             sx={{width: columnWidth}}/> :
+                                                             sx={{width: columnLongWidth}}/> :
                         <TextField {...params} variant="standard" sx={{width: editWidth}}
                                    error={inputError[field_names[1]]}/>)
                 }}
@@ -1424,17 +1436,19 @@ export default function SprayRecord(props) {
     const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Crop record has been deleted!", tag: "success"};
 
     useEffect(() => {
-        CropListGet(uid);
-        SiteListGet(uid);
-        ChemicalListGet(uid);
-        EquipmentListGet(uid);
         CropCategoryGet();
         SiteTypeGet();
         ApplicationTypeGet();
         ApplicationTargetGet();
         DecisionSupportGet();
         UnitGet();
+        CropListGet(uid);
+        SiteListGet(uid);
+        ChemicalListGet(uid);
+        EquipmentListGet(uid);
+        SprayApplicationListGet();
         clearInputError();
+        setMounted(true);
     }, []);
 
     useEffect(() => {
@@ -1467,10 +1481,10 @@ export default function SprayRecord(props) {
     }, [sprayApplicationList]);
 
     useEffect(() => {
-        if (Object.keys(applicationType).length !== 0) {
+        if (mounted) {
             SprayApplicationListGet();
         }
-    }, [refreshRecord, applicationType]);
+    }, [refreshRecord]);
 
     useEffect(() => {
         const dummy_chem_cost = "1";
