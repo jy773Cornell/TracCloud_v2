@@ -91,7 +91,6 @@ urlpatterns = [
     path('operation/application/get/', ApplicationGetView.as_view()),
     path('operation/application/list/get/', ApplicationListGetView.as_view()),
     path('operation/application/update/', ApplicationUpdateView.as_view()),
-    path('operation/application/operation/delete/', ApplicationOperationDeleteView.as_view()),
     path('operation/application/delete/', ApplicationDeleteView.as_view()),
     path('operation/application/type/', ApplicationTypeGetView.as_view()),
     path('operation/application/target/', ApplicationTargetGetView.as_view()),

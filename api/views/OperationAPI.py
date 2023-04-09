@@ -361,13 +361,14 @@ class ApplicationUpdateView(APIView):
         return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ApplicationOperationDeleteView(APIView):
-    serializer_class = OperationDeleteSerializer
+class ApplicationDeleteView(APIView):
+    serializer_class = ApplicationDeleteSerializer
 
     @csrf_exempt
     def put(self, request, format=None):
-        opid = request.data.get("opid")
         uid = request.data.get("user")
+        opid = request.data.get("opid")
+        arid = request.data.get("arid")
         operation_type_id = next((op_type["optid"] for op_type in cache.get("OperationType") if
                                   op_type["name"] == "Application"), None)
 
@@ -377,24 +378,20 @@ class ApplicationOperationDeleteView(APIView):
                 operation.delete()
                 return Response({'Succeeded': 'Application operation have been deleted.'}, status=status.HTTP_200_OK)
 
-            return Response({'Failed': 'Invalid post data'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'Failed': 'Invalid opid'}, status=status.HTTP_404_NOT_FOUND)
 
-
-class ApplicationDeleteView(APIView):
-    serializer_class = ApplicationDeleteSerializer
-
-    @csrf_exempt
-    def put(self, request, format=None):
-        uid = request.data.get("user")
-        arid = request.data.get("arid")
-
-        if arid and uid:
+        elif arid and uid:
             application = ApplicationRecord.objects.filter(arid=arid, user_id=uid).alive()
             if application:
+                opid = application.first().opid
                 application.delete()
+                if not ApplicationRecord.objects.filter(opid=opid).alive():
+                    Operation.objects.filter(opid=opid).alive().delete()
                 return Response({'Succeeded': 'Application record have been deleted.'}, status=status.HTTP_200_OK)
 
             return Response({'Failed': 'Invalid arid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ApplicationTypeGetView(APIView):

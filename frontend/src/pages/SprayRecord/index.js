@@ -32,9 +32,8 @@ import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import {a} from "@react-spring/web";
 
 const columnWidth = 200;
+const columnMidWidth = 250;
 const columnLongWidth = 350;
-
-const editWidth = 180;
 
 const field_names = [
     "crop", "site", "applied_area", "area_unit", "app_datetime", "operator", "target", "decision_support",
@@ -58,6 +57,7 @@ const windDirections = [
 function createAddAPIData(data) {
     const {
         crop: crop_id,
+        site: site_list,
         target: target_id,
         decision_support: decision_support_id,
         chemical: chemical_id,
@@ -70,6 +70,7 @@ function createAddAPIData(data) {
     } = data;
     return {
         crop_id,
+        site_list,
         target_id,
         decision_support_id,
         chemical_id,
@@ -683,7 +684,7 @@ export default function SprayRecord(props) {
         const requestOptions = {
             method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
         };
-        await fetch("/api/application/delete/", requestOptions)
+        await fetch("/api/operation/application/delete/", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     setIsDelete(true);
@@ -788,15 +789,18 @@ export default function SprayRecord(props) {
     }
 
     const onEditClicked = (params) => {
-        const crop = cropCategory.find(item => item.label === params.row.crop);
-        setFormData({"cid": params.id, "crop": crop.id});
+        const application = sprayApplicationList.find(item => item.arid === params.id);
+        setFormData({
+            "arid": params.id,
+            "crop": application.crop,
+        });
         setFieldValues(params.row);
         setEditRowId(params.id);
         clearInputError();
     };
 
-    const onDeleteClicked = (params) => {
-        ApplicationRecordDelete(params.id);
+    const onDeleteClicked = async (params) => {
+        await ApplicationRecordDelete(params.id);
         const index = rows.findIndex(item => item.id === params.id);
         setRows([...rows.slice(0, index), ...rows.slice(index + 1),]);
     };
@@ -825,7 +829,7 @@ export default function SprayRecord(props) {
             setFormData({
                 ...formData,
                 [field]: value.id,
-                ["site_list"]: [],
+                [field_names[1]]: [],
                 [field_names[6]]: null,
             });
         } else if (field === field_names[1]) {
@@ -834,7 +838,8 @@ export default function SprayRecord(props) {
                 [field]: value,
             });
             setFormData({
-                ...formData, ["site_list"]: value.map(item => item.id),
+                ...formData,
+                [field]: value.map(item => item.id),
             });
         } else if (field === field_names[3]) {
             setFieldValues({
@@ -885,26 +890,28 @@ export default function SprayRecord(props) {
         }
     };
 
-    const handleInputChange = (event, value, field) => {
+    const handleEditInputChange = (event, value, field) => {
         if (field === field_names[0]) {
             setFieldValues({
                 ...fieldValues,
                 [field]: value,
-                [field_names[1]]: [],
+                [field_names[1]]: "",
                 [field_names[6]]: "",
             });
             setFormData({
                 ...formData,
                 [field]: value.id,
-                ["site_list"]: [],
+                [field_names[1]]: null,
                 [field_names[6]]: null,
             });
         } else if (field === field_names[1]) {
             setFieldValues({
-                ...fieldValues, [field]: value,
+                ...fieldValues,
+                [field]: value,
             });
             setFormData({
-                ...formData, ["site_list"]: value.map(item => item.id),
+                ...formData,
+                [field]: value.map(item => item.id),
             });
         } else if (field === field_names[3]) {
             setFieldValues({
@@ -928,8 +935,29 @@ export default function SprayRecord(props) {
                 [field]: value.id,
                 [field_names[15]]: chemicalUnitOptions.find(item => item.label === value.unit).id,
             });
+        } else if (field === field_names[19]) {
+            setFieldValues({
+                ...fieldValues,
+                [field]: value,
+            });
+            setFormData({
+                ...formData,
+                [field]: value.label,
+            });
+        } else if ([
+            field_names[2],
+            field_names[4],
+            field_names[5],
+            field_names[10],
+            field_names[12],
+            field_names[17],
+            field_names[18],
+            field_names[20]
+        ].includes(field)) {
+            setFieldValues({...fieldValues, [field]: value});
+            setFormData({...formData, [field]: value});
         } else {
-            setFieldValues({...fieldValues, [field]: value.label});
+            setFieldValues({...fieldValues, [field]: value});
             setFormData({...formData, [field]: value.id});
         }
     };
@@ -983,6 +1011,11 @@ export default function SprayRecord(props) {
     const ChemicalOptionsFresh = () => {
         setChemicalOptions(chemicalList.map(item => ({
             label: `${item.epa_reg_no}  |  ${item.trade_name}  |  ${item.active_ingredient}  |  ${item.rei}  |  ${item.phi}  |  ${item.unit}`,
+            epa_reg_no: item.epa_reg_no,
+            trade_name: item.trade_name,
+            active_ingredient: item.active_ingredient,
+            rei: item.rei,
+            phi: item.phi,
             unit: item.unit,
             id: item.chemid,
         })))
@@ -1058,31 +1091,58 @@ export default function SprayRecord(props) {
             },
         },
         {
-            field: 'crop', headerName: 'Crop', sortable: false, width: columnLongWidth, valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[0]] : params.value)
-            }
+            field: 'crop',
+            headerName: 'Crop',
+            sortable: false,
+            width: columnLongWidth,
+            renderCell: (params, rowID = params.id) => (
+                <Autocomplete
+                    options={cropOptions}
+                    disableClearable
+                    readOnly={editRowId !== rowID}
+                    value={editRowId === rowID ? fieldValues[field_names[0]] : params.value}
+                    onChange={(event, value) => {
+                        handleEditInputChange(event, value, field_names[0]);
+                    }}
+                    renderInput={(params) => {
+                        return (editRowId !== rowID ?
+                            <TextField
+                                {...params} variant="standard"
+                                InputProps={{disableUnderline: true}}
+                                sx={{width: columnLongWidth}}/> :
+                            <TextField
+                                {...params} variant="standard"
+                                sx={{width: columnLongWidth - 20}}
+                                error={inputError[field_names[0]]}/>)
+                    }}
+                />),
         },
         {
             field: 'site',
             headerName: 'Site',
             sortable: false,
             width: columnLongWidth,
-            renderCell: (params, rowID = params.id) => (<Autocomplete
-                options={siteOptions}
-                disableClearable
-                readOnly={editRowId !== rowID}
-                value={editRowId === rowID ? fieldValues[field_names[1]] : params.value}
-                onChange={(event, value) => {
-                    handleInputChange(event, value, field_names[1]);
-                }}
-                renderInput={(params) => {
-                    return (editRowId !== rowID ? <TextField {...params} variant="standard"
-                                                             InputProps={{disableUnderline: true}}
-                                                             sx={{width: columnLongWidth}}/> :
-                        <TextField {...params} variant="standard" sx={{width: editWidth}}
-                                   error={inputError[field_names[1]]}/>)
-                }}
-            />),
+            renderCell: (params, rowID = params.id) => (
+                <Autocomplete
+                    options={siteOptions}
+                    disableClearable
+                    readOnly={editRowId !== rowID}
+                    value={editRowId === rowID ? fieldValues[field_names[1]] : params.value}
+                    onChange={(event, value) => {
+                        handleEditInputChange(event, value, field_names[1]);
+                    }}
+                    renderInput={(params) => {
+                        return (editRowId !== rowID ?
+                            <TextField
+                                {...params} variant="standard"
+                                InputProps={{disableUnderline: true}}
+                                sx={{width: columnLongWidth}}/> :
+                            <TextField
+                                {...params} variant="standard"
+                                sx={{width: columnLongWidth - 20}}
+                                error={inputError[field_names[1]]}/>)
+                    }}
+                />),
         },
         {
             field: 'applied_area',
@@ -1090,20 +1150,23 @@ export default function SprayRecord(props) {
             sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
-                return (editRowId !== rowID ? <TextField
-                    variant="standard"
-                    value={params.value}
-                    InputProps={{
-                        disableUnderline: true, readOnly: true,
-                    }}
-                    sx={{width: columnWidth}}/> : <TextField
-                    variant="standard"
-                    value={fieldValues[field_names[4]]}
-                    sx={{width: editWidth}}
-                    onChange={(event) => {
-                        handleInputChange(event, event.target.value, field_names[4]);
-                    }}
-                />)
+                return (editRowId !== rowID ?
+                    <TextField
+                        variant="standard"
+                        value={params.value}
+                        InputProps={{
+                            disableUnderline: true,
+                            readOnly: true,
+                        }}
+                        sx={{width: columnWidth}}/> :
+                    <TextField
+                        variant="standard"
+                        value={fieldValues[field_names[2]]}
+                        sx={{width: columnWidth - 20}}
+                        onChange={(event) => {
+                            handleEditInputChange(event, event.target.value, field_names[2]);
+                        }}
+                        error={inputError[field_names[2]]}/>)
             },
         },
         {
@@ -1112,27 +1175,28 @@ export default function SprayRecord(props) {
             sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
-                return (editRowId !== rowID ? <TextField
-                    variant="standard"
-                    value={params.value}
-                    InputProps={{
-                        disableUnderline: true, readOnly: true,
-                    }}
-                    sx={{width: columnWidth}}/> : <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
+                return (editRowId !== rowID ?
+                    <TextField
                         variant="standard"
-                        sx={{width: editWidth}}
-                        views={["year"]}
-                        slotProps={{
-                            textField: {
-                                variant: "standard", placeholder: fieldValues[field_names[2]],
-                            },
+                        value={params.value}
+                        InputProps={{
+                            disableUnderline: true, readOnly: true,
                         }}
-                        onChange={(event) => {
-                            handleInputChange(event, event.$y, field_names[2]);
-                        }}
-                    />
-                </LocalizationProvider>)
+                        sx={{width: columnWidth}}/> :
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                            variant="standard"
+                            value={dayjs(fieldValues[field_names[4]])}
+                            sx={{width: columnWidth - 20}}
+                            slotProps={{
+                                textField: {
+                                    variant: "standard",
+                                },
+                            }}
+                            onChange={(event) => {
+                                handleEditInputChange(event, dayjs(event).format('YYYY-MM-DD'), field_names[4]);
+                            }}/>
+                    </LocalizationProvider>)
             },
         },
         {
@@ -1141,20 +1205,23 @@ export default function SprayRecord(props) {
             sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
-                return (editRowId !== rowID ? <TextField
-                    variant="standard"
-                    value={params.value}
-                    InputProps={{
-                        disableUnderline: true, readOnly: true,
-                    }}
-                    sx={{width: columnWidth}}/> : <TextField
-                    variant="standard"
-                    value={fieldValues[field_names[8]]}
-                    sx={{width: editWidth}}
-                    onChange={(event) => {
-                        handleInputChange(event, event.target.value, field_names[8]);
-                    }}
-                />)
+                return (editRowId !== rowID ?
+                    <TextField
+                        variant="standard"
+                        value={params.value}
+                        InputProps={{
+                            disableUnderline: true, readOnly: true,
+                        }}
+                        sx={{width: columnWidth}}/> :
+                    <TextField
+                        variant="standard"
+                        value={fieldValues[field_names[5]]}
+                        sx={{width: columnWidth - 20}}
+                        onChange={(event) => {
+                            handleEditInputChange(event, event.target.value, field_names[5]);
+                        }}
+                        error={inputError[field_names[5]]}
+                    />)
             },
         },
         {
@@ -1162,92 +1229,105 @@ export default function SprayRecord(props) {
             headerName: 'Application Target',
             sortable: false,
             width: columnWidth,
-            renderCell: (params, rowID = params.id) => (<Autocomplete
-                options={applicationTargetOptions}
-                disableClearable
-                readOnly={editRowId !== rowID}
-                value={editRowId === rowID ? fieldValues[field_names[5]] : params.value}
-                onChange={(event, value) => {
-                    handleInputChange(event, value, field_names[5]);
-                }}
-                renderInput={(params) => {
-                    return (editRowId !== rowID ? <TextField {...params} variant="standard"
-                                                             InputProps={{disableUnderline: true}}
-                                                             sx={{width: columnWidth}}/> :
-                        <TextField {...params} variant="standard" sx={{width: editWidth}}
-                                   error={inputError[field_names[5]]}/>)
-                }}
-            />),
+            renderCell: (params, rowID = params.id) => (
+                <Autocomplete
+                    options={applicationTargetOptions}
+                    disableClearable
+                    readOnly={editRowId !== rowID}
+                    value={editRowId === rowID ? fieldValues[field_names[6]] : params.value}
+                    onChange={(event, value) => {
+                        handleEditInputChange(event, value, field_names[6]);
+                    }}
+                    renderInput={(params) => {
+                        return (editRowId !== rowID ?
+                            <TextField
+                                {...params} variant="standard"
+                                InputProps={{disableUnderline: true}}
+                                sx={{width: columnWidth}}/> :
+                            <TextField
+                                {...params} variant="standard" sx={{width: columnWidth - 20}}
+                                error={inputError[field_names[6]]}/>)
+                    }}
+                />),
         },
         {
             field: 'decision_support',
             headerName: 'Decision Support',
             sortable: false,
             width: columnWidth,
-            renderCell: (params, rowID = params.id) => (<Autocomplete
-                options={decisionSupportOptions}
-                disableClearable
-                readOnly={editRowId !== rowID}
-                value={editRowId === rowID ? fieldValues[field_names[6]] : params.value}
-                onChange={(event, value) => {
-                    handleInputChange(event, value, field_names[6]);
-                }}
-                renderInput={(params) => {
-                    return (editRowId !== rowID ? <TextField {...params} variant="standard"
-                                                             InputProps={{disableUnderline: true}}
-                                                             sx={{width: columnWidth}}/> :
-                        <TextField {...params} variant="standard" sx={{width: editWidth}}
-                                   error={inputError[field_names[6]]}/>)
-                }}
-            />),
+            renderCell: (params, rowID = params.id) => (
+                <Autocomplete
+                    options={applicationTargetOptions}
+                    disableClearable
+                    readOnly={editRowId !== rowID}
+                    value={editRowId === rowID ? fieldValues[field_names[7]] : params.value}
+                    onChange={(event, value) => {
+                        handleEditInputChange(event, value, field_names[7]);
+                    }}
+                    renderInput={(params) => {
+                        return (editRowId !== rowID ?
+                            <TextField
+                                {...params} variant="standard"
+                                InputProps={{disableUnderline: true}}
+                                sx={{width: columnWidth}}/> :
+                            <TextField
+                                {...params} variant="standard" sx={{width: columnWidth - 20}}
+                                error={inputError[field_names[7]]}/>)
+                    }}
+                />),
         },
         {
             field: 'epa_reg_no',
             headerName: 'EPA Registration No.',
             sortable: false,
-            width: columnWidth,
-            renderCell: (params, rowID = params.id) => (<Autocomplete
-                options={chemicalOptions}
-                disableClearable
-                readOnly={editRowId !== rowID}
-                value={editRowId === rowID ? fieldValues[field_names[7]] : params.value}
-                onChange={(event, value) => {
-                    handleInputChange(event, value, field_names[7]);
-                }}
-                renderInput={(params) => {
-                    return (editRowId !== rowID ? <TextField {...params} variant="standard"
-                                                             InputProps={{disableUnderline: true}}
-                                                             sx={{width: columnWidth}}/> :
-                        <TextField {...params} variant="standard" sx={{width: editWidth}}
-                                   error={inputError[field_names[7]]}/>)
-                }}
-            />),
+            width: columnMidWidth,
+            renderCell: (params, rowID = params.id) => (
+                <Autocomplete
+                    options={chemicalOptions}
+                    disableClearable
+                    readOnly={editRowId !== rowID}
+                    value={editRowId === rowID ? fieldValues['epa_reg_no'] : params.value}
+                    onChange={(event, value) => {
+                        handleEditInputChange(event, value, field_names[8]);
+                    }}
+                    renderInput={(params) => {
+                        return (editRowId !== rowID ?
+                            <TextField
+                                {...params} variant="standard"
+                                InputProps={{disableUnderline: true}}
+                                sx={{width: columnMidWidth}}/> :
+                            <TextField
+                                {...params} variant="standard"
+                                sx={{width: columnMidWidth - 20}}
+                                error={inputError[field_names[8]]}/>)
+                    }}
+                />),
         },
         {
             field: 'trade_name',
             headerName: 'Trade Name',
             sortable: false,
-            width: columnWidth,
+            width: columnMidWidth,
             valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[2]] : params.value)
+                return (editRowId === params.id ? fieldValues['trade_name'] : params.value)
             },
         },
         {
             field: 'active_ingredient',
             headerName: 'Active Ingredient',
             sortable: false,
-            width: columnWidth,
+            width: columnMidWidth,
             valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[2]] : params.value)
+                return (editRowId === params.id ? fieldValues['active_ingredient'] : params.value)
             },
         },
         {
             field: 'percent_ai',
             headerName: 'Active Ingredient Percent',
             sortable: false,
-            width: columnWidth,
+            width: columnMidWidth,
             valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[2]] : params.value)
+                return (editRowId === params.id ? fieldValues['percent_ai'] : params.value)
             },
         },
         {
@@ -1256,7 +1336,7 @@ export default function SprayRecord(props) {
             sortable: false,
             width: columnWidth,
             valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[2]] : params.value)
+                return (editRowId === params.id ? fieldValues['rei'] : params.value)
             },
         },
         {
@@ -1265,7 +1345,7 @@ export default function SprayRecord(props) {
             sortable: false,
             width: columnWidth,
             valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[2]] : params.value)
+                return (editRowId === params.id ? fieldValues['phi'] : params.value)
             },
         },
         {
@@ -1279,14 +1359,18 @@ export default function SprayRecord(props) {
                 readOnly={editRowId !== rowID}
                 value={editRowId === rowID ? fieldValues[field_names[9]] : params.value}
                 onChange={(event, value) => {
-                    handleInputChange(event, value, field_names[9]);
+                    handleEditInputChange(event, value, field_names[9]);
                 }}
                 renderInput={(params) => {
-                    return (editRowId !== rowID ? <TextField {...params} variant="standard"
-                                                             InputProps={{disableUnderline: true}}
-                                                             sx={{width: columnWidth}}/> :
-                        <TextField {...params} variant="standard" sx={{width: editWidth}}
-                                   error={inputError[field_names[9]]}/>)
+                    return (editRowId !== rowID ?
+                        <TextField
+                            {...params} variant="standard"
+                            InputProps={{disableUnderline: true}}
+                            sx={{width: columnWidth}}/> :
+                        <TextField
+                            {...params} variant="standard"
+                            sx={{width: columnWidth - 20}}
+                            error={inputError[field_names[9]]}/>)
                 }}
             />),
         },
@@ -1294,44 +1378,50 @@ export default function SprayRecord(props) {
             field: 'water_use',
             headerName: 'Water Use',
             sortable: false,
-            width: columnWidth,
+            width: columnMidWidth,
             renderCell: (params, rowID = params.id) => {
-                return (editRowId !== rowID ? <TextField
-                    variant="standard"
-                    value={params.value}
-                    InputProps={{
-                        disableUnderline: true, readOnly: true,
-                    }}
-                    sx={{width: columnWidth}}/> : <TextField
-                    variant="standard"
-                    value={fieldValues[field_names[10]]}
-                    sx={{width: editWidth}}
-                    onChange={(event) => {
-                        handleInputChange(event, event.target.value, field_names[10]);
-                    }}
-                />)
+                return (editRowId !== rowID ?
+                    <TextField
+                        variant="standard"
+                        value={params.value}
+                        InputProps={{
+                            disableUnderline: true, readOnly: true,
+                        }}
+                        sx={{width: columnWidth}}/> :
+                    <TextField
+                        variant="standard"
+                        value={fieldValues[field_names[10]]}
+                        sx={{width: columnMidWidth - 20}}
+                        onChange={(event) => {
+                            handleEditInputChange(event, event.target.value, field_names[10]);
+                        }}
+                        error={inputError[field_names[10]]}
+                    />)
             },
         },
         {
             field: 'application_rate',
             headerName: 'Application Rate',
             sortable: false,
-            width: columnWidth,
+            width: columnMidWidth,
             renderCell: (params, rowID = params.id) => {
-                return (editRowId !== rowID ? <TextField
-                    variant="standard"
-                    value={params.value}
-                    InputProps={{
-                        disableUnderline: true, readOnly: true,
-                    }}
-                    sx={{width: columnWidth}}/> : <TextField
-                    variant="standard"
-                    value={fieldValues[field_names[12]]}
-                    sx={{width: editWidth}}
-                    onChange={(event) => {
-                        handleInputChange(event, event.target.value, field_names[12]);
-                    }}
-                />)
+                return (editRowId !== rowID ?
+                    <TextField
+                        variant="standard"
+                        value={params.value}
+                        InputProps={{
+                            disableUnderline: true, readOnly: true,
+                        }}
+                        sx={{width: columnWidth}}/> :
+                    <TextField
+                        variant="standard"
+                        value={fieldValues[field_names[12]]}
+                        sx={{width: columnMidWidth - 20}}
+                        onChange={(event) => {
+                            handleEditInputChange(event, event.target.value, field_names[12]);
+                        }}
+                        error={inputError[field_names[12]]}
+                    />)
             },
         },
         {
@@ -1358,20 +1448,22 @@ export default function SprayRecord(props) {
             sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
-                return (editRowId !== rowID ? <TextField
-                    variant="standard"
-                    value={params.value}
-                    InputProps={{
-                        disableUnderline: true, readOnly: true,
-                    }}
-                    sx={{width: columnWidth}}/> : <TextField
-                    variant="standard"
-                    value={fieldValues[field_names[20]]}
-                    sx={{width: editWidth}}
-                    onChange={(event) => {
-                        handleInputChange(event, event.target.value, field_names[20]);
-                    }}
-                />)
+                return (editRowId !== rowID ?
+                    <TextField
+                        variant="standard"
+                        value={params.value}
+                        InputProps={{
+                            disableUnderline: true, readOnly: true,
+                        }}
+                        sx={{width: columnWidth}}/> :
+                    <TextField
+                        variant="standard"
+                        value={fieldValues[field_names[17]]}
+                        sx={{width: columnWidth - 20}}
+                        onChange={(event) => {
+                            handleEditInputChange(event, event.target.value, field_names[17]);
+                        }}
+                    />)
             },
         },
         {
@@ -1380,20 +1472,22 @@ export default function SprayRecord(props) {
             sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
-                return (editRowId !== rowID ? <TextField
-                    variant="standard"
-                    value={params.value}
-                    InputProps={{
-                        disableUnderline: true, readOnly: true,
-                    }}
-                    sx={{width: columnWidth}}/> : <TextField
-                    variant="standard"
-                    value={fieldValues[field_names[17]]}
-                    sx={{width: editWidth}}
-                    onChange={(event) => {
-                        handleInputChange(event, event.target.value, field_names[17]);
-                    }}
-                />)
+                return (editRowId !== rowID ?
+                    <TextField
+                        variant="standard"
+                        value={params.value}
+                        InputProps={{
+                            disableUnderline: true, readOnly: true,
+                        }}
+                        sx={{width: columnWidth}}/> :
+                    <TextField
+                        variant="standard"
+                        value={fieldValues[field_names[18]]}
+                        sx={{width: columnWidth - 20}}
+                        onChange={(event) => {
+                            handleEditInputChange(event, event.target.value, field_names[18]);
+                        }}
+                    />)
             },
         },
         {
@@ -1401,22 +1495,26 @@ export default function SprayRecord(props) {
             headerName: 'Wind Direction',
             sortable: false,
             width: columnWidth,
-            renderCell: (params, rowID = params.id) => (<Autocomplete
-                options={windDirectionOptions}
-                disableClearable
-                readOnly={editRowId !== rowID}
-                value={editRowId === rowID ? fieldValues[field_names[18]] : params.value}
-                onChange={(event, value) => {
-                    handleInputChange(event, value, field_names[18]);
-                }}
-                renderInput={(params) => {
-                    return (editRowId !== rowID ? <TextField {...params} variant="standard"
-                                                             InputProps={{disableUnderline: true}}
-                                                             sx={{width: columnWidth}}/> :
-                        <TextField {...params} variant="standard" sx={{width: editWidth}}
-                                   error={inputError[field_names[18]]}/>)
-                }}
-            />),
+            renderCell: (params, rowID = params.id) => (
+                <Autocomplete
+                    options={windDirectionOptions}
+                    disableClearable
+                    readOnly={editRowId !== rowID}
+                    value={editRowId === rowID ? fieldValues[field_names[19]] : params.value}
+                    onChange={(event, value) => {
+                        handleEditInputChange(event, value, field_names[19]);
+                    }}
+                    renderInput={(params) => {
+                        return (editRowId !== rowID ?
+                            <TextField
+                                {...params} variant="standard"
+                                InputProps={{disableUnderline: true}}
+                                sx={{width: columnWidth}}/> :
+                            <TextField
+                                {...params} variant="standard" sx={{width: columnWidth - 20}}
+                                error={inputError[field_names[19]]}/>)
+                    }}
+                />),
         },
         {
             field: 'average_temp',
@@ -1424,20 +1522,22 @@ export default function SprayRecord(props) {
             sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
-                return (editRowId !== rowID ? <TextField
-                    variant="standard"
-                    value={params.value}
-                    InputProps={{
-                        disableUnderline: true, readOnly: true,
-                    }}
-                    sx={{width: columnWidth}}/> : <TextField
-                    variant="standard"
-                    value={fieldValues[field_names[19]]}
-                    sx={{width: editWidth}}
-                    onChange={(event) => {
-                        handleInputChange(event, event.target.value, field_names[19]);
-                    }}
-                />)
+                return (editRowId !== rowID ?
+                    <TextField
+                        variant="standard"
+                        value={params.value}
+                        InputProps={{
+                            disableUnderline: true, readOnly: true,
+                        }}
+                        sx={{width: columnWidth}}/> :
+                    <TextField
+                        variant="standard"
+                        value={fieldValues[field_names[20]]}
+                        sx={{width: columnWidth - 20}}
+                        onChange={(event) => {
+                            handleEditInputChange(event, event.target.value, field_names[20]);
+                        }}
+                    />)
             },
         },
         {
