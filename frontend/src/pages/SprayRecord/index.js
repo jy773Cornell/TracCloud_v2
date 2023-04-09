@@ -1,5 +1,4 @@
 import * as React from 'react';
-import {format} from 'date-fns';
 import dayjs from 'dayjs';
 import Paper from '@mui/material/Paper';
 import {useEffect, useState} from "react";
@@ -29,7 +28,6 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
-import {a} from "@react-spring/web";
 
 const columnWidth = 200;
 const columnMidWidth = 250;
@@ -501,6 +499,7 @@ export default function SprayRecord(props) {
     const [applicationTargetOptions, setApplicationTargetOptions] = useState([]);
     const [decisionSupportOptions, setDecisionSupportOptions] = useState([]);
     const [chemicalOptions, setChemicalOptions] = useState([]);
+    const [editChemicalOptions, setEditChemicalOptions] = useState([]);
     const [equipmentOptions, setEquipmentOptions] = useState([]);
     const [windDirectionOptions] = useState(windDirections);
     const [siteUnitOptions, setSiteUnitOptions] = useState([]);
@@ -707,6 +706,15 @@ export default function SprayRecord(props) {
         return result;
     }
 
+    const extractDecimal = (str) => {
+        const match = str.match(/(\d+\.\d+)|(\d+)/);
+        if (match) {
+            return match[0];
+        } else {
+            return null;
+        }
+    }
+
     const createExpandedRowData = (record) => {
         const crop = cropList.find(item => item.cid === record.crop);
         const chemical = chemicalList.find(item => item.chemid === record.chemical);
@@ -728,7 +736,7 @@ export default function SprayRecord(props) {
             "operator": record.operator,
             "target": record.target,
             "decision_support": record.decision_support,
-            "epa_reg_no": chemical.epa_reg_no,
+            "chemical": chemical.epa_reg_no,
             "trade_name": chemical.trade_name,
             "active_ingredient": chemical.active_ingredient,
             "percent_ai": chemical.percent_ai,
@@ -794,7 +802,13 @@ export default function SprayRecord(props) {
             "arid": params.id,
             "crop": application.crop,
         });
-        setFieldValues(params.row);
+        setFieldValues({
+            ...params.row,
+            [field_names[3]]: application.area_unit,
+            [field_names[11]]: application.water_unit,
+            [field_names[13]]: application.rate_unit,
+            [field_names[15]]: application.amount_unit,
+        });
         setEditRowId(params.id);
         clearInputError();
     };
@@ -929,6 +943,11 @@ export default function SprayRecord(props) {
                 ...fieldValues,
                 [field]: value,
                 [field_names[15]]: value.unit,
+                ["trade_name"]: value.trade_name,
+                ["active_ingredient"]: value.active_ingredient,
+                ["percent_ai"]: value.percent_ai,
+                ["rei"]: value.rei,
+                ["phi"]: value.phi,
             });
             setFormData({
                 ...formData,
@@ -1011,9 +1030,14 @@ export default function SprayRecord(props) {
     const ChemicalOptionsFresh = () => {
         setChemicalOptions(chemicalList.map(item => ({
             label: `${item.epa_reg_no}  |  ${item.trade_name}  |  ${item.active_ingredient}  |  ${item.rei}  |  ${item.phi}  |  ${item.unit}`,
-            epa_reg_no: item.epa_reg_no,
+            id: item.chemid,
+        })))
+
+        setEditChemicalOptions(chemicalList.map(item => ({
+            label: item.epa_reg_no,
             trade_name: item.trade_name,
             active_ingredient: item.active_ingredient,
+            percent_ai: item.percent_ai,
             rei: item.rei,
             phi: item.phi,
             unit: item.unit,
@@ -1042,7 +1066,7 @@ export default function SprayRecord(props) {
             field: 'operations',
             headerName: 'Operations',
             sortable: false,
-            width: 150,
+            width: 100,
             disableColumnMenu: true,
             disableClickEventBubbling: true,
             renderCell: (params) => {
@@ -1056,9 +1080,6 @@ export default function SprayRecord(props) {
                             setPopoverRowId(params.id);
                         }}>
                             <DeleteIcon/>
-                        </IconButton>
-                        <IconButton>
-                            <AddCircleIcon/>
                         </IconButton>
                         {popoverRowId === params.id && <ConfirmPopover anchorEl={anchorEl}
                                                                        setAnchorEl={setAnchorEl}
@@ -1151,22 +1172,41 @@ export default function SprayRecord(props) {
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
                 return (editRowId !== rowID ?
-                    <TextField
-                        variant="standard"
-                        value={params.value}
-                        InputProps={{
-                            disableUnderline: true,
-                            readOnly: true,
-                        }}
-                        sx={{width: columnWidth}}/> :
-                    <TextField
-                        variant="standard"
-                        value={fieldValues[field_names[2]]}
-                        sx={{width: columnWidth - 20}}
-                        onChange={(event) => {
-                            handleEditInputChange(event, event.target.value, field_names[2]);
-                        }}
-                        error={inputError[field_names[2]]}/>)
+                        <TextField
+                            variant="standard"
+                            value={params.value}
+                            InputProps={{
+                                disableUnderline: true,
+                                readOnly: true,
+                            }}
+                            sx={{width: columnWidth}}/> :
+                        <>
+                            <TextField
+                                variant="standard"
+                                value={extractDecimal(fieldValues[field_names[2]])}
+                                sx={{width: columnWidth / 3}}
+                                type="number"
+                                inputProps={{
+                                    step: 0.01,
+                                }}
+                                onChange={(event) => {
+                                    handleEditInputChange(event, event.target.value, field_names[2]);
+                                }}
+                                error={inputError[field_names[2]]}/>
+                            <Autocomplete
+                                options={siteUnitOptions}
+                                disableClearable
+                                value={fieldValues[field_names[3]]}
+                                onChange={(event, value) => {
+                                    handleAddInputChange(event, value, field_names[3]);
+                                }}
+                                renderInput={(params) => (
+                                    <TextField {...params} required variant="standard"
+                                               sx={{width: 2 * columnWidth / 3}}
+                                               error={inputError[field_names[3]]}/>)}
+                            />
+                        </>
+                )
             },
         },
         {
@@ -1277,16 +1317,16 @@ export default function SprayRecord(props) {
                 />),
         },
         {
-            field: 'epa_reg_no',
+            field: 'chemical',
             headerName: 'EPA Registration No.',
             sortable: false,
             width: columnMidWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
-                    options={chemicalOptions}
+                    options={editChemicalOptions}
                     disableClearable
                     readOnly={editRowId !== rowID}
-                    value={editRowId === rowID ? fieldValues['epa_reg_no'] : params.value}
+                    value={editRowId === rowID ? fieldValues[field_names[8]] : params.value}
                     onChange={(event, value) => {
                         handleEditInputChange(event, value, field_names[8]);
                     }}
@@ -1390,8 +1430,16 @@ export default function SprayRecord(props) {
                         sx={{width: columnWidth}}/> :
                     <TextField
                         variant="standard"
-                        value={fieldValues[field_names[10]]}
+                        value={extractDecimal(fieldValues[field_names[10]])}
                         sx={{width: columnMidWidth - 20}}
+                        type="number"
+                        inputProps={{
+                            step: 0.01,
+                        }}
+                        InputProps={{
+                            endAdornment: <InputAdornment
+                                position="end">{`per ${fieldValues[field_names[13]]}`}</InputAdornment>,
+                        }}
                         onChange={(event) => {
                             handleEditInputChange(event, event.target.value, field_names[10]);
                         }}
@@ -1415,8 +1463,16 @@ export default function SprayRecord(props) {
                         sx={{width: columnWidth}}/> :
                     <TextField
                         variant="standard"
-                        value={fieldValues[field_names[12]]}
+                        value={extractDecimal(fieldValues[field_names[12]])}
                         sx={{width: columnMidWidth - 20}}
+                        type="number"
+                        inputProps={{
+                            step: 0.01,
+                        }}
+                        InputProps={{
+                            endAdornment: <InputAdornment
+                                position="end">{`per ${fieldValues[field_names[13]]}`}</InputAdornment>,
+                        }}
                         onChange={(event) => {
                             handleEditInputChange(event, event.target.value, field_names[12]);
                         }}
