@@ -312,7 +312,7 @@ function AddSprayRecord({
                                 <TextField {...params} required
                                            variant="outlined"
                                            placeholder={"EPA NO.  |  Trade Name  |  Active Ingredient  |  REI  |  PHI  |  Application Unit"}
-                                           label={columns[8].headerName}
+                                           label={"Chemical"}
                                            error={inputError[field_names[8]]}/>)}
                         />
                     </Grid>
@@ -328,7 +328,7 @@ function AddSprayRecord({
                                            required
                                            variant="outlined"
                                            placeholder={"Equipment (Owner, Code)"}
-                                           label={columns[9].headerName}
+                                           label={columns[14].headerName}
                                            error={inputError[field_names[9]]}/>)}
                         />
                     </Grid>
@@ -345,7 +345,7 @@ function AddSprayRecord({
                                 endAdornment: <InputAdornment
                                     position="end">{`per ${fieldValues[field_names[13]]}`}</InputAdornment>,
                             }}
-                            label={columns[10].headerName}
+                            label={columns[15].headerName}
                             error={inputError[field_names[10]]}
                             onChange={(event) => {
                                 handleAddInputChange(event, event.target.value, field_names[10]);
@@ -382,7 +382,7 @@ function AddSprayRecord({
                                         {`${fieldValues[field_names[15]]} per ${fieldValues[field_names[13]]}`}
                                     </InputAdornment>,
                             }}
-                            label={columns[11].headerName}
+                            label={columns[16].headerName}
                             error={inputError[field_names[12]]}
                             onChange={(event) => {
                                 handleAddInputChange(event, event.target.value, field_names[12]);
@@ -394,7 +394,7 @@ function AddSprayRecord({
                             variant="outlined"
                             fullWidth
                             value={fieldValues[field_names[14]]}
-                            label={columns[12].headerName}
+                            label={columns[17].headerName}
                             InputLabelProps={{
                                 shrink: true,
                                 readOnly: true,
@@ -412,7 +412,7 @@ function AddSprayRecord({
                             variant="outlined"
                             fullWidth
                             value={fieldValues[field_names[16]]}
-                            label={columns[13].headerName}
+                            label={columns[18].headerName}
                             InputLabelProps={{
                                 shrink: true,
                                 readOnly: true,
@@ -426,7 +426,7 @@ function AddSprayRecord({
                         <TextField
                             variant="outlined"
                             fullWidth
-                            label={columns[14].headerName}
+                            label={columns[19].headerName}
                             onChange={(event) => {
                                 handleAddInputChange(event, event.target.value, field_names[17]);
                             }}
@@ -436,7 +436,7 @@ function AddSprayRecord({
                         <TextField
                             variant="outlined"
                             fullWidth
-                            label={columns[15].headerName}
+                            label={columns[20].headerName}
                             onChange={(event) => {
                                 handleAddInputChange(event, event.target.value, field_names[18]);
                             }}
@@ -452,7 +452,7 @@ function AddSprayRecord({
                             renderInput={(params) => (
                                 <TextField {...params}
                                            variant="outlined"
-                                           label={columns[16].headerName}
+                                           label={columns[21].headerName}
                                 />)}
                         />
                     </Grid>
@@ -460,7 +460,7 @@ function AddSprayRecord({
                         <TextField
                             variant="outlined"
                             fullWidth
-                            label={columns[17].headerName}
+                            label={columns[22].headerName}
                             onChange={(event) => {
                                 handleAddInputChange(event, event.target.value, field_names[20]);
                             }}
@@ -490,7 +490,6 @@ export default function SprayRecord(props) {
     const [chemicalList, setChemicalList] = useState([]);
     const [equipmentList, setEquipmentList] = useState([]);
     const [cropCategory, setCropCategory] = useState([]);
-    const [siteType, setSiteType] = useState([]);
     const [applicationType, setApplicationType] = useState([]);
     const [applicationTarget, setApplicationTarget] = useState([]);
     const [decisionSupport, setDecisionSupport] = useState([]);
@@ -586,20 +585,6 @@ export default function SprayRecord(props) {
                 if (response.ok) {
                     response.json().then((data) => {
                         setCropCategory(data.data);
-                    })
-                }
-            })
-    }
-
-    async function SiteTypeGet() {
-        const requestOptions = {
-            method: "GET", headers: {"Content-Type": "application/json"},
-        };
-        await fetch("/api/site/type/", requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        setSiteType(data.data);
                     })
                 }
             })
@@ -723,6 +708,8 @@ export default function SprayRecord(props) {
 
     const createExpandedRowData = (record) => {
         const crop = cropList.find(item => item.cid === record.crop);
+        const chemical = chemicalList.find(item => item.chemid === record.chemical);
+        const equipment = equipmentList.find(item => item.eid === record.equipment);
 
         let site = siteList.find(item => item.sid === record.site);
         let siteStr = site.name;
@@ -735,17 +722,22 @@ export default function SprayRecord(props) {
             "id": record.arid,
             "crop": `${crop.crop} (${crop.variety}, ${crop.growth_stage})`,
             "site": siteStr,
-            "applied_area": record.applied_area,
+            "applied_area": `${record.applied_area} ${record.area_unit}`,
             "app_datetime": record.app_datetime,
             "operator": record.operator,
             "target": record.target,
             "decision_support": record.decision_support,
-            "chemical": record.chemical,
-            "equipment": record.equipment,
-            "water_use": record.water_use,
-            "application_rate": record.application_rate,
-            "total_amount": record.total_amount,
-            "total_cost": record.total_cost,
+            "epa_reg_no": chemical.epa_reg_no,
+            "trade_name": chemical.trade_name,
+            "active_ingredient": chemical.active_ingredient,
+            "percent_ai": chemical.percent_ai,
+            "rei": chemical.rei,
+            "phi": chemical.phi,
+            "equipment": equipment.name,
+            "water_use": `${record.water_use} ${record.water_unit} per ${record.area_unit}`,
+            "application_rate": `${record.application_rate} ${chemical.unit} per ${record.area_unit}`,
+            "total_amount": `${record.total_amount} ${chemical.unit}`,
+            "total_cost": `\$ ${record.total_cost}`,
             "customer": record.customer,
             "wind_speed": record.wind_speed,
             "wind_direction": record.wind_direction,
@@ -1210,8 +1202,8 @@ export default function SprayRecord(props) {
             />),
         },
         {
-            field: 'chemical',
-            headerName: 'Chemical',
+            field: 'epa_reg_no',
+            headerName: 'EPA Registration No.',
             sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => (<Autocomplete
@@ -1230,6 +1222,51 @@ export default function SprayRecord(props) {
                                    error={inputError[field_names[7]]}/>)
                 }}
             />),
+        },
+        {
+            field: 'trade_name',
+            headerName: 'Trade Name',
+            sortable: false,
+            width: columnWidth,
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues[field_names[2]] : params.value)
+            },
+        },
+        {
+            field: 'active_ingredient',
+            headerName: 'Active Ingredient',
+            sortable: false,
+            width: columnWidth,
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues[field_names[2]] : params.value)
+            },
+        },
+        {
+            field: 'percent_ai',
+            headerName: 'Active Ingredient Percent',
+            sortable: false,
+            width: columnWidth,
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues[field_names[2]] : params.value)
+            },
+        },
+        {
+            field: 'rei',
+            headerName: 'REI',
+            sortable: false,
+            width: columnWidth,
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues[field_names[2]] : params.value)
+            },
+        },
+        {
+            field: 'phi',
+            headerName: 'PHI',
+            sortable: false,
+            width: columnWidth,
+            valueGetter: (params) => {
+                return (editRowId === params.id ? fieldValues[field_names[2]] : params.value)
+            },
         },
         {
             field: 'equipment',
@@ -1437,7 +1474,6 @@ export default function SprayRecord(props) {
 
     useEffect(() => {
         CropCategoryGet();
-        SiteTypeGet();
         ApplicationTypeGet();
         ApplicationTargetGet();
         DecisionSupportGet();

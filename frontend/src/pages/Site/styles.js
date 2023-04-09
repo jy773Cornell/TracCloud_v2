@@ -4,7 +4,7 @@ import {green, orange, grey} from '@mui/material/colors';
 import {DataGrid} from "@mui/x-data-grid";
 
 export const AddButton = styled(Button)(() => ({
-    margin: "15px 0px",
+    margin: "15px",
     backgroundColor: orange[500],
     '&:hover': {
         backgroundColor: orange[700],
@@ -12,7 +12,7 @@ export const AddButton = styled(Button)(() => ({
 }));
 
 export const TreeButton = styled(Button)(() => ({
-    margin: "15px",
+    margin: "15px 0px",
     backgroundColor: green[500],
     '&:hover': {
         backgroundColor: green[700],

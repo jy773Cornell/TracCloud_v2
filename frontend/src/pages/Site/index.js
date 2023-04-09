@@ -919,18 +919,18 @@ export default function Site(props) {
 
     return (
         <div>
-            <TreeButton
-                variant="contained"
-                startIcon={<ParkIcon/>}
-                onClick={() => onTreeClicked()}>
-                Tree Structure
-            </TreeButton>
             <AddButton
                 variant="contained"
                 startIcon={<AddIcon/>}
                 onClick={() => onAddClicked()}>
                 Add Site
             </AddButton>
+            <TreeButton
+                variant="contained"
+                startIcon={<ParkIcon/>}
+                onClick={() => onTreeClicked()}>
+                Tree Structure
+            </TreeButton>
             <StyledContainer>
                 {
                     showTree && (<SiteTreeView siteList={siteList}/>)
