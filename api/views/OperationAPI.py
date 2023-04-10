@@ -351,8 +351,8 @@ class ApplicationUpdateView(APIView):
         if arid:
             application = ApplicationRecord.objects.filter(arid=arid).alive()
             if application:
-                operation = Operation.objects.filter(opid=application.opid).alive()
-                operation.update(updatetime=timezone.now())
+                operation = Operation.objects.filter(opid=application.first().opid).alive()
+                operation.update(update_time=timezone.now())
                 application.update(**data)
                 return Response({'Succeeded': 'Application record info has been updated.'}, status=status.HTTP_200_OK)
 

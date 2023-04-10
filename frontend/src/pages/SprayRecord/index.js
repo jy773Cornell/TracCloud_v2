@@ -667,7 +667,7 @@ export default function SprayRecord(props) {
         const requestOptions = {
             method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
         };
-        await fetch("/api/application/update/", requestOptions)
+        await fetch("/api/operation/application/update/", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     setIsSave(true);
@@ -707,6 +707,9 @@ export default function SprayRecord(props) {
     }
 
     const extractDecimal = (str) => {
+        if (typeof str !== 'string') {
+            return null;
+        }
         const match = str.match(/(\d+\.\d+)|(\d+)/);
         if (match) {
             return match[0];
@@ -714,6 +717,7 @@ export default function SprayRecord(props) {
             return null;
         }
     }
+
 
     const createExpandedRowData = (record) => {
         const crop = cropList.find(item => item.cid === record.crop);
@@ -807,7 +811,9 @@ export default function SprayRecord(props) {
             [field_names[3]]: application.area_unit,
             [field_names[11]]: application.water_unit,
             [field_names[13]]: application.rate_unit,
+            [field_names[14]]: application.total_amount,
             [field_names[15]]: application.amount_unit,
+            [field_names[16]]: application.total_cost,
         });
         setEditRowId(params.id);
         clearInputError();
@@ -1030,6 +1036,7 @@ export default function SprayRecord(props) {
     const ChemicalOptionsFresh = () => {
         setChemicalOptions(chemicalList.map(item => ({
             label: `${item.epa_reg_no}  |  ${item.trade_name}  |  ${item.active_ingredient}  |  ${item.rei}  |  ${item.phi}  |  ${item.unit}`,
+            unit: item.unit,
             id: item.chemid,
         })))
 
@@ -1421,30 +1428,51 @@ export default function SprayRecord(props) {
             width: columnMidWidth,
             renderCell: (params, rowID = params.id) => {
                 return (editRowId !== rowID ?
-                    <TextField
-                        variant="standard"
-                        value={params.value}
-                        InputProps={{
-                            disableUnderline: true, readOnly: true,
-                        }}
-                        sx={{width: columnWidth}}/> :
-                    <TextField
-                        variant="standard"
-                        value={extractDecimal(fieldValues[field_names[10]])}
-                        sx={{width: columnMidWidth - 20}}
-                        type="number"
-                        inputProps={{
-                            step: 0.01,
-                        }}
-                        InputProps={{
-                            endAdornment: <InputAdornment
-                                position="end">{`per ${fieldValues[field_names[13]]}`}</InputAdornment>,
-                        }}
-                        onChange={(event) => {
-                            handleEditInputChange(event, event.target.value, field_names[10]);
-                        }}
-                        error={inputError[field_names[10]]}
-                    />)
+                        <TextField
+                            variant="standard"
+                            value={params.value}
+                            InputProps={{
+                                disableUnderline: true, readOnly: true,
+                            }}
+                            sx={{width: columnMidWidth}}/> :
+                        <>
+                            <TextField
+                                variant="standard"
+                                value={extractDecimal(fieldValues[field_names[10]])}
+                                sx={{width: columnMidWidth / 3}}
+                                type="number"
+                                inputProps={{
+                                    step: 0.01,
+                                }}
+                                onChange={(event) => {
+                                    handleEditInputChange(event, event.target.value, field_names[10]);
+                                }}
+                                error={inputError[field_names[10]]}
+                            />
+                            <Autocomplete
+                                options={chemicalUnitOptions}
+                                disableClearable
+                                value={fieldValues[field_names[11]]}
+                                onChange={(event, value) => {
+                                    handleAddInputChange(event, value, field_names[11]);
+                                }}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params} required variant="standard"
+                                        sx={{width: columnMidWidth / 3}}
+                                        error={inputError[field_names[11]]}
+                                    />)}
+                            />
+                            <TextField
+                                variant="standard"
+                                value={`per ${fieldValues[field_names[13]]}`}
+                                sx={{width: columnMidWidth / 3}}
+                                InputLabelProps={{
+                                    readOnly: true,
+                                }}
+                            />
+                        </>
+                )
             },
         },
         {
@@ -1454,30 +1482,37 @@ export default function SprayRecord(props) {
             width: columnMidWidth,
             renderCell: (params, rowID = params.id) => {
                 return (editRowId !== rowID ?
-                    <TextField
-                        variant="standard"
-                        value={params.value}
-                        InputProps={{
-                            disableUnderline: true, readOnly: true,
-                        }}
-                        sx={{width: columnWidth}}/> :
-                    <TextField
-                        variant="standard"
-                        value={extractDecimal(fieldValues[field_names[12]])}
-                        sx={{width: columnMidWidth - 20}}
-                        type="number"
-                        inputProps={{
-                            step: 0.01,
-                        }}
-                        InputProps={{
-                            endAdornment: <InputAdornment
-                                position="end">{`per ${fieldValues[field_names[13]]}`}</InputAdornment>,
-                        }}
-                        onChange={(event) => {
-                            handleEditInputChange(event, event.target.value, field_names[12]);
-                        }}
-                        error={inputError[field_names[12]]}
-                    />)
+                        <TextField
+                            variant="standard"
+                            value={params.value}
+                            InputProps={{
+                                disableUnderline: true, readOnly: true,
+                            }}
+                            sx={{width: columnWidth}}/> :
+                        <>
+                            <TextField
+                                variant="standard"
+                                value={extractDecimal(fieldValues[field_names[12]])}
+                                sx={{width: columnMidWidth / 3}}
+                                type="number"
+                                inputProps={{
+                                    step: 0.01,
+                                }}
+                                onChange={(event) => {
+                                    handleEditInputChange(event, event.target.value, field_names[12]);
+                                }}
+                                error={inputError[field_names[12]]}
+                            />
+                            <TextField
+                                variant="standard"
+                                value={`${fieldValues[field_names[15]]} per ${fieldValues[field_names[13]]}`}
+                                sx={{width: 2 * columnMidWidth / 3}}
+                                InputLabelProps={{
+                                    readOnly: true,
+                                }}
+                            />
+                        </>
+                )
             },
         },
         {
@@ -1486,7 +1521,7 @@ export default function SprayRecord(props) {
             sortable: false,
             width: columnWidth,
             valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[14]] : params.value)
+                return (editRowId === params.id ? `${fieldValues[field_names[14]]} ${fieldValues[field_names[15]]}` : params.value)
             },
         },
         {
@@ -1495,7 +1530,7 @@ export default function SprayRecord(props) {
             sortable: false,
             width: columnWidth,
             valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[16]] : params.value)
+                return (editRowId === params.id ? `\$ ${fieldValues[field_names[16]]}` : params.value)
             },
         },
         {
@@ -1679,18 +1714,21 @@ export default function SprayRecord(props) {
     }, [refreshRecord]);
 
     useEffect(() => {
-        const dummy_chem_cost = "1";
-        if (formData[field_names[2]] && formData[field_names[8]] && formData[field_names[12]]) {
-            const total_amount = Number(formData[field_names[2]]) * Number(formData[field_names[12]]);
-            const total_cost = Number(formData[field_names[2]]) * Number(dummy_chem_cost) * Number(formData[field_names[12]]);
+        const cost = "1";
+        // const cost = extractDecimal(formData[field_names[8]]);
+        const area = extractDecimal(fieldValues[field_names[2]]);
+        const rate = extractDecimal(fieldValues[field_names[12]]);
+        if (cost && area && rate) {
+            const total_amount = Number(area) * Number(rate);
+            const total_cost = Number(area) * Number(rate) * Number(cost);
             setFieldValues({...fieldValues, [field_names[14]]: total_amount, [field_names[16]]: total_cost});
             setFormData({...formData, [field_names[14]]: total_amount, [field_names[16]]: total_cost});
-        } else if (formData[field_names[2]] && formData[field_names[12]]) {
-            const total_amount = Number(formData[field_names[2]]) * Number(formData[field_names[12]]);
+        } else if (area && rate) {
+            const total_amount = Number(area) * Number(rate);
             setFieldValues({...fieldValues, [field_names[14]]: total_amount});
             setFormData({...formData, [field_names[14]]: total_amount});
         }
-    }, [formData[field_names[2]], formData[field_names[8]], formData[field_names[12]]]);
+    }, [fieldValues[field_names[2]], fieldValues[field_names[8]], fieldValues[field_names[12]]]);
 
     return (<div>
         <AddButton
