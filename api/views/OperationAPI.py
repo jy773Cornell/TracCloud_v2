@@ -18,18 +18,19 @@ class PurchaseCreateView(APIView):
     @csrf_exempt
     def post(self, request, format=None):
         data = request_data_transform(request.data)
-        serializer = PurchaseCreateSerializer()
-        fields = [field for field in serializer.fields if field not in ["operation_type", "note", ]]
-        if all(field in list(data.keys()) for field in fields):
+        required_fields = ["user_id", "chemical_id", ]
+        if all(field in list(data.keys()) for field in required_fields):
             opid = gen_uuid("OPID")
-            operation_type = serializer.get_operation_type()
+            operation_type = next((op_type["optid"] for op_type in cache.get("OperationType") if
+                                   op_type["name"] == "Chemical Purchase Record"), None)
             Operation(opid=opid, user_id=data.get("user_id"), type_id=operation_type).save()
 
-            prid = gen_uuid("PRID")
-            data["prid"] = prid
-            data["opid_id"] = opid
+            data.update({
+                "opid_id": opid,
+                "prid": gen_uuid("PRID"),
+            })
             PurchaseRecord(**data).save()
-            return Response({'Succeeded': 'Purchase record created.'}, status=status.HTTP_201_CREATED)
+            return Response({'Succeeded': 'Purchase record create.'}, status=status.HTTP_201_CREATED)
 
         return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -41,7 +42,7 @@ class PurchaseGetView(APIView):
     def get(self, request, format=None):
         opid = request.GET.get(self.lookup_url_kwarg)
         if opid:
-            purchase = PurchaseRecord.objects.filter(opid=opid, is_active=True).first()
+            purchase = PurchaseRecord.objects.filter(opid=opid).alive().first()
             if purchase:
                 data = PurchaseGetSerializer(purchase).data
                 return Response({'Succeeded': 'Purchase Record Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
@@ -58,9 +59,9 @@ class PurchaseListGetView(APIView):
     def get(self, request, format=None):
         uid = request.GET.get(self.lookup_url_kwarg)
         if uid:
-            user = User.objects.filter(uid=uid, is_active=True)
+            user = User.objects.filter(uid=uid).alive()
             if user:
-                purchase_list = PurchaseRecord.objects.filter(user_id=uid, is_active=True)
+                purchase_list = PurchaseRecord.objects.filter(user_id=uid).alive()
                 data = []
                 for purchase in purchase_list:
                     data.append(PurchaseGetSerializer(purchase).data)
@@ -80,7 +81,7 @@ class PurchaseUpdateView(APIView):
         data = request_data_transform(request.data)
         prid = data.pop("prid")
         if prid:
-            purchase = PurchaseRecord.objects.filter(prid=prid, is_active=True)
+            purchase = PurchaseRecord.objects.filter(prid=prid).alive()
             if purchase:
                 purchase.update(**data)
                 return Response({'Succeeded': 'Purchase record info has been updated.'}, status=status.HTTP_200_OK)
@@ -95,14 +96,14 @@ class PurchaseDeleteView(APIView):
 
     @csrf_exempt
     def put(self, request, format=None):
-        opid = request.data.get("opid")
+        arid = request.data.get("arid")
         user = request.data.get("user")
-        if opid and user:
-            operation = Operation.objects.filter(opid=opid, user_id=user, is_active=True)
-            purchase = PurchaseRecord.objects.filter(opid=opid, user_id=user, is_active=True)
-            if operation and purchase:
-                model_delete(operation)
-                model_delete(purchase)
+        if arid and user:
+            purchase = PurchaseRecord.objects.filter(arid=arid, user_id=user).alive()
+            if purchase:
+                operation = Operation.objects.filter(opid=purchase.first().opid_id, user_id=user).alive()
+                operation.delete()
+                purchase.delete()
                 return Response({'Succeeded': 'Purchase record has been deleted.'}, status=status.HTTP_200_OK)
 
             return Response({'Failed': 'Invalid opid'}, status=status.HTTP_404_NOT_FOUND)

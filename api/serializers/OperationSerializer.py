@@ -31,9 +31,7 @@ class PurchaseCreateSerializer(serializers.ModelSerializer):
 
 
 class PurchaseGetSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-    operator = serializers.StringRelatedField()
-    chemical = serializers.StringRelatedField()
+    update_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
 
     class Meta:
         model = PurchaseRecord
