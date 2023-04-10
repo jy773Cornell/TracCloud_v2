@@ -125,7 +125,7 @@ function AddSprayRecord({
                             siteUnitOptions,
                             applicationTargetOptions,
                             decisionSupportOptions,
-                            chemicalOptions,
+                            addChemicalOptions,
                             equipmentOptions,
                             chemicalUnitOptions,
                             windDirectionOptions,
@@ -306,7 +306,7 @@ function AddSprayRecord({
                     <Grid item xs={12}>
                         <Autocomplete
                             value={fieldValues[field_names[8]]}
-                            options={chemicalOptions}
+                            options={addChemicalOptions}
                             onChange={(event, value) => {
                                 handleAddInputChange(event, value, field_names[8]);
                             }}
@@ -501,7 +501,7 @@ export default function SprayRecord(props) {
     const [siteOptions, setSiteOptions] = useState([]);
     const [applicationTargetOptions, setApplicationTargetOptions] = useState([]);
     const [decisionSupportOptions, setDecisionSupportOptions] = useState([]);
-    const [chemicalOptions, setChemicalOptions] = useState([]);
+    const [addChemicalOptions, setAddChemicalOptions] = useState([]);
     const [editChemicalOptions, setEditChemicalOptions] = useState([]);
     const [equipmentOptions, setEquipmentOptions] = useState([]);
     const [windDirectionOptions] = useState(windDirections);
@@ -649,7 +649,7 @@ export default function SprayRecord(props) {
             })
     }
 
-    async function SprayApplicationListGet() {
+    async function SprayApplicationListGet(uid) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
@@ -720,7 +720,6 @@ export default function SprayRecord(props) {
             return null;
         }
     }
-
 
     const createExpandedRowData = (record) => {
         const crop = cropList.find(item => item.cid === record.crop);
@@ -829,8 +828,8 @@ export default function SprayRecord(props) {
         clearInputError();
     };
 
-    const onDeleteClicked = async (params) => {
-        await ApplicationRecordDelete(params.id);
+    const onDeleteClicked = (params) => {
+        ApplicationRecordDelete(params.id);
         const index = rows.findIndex(item => item.id === params.id);
         setRows([...rows.slice(0, index), ...rows.slice(index + 1),]);
     };
@@ -1044,7 +1043,7 @@ export default function SprayRecord(props) {
     };
 
     const ChemicalOptionsFresh = () => {
-        setChemicalOptions(chemicalList.map(item => ({
+        setAddChemicalOptions(chemicalList.map(item => ({
             label: `${item.epa_reg_no}  |  ${item.trade_name}  |  ${item.active_ingredient}  |  ${item.rei}  |  ${item.phi}  |  ${item.unit}`,
             unit: item.unit,
             id: item.chemid,
@@ -1652,7 +1651,7 @@ export default function SprayRecord(props) {
         siteUnitOptions,
         applicationTargetOptions,
         decisionSupportOptions,
-        chemicalOptions,
+        addChemicalOptions,
         equipmentOptions,
         chemicalUnitOptions,
         windDirectionOptions,
@@ -1674,16 +1673,22 @@ export default function SprayRecord(props) {
     const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Crop record has been deleted!", tag: "success"};
 
     useEffect(() => {
-        CropCategoryGet();
-        ApplicationTypeGet();
-        ApplicationTargetGet();
-        DecisionSupportGet();
-        UnitGet();
-        CropListGet(uid);
-        SiteListGet(uid);
-        ChemicalListGet(uid);
-        EquipmentListGet(uid);
-        SprayApplicationListGet();
+        const fetchData = async () => {
+            await Promise.all([
+                CropCategoryGet(),
+                ApplicationTypeGet(),
+                ApplicationTargetGet(),
+                DecisionSupportGet(),
+                UnitGet(),
+                CropListGet(uid),
+                SiteListGet(uid),
+                ChemicalListGet(uid),
+                EquipmentListGet(uid)
+            ]);
+            await SprayApplicationListGet(uid);
+        };
+
+        fetchData();
         clearInputError();
         setMounted(true);
     }, []);
@@ -1719,7 +1724,7 @@ export default function SprayRecord(props) {
 
     useEffect(() => {
         if (mounted) {
-            SprayApplicationListGet();
+            SprayApplicationListGet(uid);
         }
     }, [refreshRecord]);
 

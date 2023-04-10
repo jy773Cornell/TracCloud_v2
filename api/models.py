@@ -337,9 +337,9 @@ class PurchaseRecord(models.Model):
     opid = models.ForeignKey(verbose_name="OPID", to="Operation", to_field="opid", related_name="pr_op",
                              null=True, blank=True, on_delete=models.SET_NULL)
     chemical = models.ForeignKey(verbose_name="Chemical", to="Chemical", to_field="chemid",
-                                 related_name="pr_chem", null=True, blank=True, on_delete=models.SET_NULL)
-    amount = models.CharField(verbose_name="Amount", max_length=32)
+                                 related_name="pr_chem", null=True, blank=True, on_delete=models.CASCADE)
     cost_per_unit = models.CharField(verbose_name="Cost Per Unit", max_length=32)
+    amount = models.CharField(verbose_name="Amount", max_length=32)
     total_cost = models.CharField(verbose_name="Total Cost", max_length=32)
     pur_datetime = models.CharField(verbose_name="Purchase Datetime", null=True, blank=True, max_length=64)
     operator = models.CharField(verbose_name="Operator", null=True, blank=True, max_length=64)
