@@ -336,14 +336,14 @@ class PurchaseRecord(models.Model):
                              null=True, blank=True, on_delete=models.SET_NULL)
     opid = models.ForeignKey(verbose_name="OPID", to="Operation", to_field="opid", related_name="pr_op",
                              null=True, blank=True, on_delete=models.SET_NULL)
-    pur_datetime = models.CharField(verbose_name="Purchase Datetime", null=True, blank=True, max_length=64)
-    operator = models.CharField(verbose_name="Operator", null=True, blank=True, max_length=64)
     chemical = models.ForeignKey(verbose_name="Chemical", to="Chemical", to_field="chemid",
                                  related_name="pr_chem", null=True, blank=True, on_delete=models.SET_NULL)
-    vendor = models.CharField(verbose_name="Vendor", null=True, blank=True, max_length=64)
     amount = models.CharField(verbose_name="Amount", max_length=32)
     cost_per_unit = models.CharField(verbose_name="Cost Per Unit", max_length=32)
     total_cost = models.CharField(verbose_name="Total Cost", max_length=32)
+    pur_datetime = models.CharField(verbose_name="Purchase Datetime", null=True, blank=True, max_length=64)
+    operator = models.CharField(verbose_name="Operator", null=True, blank=True, max_length=64)
+    vendor = models.CharField(verbose_name="Vendor", null=True, blank=True, max_length=64)
     note = models.TextField(verbose_name="Note", null=True, blank=True)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)

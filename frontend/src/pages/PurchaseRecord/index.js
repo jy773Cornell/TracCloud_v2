@@ -23,23 +23,19 @@ import ConfirmPopover from "../../components/ConfirmPopover";
 const columnWidth = 200;
 const editWidth = 180;
 
-const field_names = ["crop", "variety", "crop_code", "category", "growth_stage"]
+const field_names = [
+    "chemical",
+    "amount",
+    "cost_per_unit",
+    "total_cost",
+    "pur_datetime",
+    "operator",
+    "vendor",
+]
 
 function createAPIData(data) {
-    const {crop: crop_id, variety: variety_id, growth_stage: growth_stage_id, ...rest} = data;
-    return {crop_id, variety_id, growth_stage_id, ...rest};
-}
-
-function createRowData(record) {
-    return {
-        "id": record.cid,
-        "crop": record.crop,
-        "variety": record.variety,
-        "crop_code": record.crop_code,
-        "category": record.category,
-        "growth_stage": record.growth_stage,
-        "update_time": record.update_time
-    };
+    const {chemical: chemical_id, ...rest} = data;
+    return {chemical_id, ...rest};
 }
 
 function CustomToolbar() {
@@ -52,21 +48,21 @@ function CustomToolbar() {
 }
 
 function AddPurchaseRecord({
-                           fieldValues,
-                           formData,
-                           columns,
-                           cropCategoryOptions,
-                           cropVarietyOptions,
-                           cropGrowthStageOptions,
-                           handleInputChange,
-                           showAddModal,
-                           setShowAddModal,
-                           setIsSave,
-                           inputError,
-                           updateInputError,
-                           refreshRecord,
-                           setRefreshRecord,
-                       }) {
+                               fieldValues,
+                               formData,
+                               columns,
+                               cropCategoryOptions,
+                               cropVarietyOptions,
+                               cropGrowthStageOptions,
+                               handleInputChange,
+                               showAddModal,
+                               setShowAddModal,
+                               setIsSave,
+                               inputError,
+                               updateInputError,
+                               refreshRecord,
+                               setRefreshRecord,
+                           }) {
 
     async function CropRecordSave() {
         const apiData = createAPIData(formData);
@@ -181,17 +177,15 @@ function AddPurchaseRecord({
 
 export default function PurchaseRecord(props) {
     const uid = props.uid;
-    const [cropCategory, setCropCategory] = useState([]);
-    const [cropVariety, setCropVariety] = useState([]);
-    const [cropGrowthStage, setCropGrowthStage] = useState([]);
+    const [purchaseList, setPurchaseList] = useState([]);
+    const [chemicalList, setChemicalList] = useState([]);
 
     const [rows, setRows] = useState([]);
     const [formData, setFormData] = useState({});
     const [fieldValues, setFieldValues] = useState({});
-    const [cropCategoryOptions, setCropCategoryOptions] = useState([]);
-    const [cropVarietyOptions, setCropVarietyOptions] = useState([]);
-    const [cropGrowthStageOptions, setCropGrowthStageOptions] = useState([]);
+    const [chemicalOptions, setChemicalOptions] = useState([]);
 
+    const [mounted, setMounted] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
     const [isSave, setIsSave] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
@@ -201,71 +195,41 @@ export default function PurchaseRecord(props) {
     const [popoverRowId, setPopoverRowId] = useState(null);
     const [refreshRecord, setRefreshRecord] = useState(false);
 
-    async function CropListGet(uid) {
+    async function PurchaseListGet(uid) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/crop/list/get/" + "?uid=" + uid, requestOptions)
+        await fetch("/api/operation/purchase/list/get/" + "?uid=" + uid, requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        const record_list = data.data;
-                        const record_row = record_list.map((record) => createRowData(record))
-                        setRows(record_row);
+                        setPurchaseList(data.data);
                     })
                 }
             })
     }
 
-    async function CropCategoryGet() {
+    async function ChemicalListGet(uid) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/crop/category/", requestOptions)
+        await fetch("/api/chemical/list/get/" + "?uid=" + uid, requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        setCropCategory(data.data);
+                        setChemicalList(data.data);
                     })
                 }
             })
     }
 
-    async function CropVarietyGet() {
-        const requestOptions = {
-            method: "GET", headers: {"Content-Type": "application/json"},
-        };
-        await fetch("/api/crop/variety/", requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        setCropVariety(data.data);
-                    })
-                }
-            })
-    }
-
-    async function CropGrowthStageGet() {
-        const requestOptions = {
-            method: "GET", headers: {"Content-Type": "application/json"},
-        };
-        await fetch("/api/crop/growthstage/", requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        setCropGrowthStage(data.data);
-                    })
-                }
-            })
-    }
-
-    async function CropRecordUpdate() {
+    async function PurchaseRecordUpdate() {
         const apiData = createAPIData(formData);
         console.log(apiData);
         const requestOptions = {
             method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
         };
-        await fetch("/api/crop/update/", requestOptions)
+        await fetch("/api/operation/purchase/update/", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     setIsSave(true);
@@ -275,19 +239,40 @@ export default function PurchaseRecord(props) {
             })
     }
 
-    async function CropRecordDelete(cid) {
-        const apiData = {"user": uid, "cid": cid}
+    async function PurchaseRecordDelete(prid) {
+        const apiData = {"user": uid, "prid": prid}
         console.log(apiData);
         const requestOptions = {
             method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
         };
-        await fetch("/api/crop/delete/", requestOptions)
+        await fetch("/api/operation/purchase/delete/", requestOptions)
             .then((response) => {
                 if (response.ok) {
                     setIsDelete(true);
                     setRefreshRecord(~refreshRecord);
                 }
             })
+    }
+
+    const createRowData = (record) => {
+        const chemical = chemicalList.find(item => item.chemid === record.chemical);
+
+        return {
+            "id": record.prid,
+            "chemical": chemical.epa_reg_no,
+            "trade_name": chemical.trade_name,
+            "active_ingredient": chemical.active_ingredient,
+            "percent_ai": chemical.percent_ai,
+            "rei": chemical.rei,
+            "phi": chemical.phi,
+            "unit": chemical.unit,
+            "amount": record.amount,
+            "cost_per_unit": record.cost_per_unit,
+            "total_cost": record.total_cost,
+            "pur_datetime": record.pur_datetime,
+            "operator": record.operator,
+            "vendor": record.vendor,
+        };
     }
 
     const clearInputError = () => {
@@ -330,15 +315,14 @@ export default function PurchaseRecord(props) {
     }
 
     const onEditClicked = (params) => {
-        const crop = cropCategoryOptions.find(item => item.label === params.row.crop);
-        setFormData({"cid": params.id, "crop": crop.id});
+        setFormData({"prid": params.id});
         setFieldValues(params.row);
         setEditRowId(params.id);
         clearInputError();
     };
 
     const onDeleteClicked = (params) => {
-        CropRecordDelete(params.id);
+        PurchaseRecordDelete(params.id);
         const index = rows.findIndex(item => item.id === params.id);
         setRows([
             ...rows.slice(0, index),
@@ -354,21 +338,16 @@ export default function PurchaseRecord(props) {
         clearInputError();
     };
 
-    const CropCategoryOptionsFresh = () => {
-        setCropCategoryOptions(cropCategory.map(item => ({
-            label: item.name, id: item.ccid, crop_code: item.crop_code, category: item.category,
-        })));
-    };
-
-    const CropVarietyOptionsFresh = (crop_id) => {
-        setCropVarietyOptions(cropVariety.filter(item => item.crop_id === crop_id).map(item => ({
-            label: item.name, id: item.cvid
-        })))
-    };
-
-    const CropGrowthStageOptionsFresh = (crop_id) => {
-        setCropGrowthStageOptions(cropGrowthStage.filter(item => item.crop_id === crop_id).map(item => ({
-            label: item.name, id: item.cgsid
+    const ChemicalOptionsFresh = () => {
+        setChemicalOptions(chemicalList.map(item => ({
+            label: item.epa_reg_no,
+            trade_name: item.trade_name,
+            active_ingredient: item.active_ingredient,
+            percent_ai: item.percent_ai,
+            rei: item.rei,
+            phi: item.phi,
+            unit: item.unit,
+            id: item.chemid,
         })))
     };
 
@@ -376,18 +355,21 @@ export default function PurchaseRecord(props) {
         if (field === field_names[0]) {
             setFieldValues({
                 ...fieldValues,
-                [field]: value.label,
-                [field_names[1]]: "",
-                [field_names[2]]: value.crop_code,
-                [field_names[3]]: value.category,
-                [field_names[4]]: "",
+                [field]: value,
+                ["trade_name"]: value.trade_name,
+                ["active_ingredient"]: value.active_ingredient,
+                ["percent_ai"]: value.percent_ai,
+                ["rei"]: value.rei,
+                ["phi"]: value.phi,
+                ["unit"]: value.unit,
             });
             setFormData({
-                ...formData, [field]: value.id, [field_names[1]]: null, [field_names[4]]: null
+                ...formData,
+                [field]: value.id,
             });
         } else {
-            setFieldValues({...fieldValues, [field]: value.label});
-            setFormData({...formData, [field]: value.id});
+            setFieldValues({...fieldValues, [field]: value});
+            setFormData({...formData, [field]: value});
         }
     };
 
@@ -556,9 +538,7 @@ export default function PurchaseRecord(props) {
         fieldValues,
         formData,
         columns,
-        cropCategoryOptions,
-        cropVarietyOptions,
-        cropGrowthStageOptions,
+        chemicalOptions,
         handleInputChange,
         showAddModal,
         setShowAddModal,
@@ -569,15 +549,25 @@ export default function PurchaseRecord(props) {
         setRefreshRecord,
     };
 
-    const saveProps = {open: isSave, setOpen: setIsSave, msg: "Crop record is uploaded successfully!", tag: "success"};
+    const saveProps = {
+        open: isSave,
+        setOpen: setIsSave,
+        msg: "Purchase record is uploaded successfully!",
+        tag: "success"
+    };
 
-    const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Crop record has been deleted!", tag: "success"};
+    const deleteProps = {
+        open: isDelete,
+        setOpen: setIsDelete,
+        msg: "Purchase record has been deleted!",
+        tag: "success"
+    };
 
     useEffect(() => {
-        CropCategoryGet();
-        CropVarietyGet();
-        CropGrowthStageGet();
+        ChemicalListGet();
+        PurchaseListGet();
         clearInputError();
+        setMounted(true);
     }, []);
 
     useEffect(() => {
@@ -612,7 +602,7 @@ export default function PurchaseRecord(props) {
                 }}
             />
         </Paper>
-        <AddCropRecord {...addProps}/>
+        <AddPurchaseRecord {...addProps}/>
         <OperationSnackbars  {...saveProps}/>
         <OperationSnackbars  {...deleteProps}/>
     </div>);

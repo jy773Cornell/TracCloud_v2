@@ -110,7 +110,6 @@ function createEditAPIData(data) {
     };
 }
 
-
 function CustomToolbar() {
     return (<GridToolbarContainer>
         <GridToolbarColumnsButton/>
