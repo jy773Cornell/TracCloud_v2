@@ -51,7 +51,7 @@ function CustomToolbar() {
     </GridToolbarContainer>);
 }
 
-function AddCropRecord({
+function AddPurchaseRecord({
                            fieldValues,
                            formData,
                            columns,
