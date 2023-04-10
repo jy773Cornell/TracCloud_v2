@@ -348,6 +348,7 @@ class ApplicationUpdateView(APIView):
     def put(self, request, format=None):
         data = request_data_transform(request.data)
         arid = data.pop("arid")
+        print(data)
         if arid:
             application = ApplicationRecord.objects.filter(arid=arid).alive()
             if application:

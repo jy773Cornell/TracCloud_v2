@@ -81,8 +81,9 @@ function createAddAPIData(data) {
     };
 }
 
-function createAPIData(data) {
+function createEditAPIData(data) {
     const {
+        crop: crop_id,
         site: site_id,
         target: target_id,
         decision_support: decision_support_id,
@@ -95,6 +96,7 @@ function createAPIData(data) {
         ...rest
     } = data;
     return {
+        crop_id,
         site_id,
         target_id,
         decision_support_id,
@@ -103,9 +105,11 @@ function createAPIData(data) {
         water_unit_id,
         rate_unit_id,
         amount_unit_id,
-        area_unit_id, ...rest
+        area_unit_id,
+        ...rest
     };
 }
+
 
 function CustomToolbar() {
     return (<GridToolbarContainer>
@@ -662,7 +666,7 @@ export default function SprayRecord(props) {
     }
 
     async function ApplicationRecordUpdate() {
-        const apiData = createAPIData(formData);
+        const apiData = createEditAPIData(formData);
         console.log(apiData);
         const requestOptions = {
             method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
@@ -786,7 +790,9 @@ export default function SprayRecord(props) {
     }
 
     const onSaveClicked = () => {
-        if (Object.values(fieldValues).every(value => value !== "")) {
+        if (Object.keys(fieldValues)
+            .filter(key => !field_names.slice(17, 21).includes(key))
+            .filter(key => fieldValues[key].length === 0).length === 0) {
             ApplicationRecordUpdate();
             const index = rows.findIndex(item => item.id === fieldValues.id);
             setRows([...rows.slice(0, index), fieldValues, ...rows.slice(index + 1),]);
@@ -802,12 +808,17 @@ export default function SprayRecord(props) {
 
     const onEditClicked = (params) => {
         const application = sprayApplicationList.find(item => item.arid === params.id);
+        const updatedRow = Object.keys(params.row).reduce((acc, key) => {
+            acc[key] = params.row[key] === null ? "" : params.row[key];
+            return acc;
+        }, {});
+
         setFormData({
             "arid": params.id,
             "crop": application.crop,
         });
         setFieldValues({
-            ...params.row,
+            ...updatedRow,
             [field_names[3]]: application.area_unit,
             [field_names[11]]: application.water_unit,
             [field_names[13]]: application.rate_unit,
@@ -931,7 +942,7 @@ export default function SprayRecord(props) {
             });
             setFormData({
                 ...formData,
-                [field]: value.map(item => item.id),
+                [field]: value.id,
             });
         } else if (field === field_names[3]) {
             setFieldValues({
@@ -1304,7 +1315,7 @@ export default function SprayRecord(props) {
             width: columnWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
-                    options={applicationTargetOptions}
+                    options={decisionSupportOptions}
                     disableClearable
                     readOnly={editRowId !== rowID}
                     value={editRowId === rowID ? fieldValues[field_names[7]] : params.value}
