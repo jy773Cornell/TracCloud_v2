@@ -256,6 +256,20 @@ export default function Site(props) {
             })
     }
 
+    async function CropListGet(uid) {
+        const requestOptions = {
+            method: "GET", headers: {"Content-Type": "application/json"},
+        };
+        await fetch("/api/crop/list/get/" + "?uid=" + uid, requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    response.json().then((data) => {
+                        setCropList(data.data);
+                    })
+                }
+            })
+    }
+
     async function SiteTypeGet() {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
@@ -265,20 +279,6 @@ export default function Site(props) {
                 if (response.ok) {
                     response.json().then((data) => {
                         setSiteType(data.data);
-                    })
-                }
-            })
-    }
-
-    async function CropListGet() {
-        const requestOptions = {
-            method: "GET", headers: {"Content-Type": "application/json"},
-        };
-        await fetch("/api/crop/list/get/" + "?uid=" + uid, requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        setCropList(data.data);
                     })
                 }
             })
@@ -903,8 +903,8 @@ export default function Site(props) {
 
     useEffect(() => {
         SiteTypeGet();
-        CropListGet();
         UnitGet();
+        CropListGet(uid);
         clearInputError();
     }, []);
 

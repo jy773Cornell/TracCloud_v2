@@ -183,7 +183,6 @@ export default function Equipment(props) {
             })
     }
 
-
     async function EquipmentRecordUpdate() {
         const apiData = createAPIData(formData);
         console.log(apiData);
