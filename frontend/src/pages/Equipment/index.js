@@ -453,7 +453,6 @@ export default function Equipment(props) {
         clearInputError();
     }, []);
 
-
     useEffect(() => {
         EquipmentListGet(uid);
     }, [refreshRecord]);
