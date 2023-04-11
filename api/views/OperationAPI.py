@@ -61,7 +61,7 @@ class PurchaseListGetView(APIView):
         if uid:
             user = User.objects.filter(uid=uid).alive()
             if user:
-                purchase_list = PurchaseRecord.objects.filter(user_id=uid).alive()
+                purchase_list = PurchaseRecord.objects.filter(user_id=uid).alive().order_by('-update_time')
                 data = []
                 for purchase in purchase_list:
                     data.append(PurchaseGetSerializer(purchase).data)
@@ -83,6 +83,8 @@ class PurchaseUpdateView(APIView):
         if prid:
             purchase = PurchaseRecord.objects.filter(prid=prid).alive()
             if purchase:
+                operation = Operation.objects.filter(opid=purchase.first().opid_id).alive()
+                operation.update(update_time=timezone.now())
                 purchase.update(**data)
                 return Response({'Succeeded': 'Purchase record info has been updated.'}, status=status.HTTP_200_OK)
 
@@ -262,7 +264,7 @@ class ApplicationCreateView(APIView):
     def post(self, request, format=None):
         data = request_data_transform(request.data)
         if data.get("opid_id"):
-            required_fields = ["user_id", "type_id", "crop_id", "site_id", "chemical_id"]
+            required_fields = ["user_id", "type_id", "crop_id", "site_id", "chemical_purchase_id"]
             if all(field in list(data.keys()) for field in required_fields):
                 operation = Operation.objects.filter(opid_id=data.get("opid_id"), user_id=data.get("user_id")).alive()
                 data.update({"arid": gen_uuid("ARID"), })
@@ -272,7 +274,7 @@ class ApplicationCreateView(APIView):
 
             return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            required_fields = ["user_id", "type_id", "crop_id", "site_list", "chemical_id"]
+            required_fields = ["user_id", "type_id", "crop_id", "site_list", "chemical_purchase_id"]
             if all(field in list(data.keys()) for field in required_fields):
                 opid = gen_uuid("OPID")
                 operation_type = next((op_type["optid"] for op_type in cache.get("OperationType") if
@@ -349,11 +351,11 @@ class ApplicationUpdateView(APIView):
     def put(self, request, format=None):
         data = request_data_transform(request.data)
         arid = data.pop("arid")
-        print(data)
+
         if arid:
             application = ApplicationRecord.objects.filter(arid=arid).alive()
             if application:
-                operation = Operation.objects.filter(opid=application.first().opid).alive()
+                operation = Operation.objects.filter(opid=application.first().opid_id).alive()
                 operation.update(update_time=timezone.now())
                 application.update(**data)
                 return Response({'Succeeded': 'Application record info has been updated.'}, status=status.HTTP_200_OK)

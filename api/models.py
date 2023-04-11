@@ -405,8 +405,8 @@ class ApplicationRecord(models.Model):
     decision_support = models.ForeignKey(verbose_name="Decision Support", to="DecisionSupport", to_field="dsid",
                                          related_name="ar_decision_support", null=True, blank=True,
                                          on_delete=models.SET_NULL)
-    chemical = models.ForeignKey(verbose_name="Chemical", to="Chemical", to_field="chemid",
-                                 related_name="ar_chem", null=True, blank=True, on_delete=models.SET_NULL)
+    chemical_purchase = models.ForeignKey(verbose_name="Chemical Purchase", to="PurchaseRecord", to_field="prid",
+                                 related_name="ar_purchase", null=True, blank=True, on_delete=models.SET_NULL)
     equipment = models.ForeignKey(verbose_name="Equipment", to="Equipment", to_field="eid",
                                   related_name="ar_equipment", null=True, blank=True, on_delete=models.SET_NULL)
     water_use = models.CharField(verbose_name="Water Use", null=True, blank=True, max_length=32)

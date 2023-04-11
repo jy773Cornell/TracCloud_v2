@@ -348,9 +348,9 @@ export default function PurchaseRecord(props) {
             "rei": chemical.rei,
             "phi": chemical.phi,
             "unit": chemical.unit,
-            "cost_per_unit": `\$ ${record.cost_per_unit} per ${chemical.unit}`,
+            "cost_per_unit": `\$${record.cost_per_unit} per ${chemical.unit}`,
             "amount": `${record.amount} ${chemical.unit}`,
-            "total_cost": `\$ ${record.total_cost}`,
+            "total_cost": `\$${record.total_cost}`,
             "pur_datetime": record.pur_datetime,
             "operator": record.operator,
             "vendor": record.vendor,
@@ -702,7 +702,7 @@ export default function PurchaseRecord(props) {
             sortable: false,
             width: columnWidth,
             valueGetter: (params) => {
-                return (editRowId === params.id ? `\$ ${fieldValues[field_names[3]]}` : params.value)
+                return (editRowId === params.id ? `\$${fieldValues[field_names[3]]}` : params.value)
             },
         },
         {
