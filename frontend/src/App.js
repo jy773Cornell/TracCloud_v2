@@ -12,6 +12,8 @@ const Chemical = lazy(() => import('./pages/Chemical'))
 const Site = lazy(() => import('./pages/Site'))
 const Equipment = lazy(() => import('./pages/Equipment'))
 const SprayRecord = lazy(() => import('./pages/SprayRecord'))
+const FertRecord = lazy(() => import('./pages/FertRecord'))
+const HarvestRecord = lazy(() => import('./pages/HarvestRecord'))
 const PurchaseRecord = lazy(() => import('./pages/PurchaseRecord'))
 
 function App() {
@@ -37,7 +39,8 @@ function App() {
                         <Route path="chemical" element={<Chemical uid={uid}/>}/>
                         <Route path="equipment" element={<Equipment uid={uid}/>}/>
                         <Route path="record/spray" element={<SprayRecord uid={uid}/>}/>
-                        <Route path="record/harvest" element={<SprayRecord uid={uid}/>}/>
+                        <Route path="record/fertilization" element={<FertRecord uid={uid}/>}/>
+                        <Route path="record/harvest" element={<HarvestRecord uid={uid}/>}/>
                         <Route path="record/purchase" element={<PurchaseRecord uid={uid}/>}/>
                         <Route path="report" element={<UserProfile/>}/>
                     </Route>
