@@ -114,24 +114,6 @@ class PurchaseDeleteView(APIView):
 
 
 # HarvestRecord
-class HarvestOperationCreateView(APIView):
-    serializer_class = OperationCreateSerializer
-
-    @csrf_exempt
-    def post(self, request, format=None):
-        uid = request.data.get("user")
-        operation_type = OperationType.objects.filter(name="Harvest", is_active=True).first()
-        if uid:
-            user = User.objects.filter(uid=uid, is_active=True)
-            if user:
-                opid = gen_uuid("OPID")
-                Operation(opid=opid, user_id=uid, type=operation_type).save()
-                return Response({'Succeeded': 'Harvest operation created.'}, status=status.HTTP_200_OK)
-
-            return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
-
-        return Response({'Bad Request': 'Invalid POST parameter'}, status=status.HTTP_400_BAD_REQUEST)
-
 
 class HarvestCreateView(APIView):
     serializer_class = HarvestCreateSerializer
@@ -139,15 +121,36 @@ class HarvestCreateView(APIView):
     @csrf_exempt
     def post(self, request, format=None):
         data = request_data_transform(request.data)
-        serializer = HarvestCreateSerializer()
-        fields = [field for field in serializer.fields if field not in ["rows", "tracing_no", "note", ]]
-        if all(field in list(data.keys()) for field in fields):
-            hrid = gen_uuid("HRID")
-            data["hrid"] = hrid
-            HarvestRecord(**data).save()
-            return Response({'Succeeded': 'Harvest record create.'}, status=status.HTTP_201_CREATED)
+        if data.get("opid_id"):
+            required_fields = ["user_id", "crop_id", "site_id"]
+            if all(field in list(data.keys()) for field in required_fields):
+                operation = Operation.objects.filter(opid_id=data.get("opid_id"), user_id=data.get("user_id")).alive()
+                data.update({"hrid": gen_uuid("HRID"), })
+                HarvestRecord(**data).save()
+                operation.update(updatetime=timezone.now())
+                return Response({'Succeeded': 'Harvest record create.'}, status=status.HTTP_201_CREATED)
 
-        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            required_fields = ["user_id", "crop_id", "site_list"]
+            if all(field in list(data.keys()) for field in required_fields):
+                opid = gen_uuid("OPID")
+                operation_type = next((op_type["optid"] for op_type in cache.get("OperationType") if
+                                       op_type["name"] == "Application"), None)
+                Operation(opid=opid, user_id=data.get("user_id"), type_id=operation_type).save()
+                site_list = data.pop("site_list")
+
+                for site_id in site_list:
+                    save_data = data
+                    save_data.update({
+                        "opid_id": opid,
+                        "hrid": gen_uuid("HRID"),
+                        "site_id": site_id,
+                    })
+                    HarvestRecord(**save_data).save()
+                return Response({'Succeeded': 'Harvest record create.'}, status=status.HTTP_201_CREATED)
+
+            return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class HarvestGetView(APIView):
@@ -157,7 +160,7 @@ class HarvestGetView(APIView):
     def get(self, request, format=None):
         opid = request.GET.get(self.lookup_url_kwarg)
         if opid:
-            harvest_list = HarvestRecord.objects.filter(opid=opid, is_active=True)
+            harvest_list = HarvestRecord.objects.filter(opid=opid).alive()
             if harvest_list:
                 data = []
                 for harvest in harvest_list:
@@ -176,21 +179,20 @@ class HarvestListGetView(APIView):
     def get(self, request, format=None):
         uid = request.GET.get(self.lookup_url_kwarg)
         if uid:
-            user = User.objects.filter(uid=uid, is_active=True)
+            user = User.objects.filter(uid=uid).alive()
             if user:
                 op_harvest_list = Operation.objects.filter(
                     user_id=uid,
-                    type=OperationType.objects.filter(name="Harvest", is_active=True).first(),
-                    is_active=True)
-                data = {}
+                    type_id=next((op_type["optid"] for op_type in cache.get("OperationType") if
+                                  op_type["name"] == "Harvest"), None)
+                ).alive().order_by('-update_time')
+                harvest_list = HarvestRecord.objects.filter(user_id=uid).alive().order_by('-update_time')
 
+                data = []
                 for op_harvest in op_harvest_list:
-                    opid = op_harvest.opid
-                    op_str = op_harvest.__str__()
-                    data[op_str] = []
-                    harvest_list = HarvestRecord.objects.filter(opid=opid, is_active=True)
                     for harvest in harvest_list:
-                        data[op_str].append(HarvestGetSerializer(harvest).data)
+                        if harvest.opid == op_harvest:
+                            data.append(HarvestGetSerializer(harvest).data)
                 return Response({'Succeeded': 'Harvest Record List Info Fetched.', 'data': data},
                                 status=status.HTTP_200_OK)
 
@@ -206,9 +208,12 @@ class HarvestUpdateView(APIView):
     def put(self, request, format=None):
         data = request_data_transform(request.data)
         hrid = data.pop("hrid")
+
         if hrid:
-            harvest = HarvestRecord.objects.filter(hrid=hrid, is_active=True)
+            harvest = HarvestRecord.objects.filter(hrid=hrid).alive()
             if harvest:
+                operation = Operation.objects.filter(opid=harvest.first().opid_id).alive()
+                operation.update(update_time=timezone.now())
                 harvest.update(**data)
                 return Response({'Succeeded': 'Harvest record info has been updated.'}, status=status.HTTP_200_OK)
 
@@ -217,42 +222,37 @@ class HarvestUpdateView(APIView):
         return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class HarvestOperationDeleteView(APIView):
-    serializer_class = OperationDeleteSerializer
-
-    @csrf_exempt
-    def put(self, request, format=None):
-        opid = request.data.get("opid")
-        uid = request.data.get("user")
-        operation_type = OperationType.objects.filter(name="Harvest", is_active=True).first()
-
-        if opid and uid:
-            operation = Operation.objects.filter(opid=opid, user_id=uid, type=operation_type, is_active=True)
-            harvest = HarvestRecord.objects.filter(opid_id=opid, user_id=uid, is_active=True)
-            if operation:
-                model_delete(operation)
-                if harvest:
-                    model_delete(harvest)
-                return Response({'Succeeded': 'Harvest operation have been deleted.'}, status=status.HTTP_200_OK)
-
-            return Response({'Failed': 'Invalid opid'}, status=status.HTTP_404_NOT_FOUND)
-
-
 class HarvestDeleteView(APIView):
     serializer_class = HarvestDeleteSerializer
 
     @csrf_exempt
     def put(self, request, format=None):
         uid = request.data.get("user")
+        opid = request.data.get("opid")
         hrid = request.data.get("hrid")
+        operation_type_id = next((op_type["optid"] for op_type in cache.get("OperationType") if
+                                  op_type["name"] == "Harvest"), None)
 
-        if uid and hrid:
-            harvest = HarvestRecord.objects.filter(hrid=hrid, user_id=uid, is_active=True)
+        if opid and uid:
+            operation = Operation.objects.filter(opid=opid, user_id=uid, type_id=operation_type_id).alive()
+            if operation:
+                operation.delete()
+                return Response({'Succeeded': 'Harvest operation have been deleted.'}, status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid opid'}, status=status.HTTP_404_NOT_FOUND)
+
+        elif hrid and uid:
+            harvest = HarvestRecord.objects.filter(hrid=hrid, user_id=uid).alive()
             if harvest:
-                model_delete(harvest)
+                opid = harvest.first().opid
+                harvest.delete()
+                if not HarvestRecord.objects.filter(opid=opid).alive():
+                    Operation.objects.filter(opid=opid).alive().delete()
                 return Response({'Succeeded': 'Harvest record have been deleted.'}, status=status.HTTP_200_OK)
 
             return Response({'Failed': 'Invalid hrid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # ApplicationRecord

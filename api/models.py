@@ -194,7 +194,7 @@ class Site(models.Model):
     name = models.CharField(verbose_name="Site Name", max_length=256)
     owner_name = models.CharField(verbose_name="Owner Name", null=True, blank=True, max_length=64)
     crop = models.ForeignKey(verbose_name="Crop", to="Crop", to_field="cid", related_name="site_crop",
-                             null=True, blank=True, on_delete=models.SET_NULL)
+                             null=True, blank=True, on_delete=models.CASCADE)
     crop_year = models.CharField(verbose_name="Crop Year", max_length=32, null=True, blank=True)
     size = models.CharField(verbose_name="Size", null=True, blank=True, max_length=32)
     size_unit = models.ForeignKey(verbose_name="Size Unit", to="Unit", to_field="unitid", related_name="site_unit",
@@ -335,7 +335,7 @@ class PurchaseRecord(models.Model):
     user = models.ForeignKey(verbose_name="User", to="User", to_field="uid", related_name="pr_user",
                              null=True, blank=True, on_delete=models.SET_NULL)
     opid = models.ForeignKey(verbose_name="OPID", to="Operation", to_field="opid", related_name="pr_op",
-                             null=True, blank=True, on_delete=models.SET_NULL)
+                             null=True, blank=True, on_delete=models.CASCADE)
     chemical = models.ForeignKey(verbose_name="Chemical", to="Chemical", to_field="chemid",
                                  related_name="pr_chem", null=True, blank=True, on_delete=models.CASCADE)
     cost_per_unit = models.CharField(verbose_name="Cost Per Unit", max_length=32)
@@ -360,27 +360,30 @@ class HarvestRecord(models.Model):
     user = models.ForeignKey(verbose_name="User", to="User", to_field="uid", related_name="hr_user",
                              null=True, blank=True, on_delete=models.SET_NULL)
     opid = models.ForeignKey(verbose_name="OPID", to="Operation", to_field="opid", related_name="hr_op",
-                             null=True, blank=True, on_delete=models.SET_NULL)
-    har_datetime = models.DateTimeField(verbose_name="Harvest Datetime", null=True, blank=True)
-    operator = models.ForeignKey(verbose_name="Operator", to="User", to_field="uid", related_name="hr_op_user",
-                                 null=True, blank=True, on_delete=models.SET_NULL)
+                             null=True, blank=True, on_delete=models.CASCADE)
     crop = models.ForeignKey(verbose_name="Crop", to="Crop", to_field="cid", related_name="hr_crop",
-                             null=True, blank=True, on_delete=models.SET_NULL)
+                             null=True, blank=True, on_delete=models.CASCADE)
     site = models.ForeignKey(verbose_name="Site", to="Site", to_field="sid", related_name="hr_site",
                              null=True, blank=True, on_delete=models.SET_NULL)
-    planting_date = models.DateField(verbose_name="Planting Date", null=True, blank=True)
-    bloom_date = models.DateField(verbose_name="Bloom Date", null=True, blank=True)
     hr_area = models.CharField(verbose_name="Harvest Area", max_length=32)
     area_unit = models.ForeignKey(verbose_name="Area Unit", to="Unit", to_field="unitid",
                                   related_name="hr_unit", null=True, blank=True, on_delete=models.SET_NULL)
-    rows = models.CharField(verbose_name="Rows", max_length=32)
+    rows = models.CharField(verbose_name="Rows", null=True, blank=True, max_length=32)
+    planting_date = models.CharField(verbose_name="Planting Date", null=True, blank=True, max_length=64)
+    bloom_date = models.CharField(verbose_name="Bloom Date", null=True, blank=True, max_length=64)
+    har_datetime = models.CharField(verbose_name="Harvest Datetime", null=True, blank=True, max_length=64)
+    operator = models.CharField(verbose_name="Operator", null=True, blank=True, max_length=64)
     tracing_no = models.CharField(verbose_name="Tracking No.", null=True, blank=True, max_length=128)
+
     note = models.TextField(verbose_name="Note", null=True, blank=True)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
+    update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
 
     def __str__(self):
         return "{} ({})".format(self.site, self.har_datetime)
+
+    objects = MyModelManager()
 
 
 class ApplicationRecord(models.Model):
@@ -392,7 +395,7 @@ class ApplicationRecord(models.Model):
     type = models.ForeignKey(verbose_name="Application Type", to="ApplicationType", to_field="atid",
                              related_name="ar_type", null=True, blank=True, on_delete=models.SET_NULL)
     crop = models.ForeignKey(verbose_name="Crop", to="Crop", to_field="cid", related_name="ar_crop",
-                             null=True, blank=True, on_delete=models.SET_NULL)
+                             null=True, blank=True, on_delete=models.CASCADE)
     site = models.ForeignKey(verbose_name="Site", to="Site", to_field="sid", related_name="ar_site",
                              null=True, blank=True, on_delete=models.SET_NULL)
     applied_area = models.CharField(verbose_name="Applied Area", max_length=32)
@@ -406,7 +409,7 @@ class ApplicationRecord(models.Model):
                                          related_name="ar_decision_support", null=True, blank=True,
                                          on_delete=models.SET_NULL)
     chemical_purchase = models.ForeignKey(verbose_name="Chemical Purchase", to="PurchaseRecord", to_field="prid",
-                                 related_name="ar_purchase", null=True, blank=True, on_delete=models.SET_NULL)
+                                          related_name="ar_purchase", null=True, blank=True, on_delete=models.SET_NULL)
     equipment = models.ForeignKey(verbose_name="Equipment", to="Equipment", to_field="eid",
                                   related_name="ar_equipment", null=True, blank=True, on_delete=models.SET_NULL)
     water_use = models.CharField(verbose_name="Water Use", null=True, blank=True, max_length=32)

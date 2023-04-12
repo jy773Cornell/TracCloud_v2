@@ -84,7 +84,6 @@ urlpatterns = [
     path('operation/harvest/get/', HarvestGetView.as_view()),
     path('operation/harvest/list/get/', HarvestListGetView.as_view()),
     path('operation/harvest/update/', HarvestUpdateView.as_view()),
-    path('operation/harvest/operation/delete/', HarvestOperationDeleteView.as_view()),
     path('operation/harvest/delete/', HarvestDeleteView.as_view()),
 
     path('operation/application/create/', ApplicationCreateView.as_view()),

@@ -72,16 +72,15 @@ class HarvestCreateSerializer(serializers.ModelSerializer):
 
 
 class HarvestGetSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-    opid = serializers.StringRelatedField()
-    operator = serializers.StringRelatedField()
-    crop = serializers.StringRelatedField()
-    site = serializers.StringRelatedField()
-    area_unit = serializers.StringRelatedField()
+    area_unit = serializers.SerializerMethodField()
+    update_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
 
     class Meta:
         model = HarvestRecord
         fields = "__all__"
+
+    def get_area_unit(self, obj):
+        return next((item['name'] for item in cache.get("Unit") if item['unitid'] == obj.area_unit_id), None)
 
 
 class HarvestUpdateSerializer(serializers.ModelSerializer):
@@ -110,8 +109,8 @@ class ApplicationCreateSerializer(serializers.ModelSerializer):
     type_id = serializers.PrimaryKeyRelatedField(source='type', queryset=ApplicationType.objects.filter(is_active=True))
     target_id = serializers.PrimaryKeyRelatedField(source='target',
                                                    queryset=ApplicationTarget.objects.filter(is_active=True))
-    chemid = serializers.PrimaryKeyRelatedField(source='chemical',
-                                                queryset=Chemical.objects.filter(is_active=True))
+    chemical_purchase_id = serializers.PrimaryKeyRelatedField(source='PurchaseRecord',
+                                                              queryset=PurchaseRecord.objects.filter(is_active=True))
     equipment_id = serializers.PrimaryKeyRelatedField(source='equipment',
                                                       queryset=Equipment.objects.filter(is_active=True))
     water_unit_id = serializers.PrimaryKeyRelatedField(source='water_unit',
@@ -133,8 +132,9 @@ class ApplicationCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ApplicationRecord
-        exclude = ("arid", "user", "opid", "type", "target", "chemical", "equipment", "water_unit", "rate_unit",
-                   "amount_unit", "site", "area_unit", "crop", "decision_support", "is_active", "create_time",)
+        exclude = (
+            "arid", "user", "opid", "type", "target", "chemical_purchase", "equipment", "water_unit", "rate_unit",
+            "amount_unit", "site", "area_unit", "crop", "decision_support", "is_active", "create_time",)
 
 
 class ApplicationGetSerializer(serializers.ModelSerializer):
