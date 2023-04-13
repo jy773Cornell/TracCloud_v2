@@ -136,7 +136,7 @@ class HarvestCreateView(APIView):
             if all(field in list(data.keys()) for field in required_fields):
                 opid = gen_uuid("OPID")
                 operation_type = next((op_type["optid"] for op_type in cache.get("OperationType") if
-                                       op_type["name"] == "Application"), None)
+                                       op_type["name"] == "Harvest"), None)
                 Operation(opid=opid, user_id=data.get("user_id"), type_id=operation_type).save()
                 site_list = data.pop("site_list")
 

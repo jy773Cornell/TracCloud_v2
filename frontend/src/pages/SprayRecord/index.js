@@ -159,9 +159,11 @@ function AddSprayRecord({
     }
 
     const handleSaveButtonPressed = () => {
-        if (Object.keys(fieldValues)
+        const isFormValid = Object.keys(fieldValues)
             .filter(key => !field_names.slice(17, 21).includes(key))
-            .filter(key => fieldValues[key].length === 0).length === 0) {
+            .filter(key => fieldValues[key].length === 0).length === 0
+
+        if (isFormValid) {
             OperationApplicationRecordSave();
         } else {
             updateInputError();
@@ -805,9 +807,11 @@ export default function SprayRecord(props) {
     }
 
     const onSaveClicked = () => {
-        if (Object.keys(fieldValues)
+        const isFormValid = Object.keys(fieldValues)
             .filter(key => !field_names.slice(17, 21).includes(key))
-            .filter(key => fieldValues[key].length === 0).length === 0) {
+            .filter(key => fieldValues[key].length === 0).length === 0;
+
+        if (isFormValid) {
             ApplicationRecordUpdate();
             const index = rows.findIndex(item => item.id === fieldValues.id);
             setRows([...rows.slice(0, index), fieldValues, ...rows.slice(index + 1),]);
