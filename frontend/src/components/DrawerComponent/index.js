@@ -128,21 +128,6 @@ export default function LayoutDrawer(props) {
                             backgroundColor: grey[100],
                             '&:hover': {backgroundColor: grey[100],},
                         }}
-                        onClick={() => handleMenuButtonPressed('/record/fertilization')}
-                        selected={location.pathname === "/record/fertilization"}>
-                        <ListItemIcon>
-                            <AgricultureIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary="Fertilization"/>
-                    </ListItemButton>
-                </ListItem>
-                <ListItem disablePadding>
-                    <ListItemButton
-                        sx={{
-                            pl: 4,
-                            backgroundColor: grey[100],
-                            '&:hover': {backgroundColor: grey[100],},
-                        }}
                         onClick={() => handleMenuButtonPressed('/record/harvest')}
                         selected={location.pathname === "/record/harvest"}>
                         <ListItemIcon>

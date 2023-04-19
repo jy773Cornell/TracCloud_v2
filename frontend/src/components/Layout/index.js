@@ -3,8 +3,8 @@ import {Outlet, useNavigate} from "react-router-dom";
 import {StyledContainer, StyledRoot} from './styles'
 import {removeToken} from "../../utils";
 
-const LayoutAppBar = lazy(() => import('../../components/AppBarComponent'))
-const LayoutDrawer = lazy(() => import('../../components/DrawerComponent'))
+const LayoutAppBar = lazy(() => import('../AppBarComponent'))
+const LayoutDrawer = lazy(() => import('../DrawerComponent'))
 
 export default function Layout(props) {
     const [username, setUsername] = useState("")

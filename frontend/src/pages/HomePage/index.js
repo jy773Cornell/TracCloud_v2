@@ -1,9 +1,9 @@
 import * as React from 'react';
 
-export default function SiteTreeView() {
+export default function HomePage() {
     return (
         <div>
-            home
+            HomePage
         </div>
     );
 }

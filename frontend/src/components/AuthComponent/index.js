@@ -3,8 +3,8 @@ import {Navigate} from 'react-router-dom'
 import {useState} from "react";
 import {getToken} from "../../utils";
 
-const Loading = lazy(() => import('../../pages/Loading'))
-const Layout = lazy(() => import('../../pages/Layout'))
+const Loading = lazy(() => import('../Loading'))
+const Layout = lazy(() => import('../Layout'))
 
 export default function AuthComponent({onUIDReceived}) {
     const [authStatus, setAuthStatus] = useState("loading")
