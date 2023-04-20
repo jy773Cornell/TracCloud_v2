@@ -401,7 +401,9 @@ class ApplicationRecord(models.Model):
     applied_area = models.CharField(verbose_name="Applied Area", max_length=32)
     area_unit = models.ForeignKey(verbose_name="Area Unit", to="Unit", to_field="unitid", related_name="ar_area_unit",
                                   null=True, blank=True, on_delete=models.SET_NULL)
-    app_datetime = models.CharField(verbose_name="Application Datetime", null=True, blank=True, max_length=64)
+    app_date = models.CharField(verbose_name="Application Date", null=True, blank=True, max_length=64)
+    start_time = models.CharField(verbose_name="Start Time", null=True, blank=True, max_length=64)
+    finish_time = models.CharField(verbose_name="Finish Time", null=True, blank=True, max_length=64)
     operator = models.CharField(verbose_name="Operator", null=True, blank=True, max_length=64)
     target = models.ForeignKey(verbose_name="Application Target", to="ApplicationTarget", to_field="attid",
                                related_name="ar_pd", null=True, blank=True, on_delete=models.SET_NULL)

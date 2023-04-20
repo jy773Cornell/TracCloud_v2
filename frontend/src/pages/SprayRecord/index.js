@@ -24,9 +24,9 @@ import {
     GridToolbarFilterButton
 } from "@mui/x-data-grid";
 import ConfirmPopover from "../../components/ConfirmPopover";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
+import {TimePicker} from '@mui/x-date-pickers/TimePicker';
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 
 const columnWidth = 200;
@@ -34,7 +34,7 @@ const columnMidWidth = 250;
 const columnLongWidth = 350;
 
 const field_names = [
-    "crop", "site", "applied_area", "area_unit", "app_datetime", "operator", "target", "decision_support",
+    "crop", "site", "applied_area", "area_unit", "app_date", "start_time", "finish_time", "operator", "target", "decision_support",
     "chemical_purchase", "equipment", "water_use", "water_unit", "application_rate",
     "rate_unit", "total_amount", "amount_unit", "total_cost", "customer", "wind_speed", "wind_direction", "average_temp",
 ]
@@ -160,7 +160,7 @@ function AddSprayRecord({
 
     const handleSaveButtonPressed = () => {
         const isFormValid = Object.keys(fieldValues)
-            .filter(key => !field_names.slice(17, 21).includes(key))
+            .filter(key => !field_names.slice(19, 23).includes(key))
             .filter(key => fieldValues[key].length === 0).length === 0
 
         if (isFormValid) {
@@ -228,7 +228,7 @@ function AddSprayRecord({
                                            error={inputError[field_names[1]]}/>)}
                         />
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={2.4}>
                         <TextField
                             variant="outlined"
                             fullWidth
@@ -244,7 +244,7 @@ function AddSprayRecord({
                             }}
                         />
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={2.4}>
                         <Autocomplete
                             value={fieldValues[field_names[3]]}
                             options={siteUnitOptions}
@@ -256,7 +256,7 @@ function AddSprayRecord({
                                            error={inputError[field_names[3]]}/>)}
                         />
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={2.4}>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
                                 variant="outlined"
@@ -269,97 +269,87 @@ function AddSprayRecord({
                             />
                         </LocalizationProvider>
                     </Grid>
+                    <Grid item xs={2.4}>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <TimePicker
+                                variant="outlined"
+                                label={columns[5].headerName}
+                                value={dayjs(`1970-01-01T${dayjs(fieldValues[field_names[5]], "h:mm A").format("HH:mm")}`)}
+                                onChange={(event) => {
+                                    handleAddInputChange(event, dayjs(event).format('HH:mm A'), field_names[5]);
+                                }}
+                                sx={{width: '100%'}}
+                            />
+                        </LocalizationProvider>
+                    </Grid>
+                    <Grid item xs={2.4}>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <TimePicker
+                                variant="outlined"
+                                label={columns[6].headerName}
+                                value={dayjs(`1970-01-01T${dayjs(fieldValues[field_names[6]], "h:mm A").format("HH:mm")}`)}
+                                onChange={(event) => {
+                                    handleAddInputChange(event, dayjs(event).format('HH:mm A'), field_names[6]);
+                                }}
+                                sx={{width: '100%'}}
+                            />
+                        </LocalizationProvider>
+                    </Grid>
                     <Grid item xs={3}>
                         <TextField
                             variant="outlined"
                             fullWidth
                             required
-                            label={columns[5].headerName}
-                            error={inputError[field_names[5]]}
+                            label={columns[7].headerName}
+                            error={inputError[field_names[7]]}
                             onChange={(event) => {
-                                handleAddInputChange(event, event.target.value, field_names[5]);
+                                handleAddInputChange(event, event.target.value, field_names[7]);
                             }}
                         />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={4.5}>
                         <Autocomplete
-                            value={fieldValues[field_names[6]]}
+                            value={fieldValues[field_names[8]]}
                             options={applicationTargetOptions}
                             onChange={(event, value) => {
-                                handleAddInputChange(event, value, field_names[6]);
+                                handleAddInputChange(event, value, field_names[8]);
                             }}
                             renderInput={(params) => (
-                                <TextField {...params} required variant="outlined" label={columns[6].headerName}
-                                           error={inputError[field_names[6]]}/>)}
+                                <TextField {...params} required variant="outlined" label={columns[8].headerName}
+                                           error={inputError[field_names[8]]}/>)}
                         />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={4.5}>
                         <Autocomplete
-                            value={fieldValues[field_names[7]]}
+                            value={fieldValues[field_names[9]]}
                             options={decisionSupportOptions}
                             onChange={(event, value) => {
-                                handleAddInputChange(event, value, field_names[7]);
+                                handleAddInputChange(event, value, field_names[9]);
                             }}
                             renderInput={(params) => (
-                                <TextField {...params} required variant="outlined" label={columns[7].headerName}
-                                           error={inputError[field_names[7]]}/>)}
+                                <TextField {...params} required variant="outlined" label={columns[9].headerName}
+                                           error={inputError[field_names[9]]}/>)}
                         />
                     </Grid>
                     <Grid item xs={12}>
                         <Autocomplete
-                            value={fieldValues[field_names[8]]}
+                            value={fieldValues[field_names[10]]}
                             options={addChemicalOptions}
                             onChange={(event, value) => {
-                                handleAddInputChange(event, value, field_names[8]);
+                                handleAddInputChange(event, value, field_names[10]);
                             }}
                             renderInput={(params) => (
                                 <TextField {...params} required
                                            variant="outlined"
                                            placeholder={"EPA NO.  |  Trade Name  |  Active Ingredient  |  REI  |  PHI  |  Cost per Unit  |  Purchase Date"}
                                            label={"Chemical"}
-                                           error={inputError[field_names[8]]}/>)}
+                                           error={inputError[field_names[10]]}/>)}
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <Autocomplete
-                            value={fieldValues[field_names[9]]}
-                            options={equipmentOptions}
-                            onChange={(event, value) => {
-                                handleAddInputChange(event, value, field_names[9]);
-                            }}
-                            renderInput={(params) => (
-                                <TextField {...params}
-                                           required
-                                           variant="outlined"
-                                           placeholder={"Equipment (Owner, Code)"}
-                                           label={columns[15].headerName}
-                                           error={inputError[field_names[9]]}/>)}
-                        />
-                    </Grid>
-                    <Grid item xs={3.5}>
-                        <TextField
-                            variant="outlined"
-                            fullWidth
-                            required
-                            type="number"
-                            inputProps={{
-                                step: 0.01,
-                            }}
-                            InputProps={{
-                                endAdornment: <InputAdornment
-                                    position="end">{`per ${fieldValues[field_names[13]]}`}</InputAdornment>,
-                            }}
-                            label={columns[16].headerName}
-                            error={inputError[field_names[10]]}
-                            onChange={(event) => {
-                                handleAddInputChange(event, event.target.value, field_names[10]);
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={2}>
-                        <Autocomplete
                             value={fieldValues[field_names[11]]}
-                            options={chemicalUnitOptions}
+                            options={equipmentOptions}
                             onChange={(event, value) => {
                                 handleAddInputChange(event, value, field_names[11]);
                             }}
@@ -367,7 +357,8 @@ function AddSprayRecord({
                                 <TextField {...params}
                                            required
                                            variant="outlined"
-                                           label={"Water Unit"}
+                                           placeholder={"Equipment (Owner, Code)"}
+                                           label={columns[17].headerName}
                                            error={inputError[field_names[11]]}/>)}
                         />
                     </Grid>
@@ -381,33 +372,50 @@ function AddSprayRecord({
                                 step: 0.01,
                             }}
                             InputProps={{
-                                endAdornment:
-                                    <InputAdornment position="end">
-                                        {`${fieldValues[field_names[15]]} per ${fieldValues[field_names[13]]}`}
-                                    </InputAdornment>,
+                                endAdornment: <InputAdornment
+                                    position="end">{`per ${fieldValues[field_names[15]]}`}</InputAdornment>,
                             }}
-                            label={columns[17].headerName}
+                            label={columns[18].headerName}
                             error={inputError[field_names[12]]}
                             onChange={(event) => {
                                 handleAddInputChange(event, event.target.value, field_names[12]);
                             }}
                         />
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={2}>
+                        <Autocomplete
+                            value={fieldValues[field_names[13]]}
+                            options={chemicalUnitOptions}
+                            onChange={(event, value) => {
+                                handleAddInputChange(event, value, field_names[13]);
+                            }}
+                            renderInput={(params) => (
+                                <TextField {...params}
+                                           required
+                                           variant="outlined"
+                                           label={"Water Unit"}
+                                           error={inputError[field_names[13]]}/>)}
+                        />
+                    </Grid>
+                    <Grid item xs={3.5}>
                         <TextField
                             variant="outlined"
                             fullWidth
-                            value={fieldValues[field_names[14]]}
-                            label={columns[18].headerName}
-                            InputLabelProps={{
-                                shrink: true,
-                                readOnly: true,
+                            required
+                            type="number"
+                            inputProps={{
+                                step: 0.01,
                             }}
                             InputProps={{
                                 endAdornment:
                                     <InputAdornment position="end">
-                                        {`${fieldValues[field_names[15]]}`}
+                                        {`${fieldValues[field_names[17]]} per ${fieldValues[field_names[15]]}`}
                                     </InputAdornment>,
+                            }}
+                            label={columns[19].headerName}
+                            error={inputError[field_names[14]]}
+                            onChange={(event) => {
+                                handleAddInputChange(event, event.target.value, field_names[14]);
                             }}
                         />
                     </Grid>
@@ -416,7 +424,25 @@ function AddSprayRecord({
                             variant="outlined"
                             fullWidth
                             value={fieldValues[field_names[16]]}
-                            label={columns[19].headerName}
+                            label={columns[20].headerName}
+                            InputLabelProps={{
+                                shrink: true,
+                                readOnly: true,
+                            }}
+                            InputProps={{
+                                endAdornment:
+                                    <InputAdornment position="end">
+                                        {`${fieldValues[field_names[17]]}`}
+                                    </InputAdornment>,
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <TextField
+                            variant="outlined"
+                            fullWidth
+                            value={fieldValues[field_names[18]]}
+                            label={columns[21].headerName}
                             InputLabelProps={{
                                 shrink: true,
                                 readOnly: true,
@@ -430,34 +456,10 @@ function AddSprayRecord({
                         <TextField
                             variant="outlined"
                             fullWidth
-                            label={columns[20].headerName}
+                            label={columns[22].headerName}
                             onChange={(event) => {
-                                handleAddInputChange(event, event.target.value, field_names[17]);
+                                handleAddInputChange(event, event.target.value, field_names[19]);
                             }}
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <TextField
-                            variant="outlined"
-                            fullWidth
-                            label={columns[21].headerName}
-                            onChange={(event) => {
-                                handleAddInputChange(event, event.target.value, field_names[18]);
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <Autocomplete
-                            value={fieldValues[field_names[19]]}
-                            options={windDirectionOptions}
-                            onChange={(event, value) => {
-                                handleAddInputChange(event, value, field_names[19]);
-                            }}
-                            renderInput={(params) => (
-                                <TextField {...params}
-                                           variant="outlined"
-                                           label={columns[22].headerName}
-                                />)}
                         />
                     </Grid>
                     <Grid item xs={4}>
@@ -467,6 +469,30 @@ function AddSprayRecord({
                             label={columns[23].headerName}
                             onChange={(event) => {
                                 handleAddInputChange(event, event.target.value, field_names[20]);
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <Autocomplete
+                            value={fieldValues[field_names[21]]}
+                            options={windDirectionOptions}
+                            onChange={(event, value) => {
+                                handleAddInputChange(event, value, field_names[21]);
+                            }}
+                            renderInput={(params) => (
+                                <TextField {...params}
+                                           variant="outlined"
+                                           label={columns[24].headerName}
+                                />)}
+                        />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <TextField
+                            variant="outlined"
+                            fullWidth
+                            label={columns[25].headerName}
+                            onChange={(event) => {
+                                handleAddInputChange(event, event.target.value, field_names[22]);
                             }}
                         />
                     </Grid>
@@ -756,7 +782,9 @@ export default function SprayRecord(props) {
             "crop": `${crop.crop} (${crop.variety}, ${crop.growth_stage})`,
             "site": siteStr,
             "applied_area": `${record.applied_area} ${record.area_unit}`,
-            "app_datetime": record.app_datetime,
+            "app_date": record.app_date,
+            "start_time": record.start_time,
+            "finish_time": record.finish_time,
             "operator": record.operator,
             "target": record.target,
             "decision_support": record.decision_support,
@@ -808,7 +836,7 @@ export default function SprayRecord(props) {
 
     const onSaveClicked = () => {
         const isFormValid = Object.keys(fieldValues)
-            .filter(key => !field_names.slice(17, 21).includes(key))
+            .filter(key => !field_names.slice(19, 23).includes(key))
             .filter(key => fieldValues[key].length === 0).length === 0;
 
         if (isFormValid) {
@@ -839,11 +867,11 @@ export default function SprayRecord(props) {
         setFieldValues({
             ...updatedRow,
             [field_names[3]]: application.area_unit,
-            [field_names[11]]: application.water_unit,
-            [field_names[13]]: application.rate_unit,
-            [field_names[14]]: application.total_amount,
-            [field_names[15]]: application.amount_unit,
-            [field_names[16]]: application.total_cost,
+            [field_names[13]]: application.water_unit,
+            [field_names[15]]: application.rate_unit,
+            [field_names[16]]: application.total_amount,
+            [field_names[17]]: application.amount_unit,
+            [field_names[18]]: application.total_cost,
         });
         setEditRowId(params.id);
         clearInputError();
@@ -859,10 +887,19 @@ export default function SprayRecord(props) {
         setFormData({
             "user_id": uid,
             "type_id": applicationType.find(item => item.name === "Spray").atid,
-            [field_names[4]]: dayjs().format('YYYY-MM-DD')
+            [field_names[4]]: dayjs().format('YYYY-MM-DD'),
+            [field_names[5]]: dayjs().format('HH:mm A'),
+            [field_names[6]]: dayjs().format('HH:mm A')
         });
-        setFieldValues(Object.fromEntries(field_names.map((item, index) =>
-            [item, index === 1 ? [] : (index === 4 ? dayjs().format('YYYY-MM-DD') : ""),])));
+
+        const defaultValues = {
+            1: [],
+            4: dayjs().format('YYYY-MM-DD'),
+            5: dayjs().format('HH:mm A'),
+            6: dayjs().format('HH:mm A')
+        };
+        setFieldValues(Object.fromEntries(field_names.map(item => [item, defaultValues[field_names.indexOf(item)] ?? ""])));
+
         setEditRowId(null);
         setShowAddModal(true);
         clearInputError();
@@ -874,13 +911,13 @@ export default function SprayRecord(props) {
                 ...fieldValues,
                 [field]: value,
                 [field_names[1]]: [],
-                [field_names[6]]: "",
+                [field_names[8]]: "",
             });
             setFormData({
                 ...formData,
                 [field]: value.id,
                 [field_names[1]]: [],
-                [field_names[6]]: null,
+                [field_names[8]]: null,
             });
         } else if (field === field_names[1]) {
             setFieldValues({
@@ -895,26 +932,26 @@ export default function SprayRecord(props) {
             setFieldValues({
                 ...fieldValues,
                 [field]: value,
-                [field_names[13]]: value.label,
+                [field_names[15]]: value.label,
             });
             setFormData({
                 ...formData,
                 [field]: value.id,
-                [field_names[13]]: value.id,
+                [field_names[15]]: value.id,
             });
-        } else if (field === field_names[8]) {
+        } else if (field === field_names[10]) {
             setFieldValues({
                 ...fieldValues,
                 [field]: value,
-                [field_names[15]]: value.unit,
+                [field_names[17]]: value.unit,
                 ["cost_per_unit"]: value.cost_per_unit,
             });
             setFormData({
                 ...formData,
                 [field]: value.id,
-                [field_names[15]]: chemicalUnitOptions.find(item => item.label === value.unit).id,
+                [field_names[17]]: chemicalUnitOptions.find(item => item.label === value.unit).id,
             });
-        } else if (field === field_names[19]) {
+        } else if (field === field_names[21]) {
             setFieldValues({
                 ...fieldValues,
                 [field]: value,
@@ -927,11 +964,13 @@ export default function SprayRecord(props) {
             field_names[2],
             field_names[4],
             field_names[5],
-            field_names[10],
+            field_names[6],
+            field_names[7],
             field_names[12],
-            field_names[17],
-            field_names[18],
-            field_names[20]
+            field_names[14],
+            field_names[19],
+            field_names[20],
+            field_names[22]
         ].includes(field)) {
             setFieldValues({...fieldValues, [field]: value});
             setFormData({...formData, [field]: value});
@@ -947,13 +986,13 @@ export default function SprayRecord(props) {
                 ...fieldValues,
                 [field]: value,
                 [field_names[1]]: "",
-                [field_names[6]]: "",
+                [field_names[8]]: "",
             });
             setFormData({
                 ...formData,
                 [field]: value.id,
                 [field_names[1]]: null,
-                [field_names[6]]: null,
+                [field_names[8]]: null,
             });
         } else if (field === field_names[1]) {
             setFieldValues({
@@ -968,18 +1007,18 @@ export default function SprayRecord(props) {
             setFieldValues({
                 ...fieldValues,
                 [field]: value,
-                [field_names[13]]: value.label,
+                [field_names[15]]: value.label,
             });
             setFormData({
                 ...formData,
                 [field]: value.id,
-                [field_names[13]]: value.id,
+                [field_names[15]]: value.id,
             });
-        } else if (field === field_names[8]) {
+        } else if (field === field_names[10]) {
             setFieldValues({
                 ...fieldValues,
                 [field]: value,
-                [field_names[15]]: value.unit,
+                [field_names[17]]: value.unit,
                 ["trade_name"]: value.trade_name,
                 ["active_ingredient"]: value.active_ingredient,
                 ["percent_ai"]: value.percent_ai,
@@ -990,9 +1029,9 @@ export default function SprayRecord(props) {
             setFormData({
                 ...formData,
                 [field]: value.id,
-                [field_names[15]]: chemicalUnitOptions.find(item => item.label === value.unit).id,
+                [field_names[17]]: chemicalUnitOptions.find(item => item.label === value.unit).id,
             });
-        } else if (field === field_names[19]) {
+        } else if (field === field_names[21]) {
             setFieldValues({
                 ...fieldValues,
                 [field]: value,
@@ -1005,11 +1044,13 @@ export default function SprayRecord(props) {
             field_names[2],
             field_names[4],
             field_names[5],
-            field_names[10],
+            field_names[6],
+            field_names[7],
             field_names[12],
-            field_names[17],
-            field_names[18],
-            field_names[20]
+            field_names[14],
+            field_names[19],
+            field_names[20],
+            field_names[22]
         ].includes(field)) {
             setFieldValues({...fieldValues, [field]: value});
             setFormData({...formData, [field]: value});
@@ -1260,8 +1301,8 @@ export default function SprayRecord(props) {
             },
         },
         {
-            field: 'app_datetime',
-            headerName: 'Application Datetime',
+            field: 'app_date',
+            headerName: 'Application Date',
             sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
@@ -1290,6 +1331,69 @@ export default function SprayRecord(props) {
             },
         },
         {
+            field: 'start_time',
+            headerName: 'Start Time',
+            sortable: false,
+            width: columnWidth,
+            renderCell: (params, rowID = params.id) => {
+                return (editRowId !== rowID ?
+                        <TextField
+                            variant="standard"
+                            value={params.value}
+                            InputProps={{
+                                disableUnderline: true, readOnly: true,
+                            }}
+                            sx={{width: columnWidth}}/> :
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <TimePicker
+                                variant="standard"
+                                value={dayjs(`1970-01-01T${dayjs(fieldValues[field_names[5]], "h:mm A").format("HH:mm")}`)}
+                                sx={{width: columnWidth - 20}}
+                                slotProps={{
+                                    textField: {
+                                        variant: "standard",
+                                    },
+                                }}
+                                onChange={(event) => {
+                                    handleAddInputChange(event, dayjs(event).format('HH:mm A'), field_names[5]);
+                                }}
+                            />
+                        </LocalizationProvider>
+                )
+            },
+        },
+        {
+            field: 'finish_time',
+            headerName: 'Finish Time',
+            sortable: false,
+            width: columnWidth,
+            renderCell: (params, rowID = params.id) => {
+                return (editRowId !== rowID ?
+                    <TextField
+                        variant="standard"
+                        value={params.value}
+                        InputProps={{
+                            disableUnderline: true, readOnly: true,
+                        }}
+                        sx={{width: columnWidth}}/> :
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <TimePicker
+                            variant="standard"
+                            value={dayjs(`1970-01-01T${dayjs(fieldValues[field_names[6]], "h:mm A").format("HH:mm")}`)}
+                            sx={{width: columnWidth - 20}}
+                            slotProps={{
+                                textField: {
+                                    variant: "standard",
+                                },
+                            }}
+                            onChange={(event) => {
+                                handleAddInputChange(event, dayjs(event).format('HH:mm A'), field_names[6]);
+                            }}
+                        />
+                    </LocalizationProvider>)
+            },
+        },
+        {
             field: 'operator',
             headerName: 'Operator',
             sortable: false,
@@ -1305,12 +1409,12 @@ export default function SprayRecord(props) {
                         sx={{width: columnWidth}}/> :
                     <TextField
                         variant="standard"
-                        value={fieldValues[field_names[5]]}
+                        value={fieldValues[field_names[7]]}
                         sx={{width: columnWidth - 20}}
                         onChange={(event) => {
-                            handleEditInputChange(event, event.target.value, field_names[5]);
+                            handleEditInputChange(event, event.target.value, field_names[7]);
                         }}
-                        error={inputError[field_names[5]]}
+                        error={inputError[field_names[7]]}
                     />)
             },
         },
@@ -1324,9 +1428,9 @@ export default function SprayRecord(props) {
                     options={applicationTargetOptions}
                     disableClearable
                     readOnly={editRowId !== rowID}
-                    value={editRowId === rowID ? fieldValues[field_names[6]] : params.value}
+                    value={editRowId === rowID ? fieldValues[field_names[8]] : params.value}
                     onChange={(event, value) => {
-                        handleEditInputChange(event, value, field_names[6]);
+                        handleEditInputChange(event, value, field_names[8]);
                     }}
                     renderInput={(params) => {
                         return (editRowId !== rowID ?
@@ -1336,7 +1440,7 @@ export default function SprayRecord(props) {
                                 sx={{width: columnWidth}}/> :
                             <TextField
                                 {...params} variant="standard" sx={{width: columnWidth - 20}}
-                                error={inputError[field_names[6]]}/>)
+                                error={inputError[field_names[8]]}/>)
                     }}
                 />),
         },
@@ -1350,9 +1454,9 @@ export default function SprayRecord(props) {
                     options={decisionSupportOptions}
                     disableClearable
                     readOnly={editRowId !== rowID}
-                    value={editRowId === rowID ? fieldValues[field_names[7]] : params.value}
+                    value={editRowId === rowID ? fieldValues[field_names[9]] : params.value}
                     onChange={(event, value) => {
-                        handleEditInputChange(event, value, field_names[7]);
+                        handleEditInputChange(event, value, field_names[9]);
                     }}
                     renderInput={(params) => {
                         return (editRowId !== rowID ?
@@ -1362,7 +1466,7 @@ export default function SprayRecord(props) {
                                 sx={{width: columnWidth}}/> :
                             <TextField
                                 {...params} variant="standard" sx={{width: columnWidth - 20}}
-                                error={inputError[field_names[7]]}/>)
+                                error={inputError[field_names[9]]}/>)
                     }}
                 />),
         },
@@ -1376,9 +1480,9 @@ export default function SprayRecord(props) {
                     options={editChemicalOptions}
                     disableClearable
                     readOnly={editRowId !== rowID}
-                    value={editRowId === rowID ? fieldValues[field_names[8]] : params.value}
+                    value={editRowId === rowID ? fieldValues[field_names[10]] : params.value}
                     onChange={(event, value) => {
-                        handleEditInputChange(event, value, field_names[8]);
+                        handleEditInputChange(event, value, field_names[10]);
                     }}
                     renderInput={(params) => {
                         return (editRowId !== rowID ?
@@ -1389,7 +1493,7 @@ export default function SprayRecord(props) {
                             <TextField
                                 {...params} variant="standard"
                                 sx={{width: columnMidWidth - 20}}
-                                error={inputError[field_names[8]]}/>)
+                                error={inputError[field_names[10]]}/>)
                     }}
                 />),
         },
@@ -1456,9 +1560,9 @@ export default function SprayRecord(props) {
                 options={equipmentOptions}
                 disableClearable
                 readOnly={editRowId !== rowID}
-                value={editRowId === rowID ? fieldValues[field_names[9]] : params.value}
+                value={editRowId === rowID ? fieldValues[field_names[11]] : params.value}
                 onChange={(event, value) => {
-                    handleEditInputChange(event, value, field_names[9]);
+                    handleEditInputChange(event, value, field_names[11]);
                 }}
                 renderInput={(params) => {
                     return (editRowId !== rowID ?
@@ -1469,7 +1573,7 @@ export default function SprayRecord(props) {
                         <TextField
                             {...params} variant="standard"
                             sx={{width: columnWidth - 20}}
-                            error={inputError[field_names[9]]}/>)
+                            error={inputError[field_names[11]]}/>)
                 }}
             />),
         },
@@ -1490,34 +1594,34 @@ export default function SprayRecord(props) {
                         <>
                             <TextField
                                 variant="standard"
-                                value={extractDecimal(fieldValues[field_names[10]])}
+                                value={extractDecimal(fieldValues[field_names[12]])}
                                 sx={{width: columnMidWidth / 3}}
                                 type="number"
                                 inputProps={{
                                     step: 0.01,
                                 }}
                                 onChange={(event) => {
-                                    handleEditInputChange(event, event.target.value, field_names[10]);
+                                    handleEditInputChange(event, event.target.value, field_names[12]);
                                 }}
-                                error={inputError[field_names[10]]}
+                                error={inputError[field_names[12]]}
                             />
                             <Autocomplete
                                 options={chemicalUnitOptions}
                                 disableClearable
-                                value={fieldValues[field_names[11]]}
+                                value={fieldValues[field_names[13]]}
                                 onChange={(event, value) => {
-                                    handleAddInputChange(event, value, field_names[11]);
+                                    handleAddInputChange(event, value, field_names[13]);
                                 }}
                                 renderInput={(params) => (
                                     <TextField
                                         {...params} required variant="standard"
                                         sx={{width: columnMidWidth / 3}}
-                                        error={inputError[field_names[11]]}
+                                        error={inputError[field_names[13]]}
                                     />)}
                             />
                             <TextField
                                 variant="standard"
-                                value={`per ${fieldValues[field_names[13]]}`}
+                                value={`per ${fieldValues[field_names[15]]}`}
                                 sx={{width: columnMidWidth / 3}}
                                 InputLabelProps={{
                                     readOnly: true,
@@ -1544,20 +1648,20 @@ export default function SprayRecord(props) {
                         <>
                             <TextField
                                 variant="standard"
-                                value={extractDecimal(fieldValues[field_names[12]])}
+                                value={extractDecimal(fieldValues[field_names[14]])}
                                 sx={{width: columnMidWidth / 3}}
                                 type="number"
                                 inputProps={{
                                     step: 0.01,
                                 }}
                                 onChange={(event) => {
-                                    handleEditInputChange(event, event.target.value, field_names[12]);
+                                    handleEditInputChange(event, event.target.value, field_names[14]);
                                 }}
-                                error={inputError[field_names[12]]}
+                                error={inputError[field_names[14]]}
                             />
                             <TextField
                                 variant="standard"
-                                value={`${fieldValues[field_names[15]]} per ${fieldValues[field_names[13]]}`}
+                                value={`${fieldValues[field_names[17]]} per ${fieldValues[field_names[15]]}`}
                                 sx={{width: 2 * columnMidWidth / 3}}
                                 InputLabelProps={{
                                     readOnly: true,
@@ -1573,7 +1677,7 @@ export default function SprayRecord(props) {
             sortable: false,
             width: columnWidth,
             valueGetter: (params) => {
-                return (editRowId === params.id ? `${fieldValues[field_names[14]]} ${fieldValues[field_names[15]]}` : params.value)
+                return (editRowId === params.id ? `${fieldValues[field_names[16]]} ${fieldValues[field_names[17]]}` : params.value)
             },
         },
         {
@@ -1582,7 +1686,7 @@ export default function SprayRecord(props) {
             sortable: false,
             width: columnWidth,
             valueGetter: (params) => {
-                return (editRowId === params.id ? `\$${fieldValues[field_names[16]]}` : params.value)
+                return (editRowId === params.id ? `\$${fieldValues[field_names[18]]}` : params.value)
             },
         },
         {
@@ -1601,10 +1705,10 @@ export default function SprayRecord(props) {
                         sx={{width: columnWidth}}/> :
                     <TextField
                         variant="standard"
-                        value={fieldValues[field_names[17]]}
+                        value={fieldValues[field_names[19]]}
                         sx={{width: columnWidth - 20}}
                         onChange={(event) => {
-                            handleEditInputChange(event, event.target.value, field_names[17]);
+                            handleEditInputChange(event, event.target.value, field_names[19]);
                         }}
                     />)
             },
@@ -1625,10 +1729,10 @@ export default function SprayRecord(props) {
                         sx={{width: columnWidth}}/> :
                     <TextField
                         variant="standard"
-                        value={fieldValues[field_names[18]]}
+                        value={fieldValues[field_names[20]]}
                         sx={{width: columnWidth - 20}}
                         onChange={(event) => {
-                            handleEditInputChange(event, event.target.value, field_names[18]);
+                            handleEditInputChange(event, event.target.value, field_names[20]);
                         }}
                     />)
             },
@@ -1643,9 +1747,9 @@ export default function SprayRecord(props) {
                     options={windDirectionOptions}
                     disableClearable
                     readOnly={editRowId !== rowID}
-                    value={editRowId === rowID ? fieldValues[field_names[19]] : params.value}
+                    value={editRowId === rowID ? fieldValues[field_names[21]] : params.value}
                     onChange={(event, value) => {
-                        handleEditInputChange(event, value, field_names[19]);
+                        handleEditInputChange(event, value, field_names[21]);
                     }}
                     renderInput={(params) => {
                         return (editRowId !== rowID ?
@@ -1655,7 +1759,7 @@ export default function SprayRecord(props) {
                                 sx={{width: columnWidth}}/> :
                             <TextField
                                 {...params} variant="standard" sx={{width: columnWidth - 20}}
-                                error={inputError[field_names[19]]}/>)
+                            />)
                     }}
                 />),
         },
@@ -1675,10 +1779,10 @@ export default function SprayRecord(props) {
                         sx={{width: columnWidth}}/> :
                     <TextField
                         variant="standard"
-                        value={fieldValues[field_names[20]]}
+                        value={fieldValues[field_names[22]]}
                         sx={{width: columnWidth - 20}}
                         onChange={(event) => {
-                            handleEditInputChange(event, event.target.value, field_names[20]);
+                            handleEditInputChange(event, event.target.value, field_names[22]);
                         }}
                     />)
             },
@@ -1775,18 +1879,18 @@ export default function SprayRecord(props) {
     useEffect(() => {
         const cost = extractDecimal(fieldValues["cost_per_unit"]);
         const area = extractDecimal(fieldValues[field_names[2]]);
-        const rate = extractDecimal(fieldValues[field_names[12]]);
+        const rate = extractDecimal(fieldValues[field_names[14]]);
         if (cost && area && rate) {
             const total_amount = Number(area) * Number(rate);
             const total_cost = Number(area) * Number(rate) * Number(cost);
-            setFieldValues({...fieldValues, [field_names[14]]: total_amount, [field_names[16]]: total_cost});
-            setFormData({...formData, [field_names[14]]: total_amount, [field_names[16]]: total_cost});
+            setFieldValues({...fieldValues, [field_names[16]]: total_amount, [field_names[18]]: total_cost});
+            setFormData({...formData, [field_names[16]]: total_amount, [field_names[18]]: total_cost});
         } else if (area && rate) {
             const total_amount = Number(area) * Number(rate);
             setFieldValues({...fieldValues, [field_names[14]]: total_amount});
             setFormData({...formData, [field_names[14]]: total_amount});
         }
-    }, [fieldValues["cost_per_unit"], fieldValues[field_names[2]], fieldValues[field_names[12]]]);
+    }, [fieldValues["cost_per_unit"], fieldValues[field_names[2]], fieldValues[field_names[14]]]);
 
     return (<div>
         <AddButton
