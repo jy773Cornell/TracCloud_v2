@@ -3,7 +3,7 @@ import Paper from '@mui/material/Paper';
 import {useEffect, useState} from "react";
 import AddIcon from '@mui/icons-material/Add';
 import {
-    Autocomplete, Button, Card, CardContent, Checkbox, Grid, InputAdornment, Modal, TextField,
+    Autocomplete, Button, Card, CardActions, CardContent, Checkbox, Grid, InputAdornment, Modal, TextField, Typography,
 } from "@mui/material";
 import {AddButton} from "./styles";
 import OperationSnackbars from "../../components/Snackbars";
@@ -15,6 +15,11 @@ import {
     GridToolbarExport,
     GridToolbarFilterButton
 } from "@mui/x-data-grid";
+import {Container} from "@mui/system";
+
+const report_list = [
+    {id: 0, name: "Central Posting", description: "This is a central posting report", link: "related_url"},
+]
 
 const columnWidth = 200;
 const columnMidWidth = 250;
@@ -32,9 +37,52 @@ function CustomToolbar() {
     );
 }
 
+function ReportCard({info}) {
+    const {name, description, link} = info;
+
+    return (
+        <Card sx={{width: 250, height: 150, margin: '15px'}}>
+            <CardContent>
+                <Typography variant="h5" component="div">
+                    name
+                </Typography>
+                <Typography sx={{mb: 1.5}} color="text.secondary">
+                    adjective
+                </Typography>
+                <Typography variant="body2">
+                    well meaning and kindly.
+                    <br/>
+                    {'"a benevolent smile"'}
+                </Typography>
+            </CardContent>
+            <CardActions>
+                <Button size="small">Learn More</Button>
+            </CardActions>
+        </Card>
+    );
+}
+
+function ReportGeneratorList() {
+    return (
+        <Container>
+            <Grid container spacing={3}>
+                {report_list.map(report => (
+                    <Grid item xs={12} md={6} lg={4} key={report.id}>
+                        <ReportCard info={report}/>
+                    </Grid>
+                ))}
+            </Grid>
+        </Container>
+    );
+}
 
 function RecordModal({
-                         showRecordModal, setShowRecordModal, rows, columns, rowSelectionModel, setRowSelectionModel,
+                         showRecordModal,
+                         setShowRecordModal,
+                         rows,
+                         columns,
+                         rowSelectionModel,
+                         setRowSelectionModel,
                      }) {
 
     return (
@@ -297,11 +345,7 @@ export default function Report(props) {
     }, [sprayApplicationList]);
 
     return (<div>
-        <AddButton
-            variant="contained"
-            startIcon={<AddIcon/>}
-            onClick={() => setShowRecordModal(true)}>
-        </AddButton>
+        <ReportGeneratorList/>
         <RecordModal {...recordModalProps}/>
         <OperationSnackbars  {...successProps}/>
         <OperationSnackbars  {...warningProps}/>
