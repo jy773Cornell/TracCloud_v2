@@ -38,7 +38,6 @@ class CentralPostingView(APIView):
                 # Use unoconv to convert the file to the requested format
                 output_file_path = os.path.join(tmp_dir, "temp.pdf")
                 command = ['unoconv', '-f', 'pdf', tmp_file_path]
-                print(command)
                 subprocess.run(command, check=True, env=os.environ.copy())
             else:
                 output_file_path = tmp_file_path
