@@ -36,13 +36,13 @@ class CentralPostingView(APIView):
             workbook.save(tmp_file_path)
 
             # Use unoconv to convert the file to the requested format
-            output_file_extension = '.pdf' if file_format.lower() != 'xlsx' else ''
+            output_file_extension = '.pdf' if file_format.lower() != 'xlsx' else '.xlsx'
             output_file_name = 'output' + output_file_extension
             output_file_path = os.path.join(tmp_dir, output_file_name)
 
             command = ['unoconv', '-f', 'pdf', '-o', output_file_path, tmp_file_path]
             print(command)
-            subprocess.run(command, check=True)
+            subprocess.run(command, check=True, env=os.environ.copy())
 
             # Read the converted file and create the response
             if not os.path.exists(output_file_path):
