@@ -113,7 +113,8 @@ const report_list = [
 const spray_report_format = ["central_posting"]
 
 const central_posting_generator = async (dataList, rowsSelected, format) => {
-    await CentralPostingGenerator();
+    const reportData = dataList.sprayApplicationList.filter(item => rowsSelected.includes(item.arid));
+    await CentralPostingGenerator(reportData, format);
 };
 
 const reportGenerators = {
@@ -161,7 +162,7 @@ function ReportList({setShowRecordModal, setReportID}) {
             {report_list.map((report) => {
                 const props = {report, setShowRecordModal, setReportID};
                 return (
-                    <Grid item xs={6} md={3} lg={2.4} key={report.id}>
+                    <Grid item xs={6} md={4} lg={3} key={report.id}>
                         <ReportCard {...props} />
                     </Grid>
                 );
