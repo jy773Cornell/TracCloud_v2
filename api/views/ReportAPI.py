@@ -23,7 +23,7 @@ class CentralPostingView(APIView):
         response = self.generate_response(workbook, file_format)
         return response
 
-    def fill_data(workbook, report_data):
+    def fill_data(self, workbook, report_data):
         sheet = workbook["Central Posting"]
         arial_8_font = Font(name='Arial', size=8)
         record_row = 5
@@ -45,7 +45,7 @@ class CentralPostingView(APIView):
             record_row += 1
 
         worksheet = workbook.active
-        worksheet.page_setup.scale = 90
+        worksheet.page_setup.scale = 60
 
     def generate_response(self, workbook, file_format):
         # Create a temporary directory
