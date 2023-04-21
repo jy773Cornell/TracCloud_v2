@@ -1,4 +1,5 @@
 import React from 'react';
+import dayjs from "dayjs";
 
 const reportGenerateUrl = '/api/report/central-posting';
 
@@ -16,7 +17,8 @@ export default function CentralPostingGenerator(reportData, format) {
             const downloadUrl = URL.createObjectURL(blob);
             const downloadLink = document.createElement("a");
             downloadLink.href = downloadUrl;
-            downloadLink.download = "Central Posting" + (format === "pdf" ? ".pdf" : ".xlsx");
+
+            downloadLink.download = "Central Posting " + dayjs().format('YYYY-MM-DD_HH-mm-ss') + (format === "pdf" ? ".pdf" : ".xlsx");
             downloadLink.click();
             URL.revokeObjectURL(downloadUrl);
             resolve();

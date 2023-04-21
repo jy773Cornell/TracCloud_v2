@@ -113,7 +113,7 @@ const report_list = [
 const spray_report_format = ["central_posting"]
 
 const central_posting_generator = async (dataList, rowsSelected, format) => {
-    const reportData = dataList.sprayApplicationList.filter(item => rowsSelected.includes(item.arid));
+    const reportData = dataList.filter(item => rowsSelected.includes(item.id));
     await CentralPostingGenerator(reportData, format);
 };
 
@@ -470,7 +470,7 @@ function RecordModal({
                         toolbar: () => <ReportToolbar
                             reportID={reportID}
                             rowsSelected={rowsSelected}
-                            dataList={{sprayApplicationList: sprayApplicationList, purchaseList: purchaseList}}/>,
+                            dataList={rows}/>,
                     }}
                     density="compact"
                 />

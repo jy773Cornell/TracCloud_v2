@@ -25,6 +25,10 @@ class CentralPostingView(APIView):
         # Fill in data
         sheet = workbook["Central Posting"]
         sheet['A5'] = "Hello"
+        record_row = 5
+        for each_record in report_data:
+            pass
+
 
     def generate_response(self, workbook, file_format):
         # Create a temporary directory
