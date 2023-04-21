@@ -1,6 +1,6 @@
 import os
-from unoconv import convert
-from tempfile import NamedTemporaryFile
+import subprocess
+from tempfile import TemporaryDirectory
 from io import BytesIO
 from django.http import HttpResponse
 from openpyxl import load_workbook
@@ -28,33 +28,38 @@ class CentralPostingView(APIView):
         sheet['A5'] = "Hello"
 
     def generate_response(self, workbook, file_format):
-        # Save the workbook to a temporary file
-        with NamedTemporaryFile(suffix='.xlsx', delete=False) as tmp_file:
-            workbook.save(tmp_file.name)
-            tmp_file_path = tmp_file.name
+        # Create a temporary directory
+        with TemporaryDirectory() as tmp_dir:
+            # Save the workbook to a temporary file
+            tmp_file_name = 'temp.xlsx'
+            tmp_file_path = os.path.join(tmp_dir, tmp_file_name)
+            workbook.save(tmp_file_path)
 
-        # Use unoconv to convert the file to the requested format
-        output_file_extension = '.pdf' if file_format.lower() != 'xlsx' else ''
-        output_file_path = tmp_file_path + output_file_extension
-        convert(tmp_file_path, output_file_path, file_format.lower())
+            # Use unoconv to convert the file to the requested format
+            output_file_extension = '.pdf' if file_format.lower() != 'xlsx' else ''
+            output_file_name = 'output' + output_file_extension
+            output_file_path = os.path.join(tmp_dir, output_file_name)
 
-        # Read the converted file and create the response
-        with open(output_file_path, 'rb') as output_file:
-            if file_format.lower() == 'xlsx':
-                response = HttpResponse(
-                    output_file.read(),
-                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                )
-                response['Content-Disposition'] = 'attachment; filename="template_with_data.xlsx"'
-            else:
-                response = HttpResponse(
-                    output_file.read(),
-                    content_type='application/pdf'
-                )
-                response['Content-Disposition'] = 'attachment; filename="template_with_data.pdf"'
+            command = ['unoconv', '-f', 'pdf', '-o', output_file_path, tmp_file_path]
+            print(command)
+            subprocess.run(command, check=True)
 
-        # Clean up temporary files
-        os.remove(tmp_file_path)
-        os.remove(output_file_path)
+            # Read the converted file and create the response
+            if not os.path.exists(output_file_path):
+                raise FileNotFoundError(f"Output file not created: {output_file_path}")
+
+            with open(output_file_path, 'rb') as output_file:
+                if file_format.lower() == 'xlsx':
+                    response = HttpResponse(
+                        output_file.read(),
+                        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    )
+                    response['Content-Disposition'] = 'attachment; filename="template_with_data.xlsx"'
+                else:
+                    response = HttpResponse(
+                        output_file.read(),
+                        content_type='application/pdf'
+                    )
+                    response['Content-Disposition'] = 'attachment; filename="template_with_data.pdf"'
 
         return response
