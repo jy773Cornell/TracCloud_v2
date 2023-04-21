@@ -1,5 +1,5 @@
 import os
-import subprocess
+from unoconv import convert
 from tempfile import NamedTemporaryFile
 from io import BytesIO
 from django.http import HttpResponse
@@ -25,9 +25,7 @@ class CentralPostingView(APIView):
     def fill_data(self, workbook, report_data):
         # Fill in data
         sheet = workbook["Central Posting"]
-        sheet['A1'] = "Hello"
-        sheet['B1'] = "World"
-        sheet['C1'] = "Test"
+        sheet['A5'] = "Hello"
 
     def generate_response(self, workbook, file_format):
         # Save the workbook to a temporary file
@@ -36,10 +34,9 @@ class CentralPostingView(APIView):
             tmp_file_path = tmp_file.name
 
         # Use unoconv to convert the file to the requested format
-        output_file_path = tmp_file_path + ('.pdf' if file_format.lower() != 'xlsx' else '')
-        unoconv_cmd = f"unoconv -f {file_format} -o {output_file_path} {tmp_file_path}"
-        print(unoconv_cmd)
-        subprocess.run(unoconv_cmd, shell=True, check=True)
+        output_file_extension = '.pdf' if file_format.lower() != 'xlsx' else ''
+        output_file_path = tmp_file_path + output_file_extension
+        convert(tmp_file_path, output_file_path, file_format.lower())
 
         # Read the converted file and create the response
         with open(output_file_path, 'rb') as output_file:
