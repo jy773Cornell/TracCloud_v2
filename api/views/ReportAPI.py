@@ -1,5 +1,6 @@
 import os
 import subprocess
+import datetime
 from tempfile import TemporaryDirectory
 from io import BytesIO
 from django.http import HttpResponse
@@ -24,11 +25,25 @@ class CentralPostingView(APIView):
     def fill_data(self, workbook, report_data):
         # Fill in data
         sheet = workbook["Central Posting"]
-        sheet['A5'] = "Hello"
         record_row = 5
         for each_record in report_data:
-            pass
+            site_list = each_record["site"].split(" - ")
+            sheet[f'A{record_row}'] = site_list[0]
+            sheet[f'B{record_row}'] = site_list[1]
+            sheet[f'C{record_row}'] = site_list[2]
 
+            sheet[f'E{record_row}'] = each_record["trade_name"]
+            sheet[f'F{record_row}'] = each_record["active_ingredient"]
+            sheet[f'G{record_row}'] = each_record["chemical_purchase"]
+            sheet[f'H{record_row}'] = each_record["app_date"]
+            sheet[f'I{record_row}'] = each_record["start_time"]
+            sheet[f'J{record_row}'] = each_record["finish_time"]
+            sheet[f'K{record_row}'] = each_record["rei"]
+
+            sheet[f'L{record_row}'] = datetime.date.today().strftime('%Y-%m-%d')
+            sheet[f'M{record_row}'] = datetime.datetime.now().strftime('%H:%M %S')
+
+            record_row += 1
 
     def generate_response(self, workbook, file_format):
         # Create a temporary directory
