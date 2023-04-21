@@ -5,6 +5,7 @@ from tempfile import TemporaryDirectory
 from io import BytesIO
 from django.http import HttpResponse
 from openpyxl import load_workbook
+from openpyxl.styles import Font, NamedStyle
 from django.core.cache import cache
 from rest_framework.views import APIView
 
@@ -22,26 +23,28 @@ class CentralPostingView(APIView):
         response = self.generate_response(workbook, file_format)
         return response
 
-    def fill_data(self, workbook, report_data):
-        # Fill in data
+    def fill_data(workbook, report_data):
+        arial_8_style = NamedStyle(name="Arial_8")
+        arial_8_style.font = Font(name='Arial', size=8)
+        if 'Arial_8' not in workbook.named_styles:
+            workbook.add_named_style(arial_8_style)
+
         sheet = workbook["Central Posting"]
         record_row = 5
         for each_record in report_data:
             site_list = each_record["site"].split(" - ")
-            sheet[f'A{record_row}'] = site_list[0]
-            sheet[f'B{record_row}'] = site_list[1]
-            sheet[f'C{record_row}'] = site_list[2]
 
-            sheet[f'E{record_row}'] = each_record["trade_name"]
-            sheet[f'F{record_row}'] = each_record["active_ingredient"]
-            sheet[f'G{record_row}'] = each_record["chemical_purchase"]
-            sheet[f'H{record_row}'] = each_record["app_date"]
-            sheet[f'I{record_row}'] = each_record["start_time"]
-            sheet[f'J{record_row}'] = each_record["finish_time"]
-            sheet[f'K{record_row}'] = each_record["rei"]
-
-            sheet[f'L{record_row}'] = datetime.date.today().strftime('%Y-%m-%d')
-            sheet[f'M{record_row}'] = datetime.datetime.now().strftime('%H:%M %S')
+            for col, value in zip(
+                    ['A', 'B', 'C', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'],
+                    [site_list[0], site_list[1], site_list[2],
+                     each_record["trade_name"], each_record["active_ingredient"],
+                     each_record["chemical_purchase"],
+                     each_record["app_date"], each_record["start_time"], each_record["finish_time"],
+                     each_record["rei"], datetime.date.today().strftime('%Y-%m-%d'),
+                     datetime.datetime.now().strftime('%H:%M:%S')]):
+                cell = sheet[f'{col}{record_row}']
+                cell.value = value
+                cell.style = 'Arial_8'
 
             record_row += 1
 
