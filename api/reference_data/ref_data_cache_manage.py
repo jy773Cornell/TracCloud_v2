@@ -1,5 +1,18 @@
-from django.core.cache import cache
 from api.models import *
+from io import BytesIO
+from django.core.cache import cache
+from openpyxl import load_workbook
+
+
+def create_workbook_bytes(path):
+    with open(path, 'rb') as f:
+        workbook = load_workbook(f)
+
+    buffer = BytesIO()
+    workbook.save(buffer)
+    workbook_bytes = buffer.getvalue()
+
+    return workbook_bytes
 
 
 def preload_ref_data():
@@ -17,3 +30,6 @@ def preload_ref_data():
     cache.set('ApplicationTarget', list(ApplicationTarget.objects.all().values()), None)
 
     cache.set('Unit', list(Unit.objects.all().values()), None)
+
+    workbook_bytes = create_workbook_bytes('api/static/ReportTemplates/CentralPosting-template.xlsx')
+    cache.set('central_posting_template', workbook_bytes, None)
