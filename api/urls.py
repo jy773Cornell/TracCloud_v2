@@ -7,6 +7,7 @@ from api.views.SiteAPI import *
 from api.views.ChemicalAPI import *
 from api.views.OperationAPI import *
 from api.views.UnitAPI import *
+from api.views.ReportAPI import *
 from api.management import cache_initializer
 
 urlpatterns = [
@@ -97,4 +98,7 @@ urlpatterns = [
 
     # UnitAPI
     path('unit/', UnitGetView.as_view()),
+
+    # ReportAPI
+    path('report/central-posting', CentralPostingView.as_view()),
 ]
