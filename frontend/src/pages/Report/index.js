@@ -9,10 +9,9 @@ import {
     CardContent,
     Grid,
     Modal,
-    Typography, MenuItem, Menu, Autocomplete, TextField,
+    Typography, MenuItem, Menu,
 } from "@mui/material";
 import SummarizeIcon from '@mui/icons-material/Summarize';
-import OperationSnackbars from "../../components/Snackbars";
 import {
     DataGrid,
     GridToolbarColumnsButton,
@@ -22,17 +21,7 @@ import {
     GridToolbarFilterButton
 } from "@mui/x-data-grid";
 import {grey} from '@mui/material/colors';
-import IconButton from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import ConfirmPopover from "../../components/ConfirmPopover";
-import SaveIcon from "@mui/icons-material/Save";
-import CancelIcon from "@mui/icons-material/Cancel";
-import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
-import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
-import {DatePicker} from "@mui/x-date-pickers/DatePicker";
-import dayjs from "dayjs";
-import {TimePicker} from "@mui/x-date-pickers/TimePicker";
+
 
 const columnWidth = 200;
 const columnMidWidth = 250;
@@ -499,8 +488,6 @@ export default function Report(props) {
 
     const [showRecordModal, setShowRecordModal] = useState(false);
     const [reportID, setReportID] = useState("");
-    const [success, setSuccess] = useState(false);
-    const [warning, setWarning] = useState(false);
 
     async function CropListGet(uid) {
         const requestOptions = {
@@ -617,14 +604,6 @@ export default function Report(props) {
         reportID,
     };
 
-    const successProps = {
-        open: success, setOpen: setSuccess, msg: "Crop record is uploaded successfully!", tag: "success"
-    };
-
-    const warningProps = {
-        open: warning, setOpen: setWarning, msg: "Crop record has been deleted!", tag: "success"
-    };
-
     useEffect(() => {
         const fetchData = async () => {
             await Promise.all([CropListGet(uid), SiteListGet(uid), EquipmentListGet(uid), await ChemicalListGet(uid), PurchaseListGet(uid)]);
@@ -638,8 +617,6 @@ export default function Report(props) {
         <div>
             <ReportList {...reportListProps}/>
             <RecordModal {...recordModalProps}/>
-            <OperationSnackbars  {...successProps}/>
-            <OperationSnackbars  {...warningProps}/>
         </div>
     );
 }
