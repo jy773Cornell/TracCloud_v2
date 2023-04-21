@@ -44,6 +44,9 @@ class CentralPostingView(APIView):
 
             record_row += 1
 
+        worksheet = workbook.active
+        worksheet.page_setup.scale = 90
+
     def generate_response(self, workbook, file_format):
         # Create a temporary directory
         with TemporaryDirectory() as tmp_dir:
