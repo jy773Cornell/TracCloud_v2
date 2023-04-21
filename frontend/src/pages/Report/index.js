@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Paper from '@mui/material/Paper';
-import {useEffect, useState} from "react";
+import {lazy, useEffect, useState} from "react";
 import {
     Button,
     Card,
@@ -21,7 +21,7 @@ import {
     GridToolbarFilterButton
 } from "@mui/x-data-grid";
 import {grey} from '@mui/material/colors';
-
+import CentralPostingGenerator from '../../components/ReportGenerators/CentralPosting';
 
 const columnWidth = 200;
 const columnMidWidth = 250;
@@ -112,13 +112,12 @@ const report_list = [
 ]
 const spray_report_format = ["central_posting"]
 
-const reportGenerator1 = (rowsSelected, format) => {
-    console.log(rowsSelected);
-    console.log(format);
+const central_posting_generator = async (dataList, rowsSelected, format) => {
+    await CentralPostingGenerator();
 };
 
 const reportGenerators = {
-    central_posting: reportGenerator1,
+    central_posting: central_posting_generator,
 };
 
 function ReportCard({report, setShowRecordModal, setReportID}) {
@@ -171,7 +170,7 @@ function ReportList({setShowRecordModal, setReportID}) {
     );
 }
 
-function ReportToolbar({reportID, rowsSelected, sprayApplicationList}) {
+function ReportToolbar({reportID, rowsSelected, dataList}) {
     const [anchorEl, setAnchorEl] = useState(null);
 
     const handleClick = (event) => {
@@ -190,7 +189,7 @@ function ReportToolbar({reportID, rowsSelected, sprayApplicationList}) {
     const generateReport = (reportID, format) => {
         const generator = reportGenerators[reportID];
         if (generator) {
-            generator(rowsSelected, format);
+            generator(dataList, rowsSelected, format);
         } else {
             console.error(`No generator found for reportID: ${reportID}`);
         }
@@ -467,8 +466,10 @@ function RecordModal({
                     }}
                     rowSelectionModel={rowsSelected}
                     slots={{
-                        toolbar: () => <ReportToolbar reportID={reportID} rowsSelected={rowsSelected}
-                                                      sprayApplicationList={sprayApplicationList}/>,
+                        toolbar: () => <ReportToolbar
+                            reportID={reportID}
+                            rowsSelected={rowsSelected}
+                            dataList={{sprayApplicationList: sprayApplicationList, purchaseList: purchaseList}}/>,
                     }}
                     density="compact"
                 />
