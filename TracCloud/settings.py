@@ -78,11 +78,14 @@ WSGI_APPLICATION = 'TracCloud.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'yjinhong0226/TracCloud',
-        'USER': 'yjinhong0226',
-        'PASSWORD': 'v2_3yL3U_PP27vLRBy6KP9bVizrWYpzV',
-        'HOST': 'db.bit.io',
+        'NAME': 'tracloud-database',
+        'USER': 'bxoftdamgk@tracloud-server',
+        'PASSWORD': '36R36ZSVG6UEP0N2$',
+        'HOST': 'tracloud-server.postgres.database.azure.com',
         'PORT': '5432',
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
     }
 }
 
