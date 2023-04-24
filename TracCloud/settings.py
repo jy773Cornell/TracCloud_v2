@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-_g8n3#k+i37=(fgnb-m#@c!75(__q%%y#e$=_h7j)^!)6fbqc1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["tracloud.azurewebsites.net"]
 
 # Application definition
 
@@ -79,9 +79,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'tracloud-database',
-        'USER': 'bxoftdamgk@tracloud-server',
-        'PASSWORD': '36R36ZSVG6UEP0N2$',
-        'HOST': 'tracloud-server.postgres.database.azure.com',
+        'USER': 'tracloudAdmin',
+        'PASSWORD': 'Tr@c1ouD',
+        'HOST': 'tracloud.postgres.database.azure.com',
         'PORT': '5432',
         'OPTIONS': {
             'sslmode': 'require',
