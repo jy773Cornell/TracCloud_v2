@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'tracloud'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_D974A18670D544D88874D83AC5FC06CC }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C57E8B889E684222B8145C660F42CF6A }}
