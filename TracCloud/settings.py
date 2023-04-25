@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_redis',
     'api.apps.ApiConfig',
     'frontend.apps.FrontendConfig',
 ]
@@ -140,11 +141,12 @@ MEDIA_URL = "/media/"
 # CACHES SETTING
 
 CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
-    }
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'rediss://tracloud.redis.cache.windows.net:6380/0',
+        'OPTIONS': {
+            'PASSWORD': 'WDsq6pdli1vs82ZfpRY2VVhxyYpVFPInJAzCaEdc78I=',
+            'SSL': True,
+        },
+    },
 }
