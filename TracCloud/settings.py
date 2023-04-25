@@ -20,17 +20,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-_g8n3#k+i37=(fgnb-m#@c!75(__q%%y#e$=_h7j)^!)6fbqc1'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ["tracloud.azurewebsites.net"]
+ALLOWED_HOSTS = []
 
 # Application definition
 
 INSTALLED_APPS = [
-    'whitenoise.runserver_nostatic',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -81,10 +80,10 @@ WSGI_APPLICATION = 'TracCloud.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'tracloud-database',
-        'USER': 'tracloudAdmin',
-        'PASSWORD': 'Tr@c1ouD',
-        'HOST': 'tracloud.postgres.database.azure.com',
+        'NAME': os.environ.get('DBNAME'),
+        'USER': os.environ.get('DBUSER'),
+        'PASSWORD': os.environ.get('DBPASS'),
+        'HOST': os.environ.get('DBHOST'),
         'PORT': '5432',
         'OPTIONS': {
             'sslmode': 'require',
@@ -143,9 +142,9 @@ MEDIA_URL = "/media/"
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'rediss://tracloud.redis.cache.windows.net:6380/0',
+        'LOCATION': f'rediss://{os.getenv("REDISHOST")}:6380/0',
         'OPTIONS': {
-            'PASSWORD': 'WDsq6pdli1vs82ZfpRY2VVhxyYpVFPInJAzCaEdc78I=',
+            'PASSWORD': os.getenv("REDISPASS"),
             'SSL': True,
         },
     },
