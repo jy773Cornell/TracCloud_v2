@@ -22,6 +22,7 @@ import {
 } from "@mui/x-data-grid";
 import {grey} from '@mui/material/colors';
 import CentralPostingGenerator from '../../components/ReportGenerators/CentralPosting';
+import {Container} from "@mui/system";
 
 const columnWidth = 200;
 const columnMidWidth = 250;
@@ -158,16 +159,18 @@ function ReportCard({report, setShowRecordModal, setReportID}) {
 
 function ReportList({setShowRecordModal, setReportID}) {
     return (
-        <Grid container spacing={1}>
-            {report_list.map((report) => {
-                const props = {report, setShowRecordModal, setReportID};
-                return (
-                    <Grid item xs={6} md={4} lg={3} key={report.id}>
-                        <ReportCard {...props} />
-                    </Grid>
-                );
-            })}
-        </Grid>
+        <Container>
+            <Grid container spacing={1}>
+                {report_list.map((report) => {
+                    const props = {report, setShowRecordModal, setReportID};
+                    return (
+                        <Grid item xs={6} md={4} lg={3} key={report.id}>
+                            <ReportCard {...props} />
+                        </Grid>
+                    );
+                })}
+            </Grid>
+        </Container>
     );
 }
 
