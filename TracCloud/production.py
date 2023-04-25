@@ -3,6 +3,8 @@ import os
 from .settings import *  # noqa
 from .settings import BASE_DIR
 
+SECRET_KEY = os.environ('DJANGO_SECRET_KEY')
+
 # Configure the domain name using the environment variable
 # that Azure automatically creates for us.
 ALLOWED_HOSTS = [os.environ['WEBSITE_HOSTNAME']] if 'WEBSITE_HOSTNAME' in os.environ else []
