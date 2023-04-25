@@ -1,7 +1,7 @@
 import * as React from 'react';
-import {Button, Card, CardActions, CardContent, CardHeader, Grid, Typography} from "@mui/material";
+import {Card, CardContent, CardHeader, Grid, Link, Typography} from "@mui/material";
 import {grey} from "@mui/material/colors";
-
+import {useLocation, useNavigate} from "react-router-dom";
 
 const entry_list = [
     {
@@ -13,19 +13,25 @@ const entry_list = [
 ]
 
 function EntryCard({entry}) {
-    const {id, name, description, path} = entry;
+    const {name, description, path} = entry;
 
     return (
-        <Card elevation={1} sx={{margin: "15px"}} style={{backgroundColor: grey[50], border: '1px solid #c8c8c8'}}>
-            <CardHeader
-                title={name}
-            />
-            <CardContent>
-                <Typography variant="body2" color="textSecondary">
-                    {description}
-                </Typography>
-            </CardContent>
-        </Card>
+        <Link to={path} style={{textDecoration: "none"}}>
+            <Card
+                elevation={1}
+                sx={{margin: "15px"}}
+                style={{backgroundColor: grey[50], border: '1px solid #c8c8c8'}
+                }>
+                <CardHeader
+                    title={name}
+                />
+                <CardContent>
+                    <Typography variant="body2">
+                        {description}
+                    </Typography>
+                </CardContent>
+            </Card>
+        </Link>
     );
 }
 
