@@ -136,7 +136,8 @@ CACHES = {
         'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': f'rediss://{os.getenv("REDISHOST")}:6380/0',
         'OPTIONS': {
-            'PASSWORD': f'{os.getenv("REDISPASS")}',
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'PASSWORD': os.getenv("REDISPASS"),
             'SSL': True,
         },
     },
