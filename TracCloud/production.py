@@ -28,30 +28,29 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Configure Postgres database based on connection string of the libpq Keyword/Value form
 # https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING
-conn_str = os.environ['AZURE_POSTGRESQL_CONNECTIONSTRING']
-conn_str_params = {pair.split('=')[0]: pair.split('=')[1] for pair in conn_str.split(' ')}
+db_conn_str = os.environ['AZURE_POSTGRESQL_CONNECTIONSTRING']
+db_conn_str_params = {pair.split('=')[0]: pair.split('=')[1] for pair in db_conn_str.split(' ')}
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': conn_str_params['dbname'],
-        'HOST': conn_str_params['host'],
-        'USER': conn_str_params['user'],
-        'PASSWORD': conn_str_params['password'],
+        'NAME': db_conn_str_params['dbname'],
+        'HOST': db_conn_str_params['host'],
+        'USER': db_conn_str_params['user'],
+        'PASSWORD': db_conn_str_params['password'],
     }
 }
 
 # CACHES SETTING
-conn_str = os.environ['AZURE_REDIS_CONNECTIONSTRING']
-conn_str_params = {pair.split(':')[0]: pair.split(':')[1] for pair in conn_str.split(' ')}
+redis_conn_str = os.environ['AZURE_REDIS_CONNECTIONSTRING']
+redis_conn_str_params = {pair.split(':')[0]: pair.split(':')[1] for pair in redis_conn_str.split(' ')}
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': f'rediss://{conn_str_params["host"]}:6380/0',
+        'LOCATION': f'rediss://{redis_conn_str_params["host"]}:6380/0',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            'PASSWORD': conn_str_params['password'],
+            'PASSWORD': redis_conn_str_params['password'],
             'SSL': True,
         },
     },
 }
-print(CACHES)
