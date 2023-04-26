@@ -48,7 +48,7 @@ print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!! {conn_str_params}")
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': f'rediss://tracloud.redis.cache.windows.net:6380',
+        'LOCATION': f'rediss://tracloud.redis.cache.windows.net:6380/0',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             'PASSWORD': "WDsq6pdli1vs82ZfpRY2VVhxyYpVFPInJAzCaEdc78I=",
