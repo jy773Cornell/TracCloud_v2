@@ -1,5 +1,5 @@
 import os
-
+import urllib.parse
 from .settings import *  # noqa
 from .settings import BASE_DIR
 
@@ -44,13 +44,14 @@ DATABASES = {
 # CACHES SETTING
 conn_str = os.environ['AZURE_REDIS_CONNECTIONSTRING']
 conn_str_params = {pair.split('=')[0]: pair.split('=')[1] for pair in conn_str.split(' ')}
+encoded_password = urllib.parse.quote(conn_str_params['password'])
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': f'rediss://{conn_str_params["host"]}:6380/0',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            'PASSWORD': conn_str_params['password'],
+            'PASSWORD': encoded_password,
             'SSL': True,
         },
     },
