@@ -44,15 +44,15 @@ DATABASES = {
 # CACHES SETTING
 conn_str = os.environ['AZURE_REDIS_CONNECTIONSTRING']
 conn_str_params = {pair.split('=')[0]: pair.split('=')[1] for pair in conn_str.split(' ')}
-print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!! {conn_str_params}")
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': f'rediss://tracloud.redis.cache.windows.net:6380/0',
+        'LOCATION': f'rediss://{conn_str_params["host"]}:6380/0',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            'PASSWORD': "WDsq6pdli1vs82ZfpRY2VVhxyYpVFPInJAzCaEdc78I=",
+            'PASSWORD': conn_str_params['password'],
             'SSL': True,
         },
     },
 }
+print(CACHES)
