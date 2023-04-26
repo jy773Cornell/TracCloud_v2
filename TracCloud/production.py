@@ -44,6 +44,7 @@ DATABASES = {
 # CACHES SETTING
 conn_str = os.environ['AZURE_REDIS_CONNECTIONSTRING']
 conn_str_params = {pair.split('=')[0]: pair.split('=')[1] for pair in conn_str.split(' ')}
+print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!! {conn_str_params}")
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
