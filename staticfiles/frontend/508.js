@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkfrontend=self.webpackChunkfrontend||[]).push([[508],{3508:(e,n,r)=>{r.r(n),r.d(n,{default:()=>u});var t=r(7294);function u(){return t.createElement("div",null,"UserProfile")}}}]);
