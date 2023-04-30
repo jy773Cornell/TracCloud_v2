@@ -1,5 +1,7 @@
-python manage.py migrate
-python manage.py collectstatic
+apt-get update
+apt-get install -y libreoffice
+python manage.py migrate --noinput
+python manage.py collectstatic --noinput
 gunicorn --workers 2 --threads 4 --timeout 60 --access-logfile \
-    '-' --error-logfile '-' --bind=0.0.0.0:8000 \
-     --chdir=/home/site/wwwroot TracCloud.wsgi
+  '-' --error-logfile '-' --bind=0.0.0.0:8000 \
+  --chdir=/home/site/wwwroot TracCloud.wsgi
