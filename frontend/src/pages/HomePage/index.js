@@ -19,19 +19,19 @@ const entry_list = [
     },
     {
         id: "crop_page",
-        name: "Crop",
+        name: "Crops",
         description: "Manage your crop information!",
         path: "/crop"
     },
     {
         id: "site_page",
-        name: "Site",
+        name: "Sites",
         description: "Manage your farming sites!",
         path: "/site"
     },
     {
         id: "chemical_page",
-        name: "Chemical",
+        name: "Chemicals",
         description: "Manage chemical usage and inventory!",
         path: "/chemical"
     },
@@ -43,25 +43,25 @@ const entry_list = [
     },
     {
         id: "spray_record_page",
-        name: "Spray Record",
+        name: "Spray Records",
         description: "Document pesticide and herbicide applications!",
         path: "/record/spray"
     },
     {
         id: "harvest_record_page",
-        name: "Harvest Record",
+        name: "Harvest Records",
         description: "Record your harvest information!",
         path: "/record/harvest"
     },
     {
         id: "purchase_record_page",
-        name: "Purchase Record",
+        name: "Purchase Records",
         description: "Track your chemical purchases!",
         path: "/record/purchase"
     },
     {
         id: "generate_report_page",
-        name: "Generate Report",
+        name: "Generate Reports",
         description: "Create reports based on your business data!",
         path: "/report"
     },
