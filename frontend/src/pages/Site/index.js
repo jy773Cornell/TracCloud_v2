@@ -228,6 +228,7 @@ export default function Site(props) {
     const [cropOptions, setCropOptions] = useState([]);
     const [unitOptions, setUnitOptions] = useState([]);
 
+    const [mounted, setMounted] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showTree, setShowTree] = useState(false);
     const [isSave, setIsSave] = useState(false);
@@ -902,11 +903,20 @@ export default function Site(props) {
     };
 
     useEffect(() => {
-        SiteTypeGet();
-        UnitGet();
-        CropListGet(uid);
+        const fetchData = async () => {
+            try {
+                await Promise.all([SiteTypeGet(), UnitGet(), CropListGet(uid)]);
+                await SiteListGet(uid);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
         clearInputError();
+        setMounted(true);
     }, []);
+
 
     useEffect(() => {
         CropOptionsFresh();
@@ -914,7 +924,9 @@ export default function Site(props) {
     }, [siteType, cropList, unit]);
 
     useEffect(() => {
-        SiteListGet(uid)
+        if (mounted) {
+            SiteListGet(uid);
+        }
     }, [refreshRecord]);
 
     return (
