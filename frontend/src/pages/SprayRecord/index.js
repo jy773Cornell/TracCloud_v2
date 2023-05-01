@@ -1815,9 +1815,9 @@ export default function SprayRecord(props) {
         setRefreshRecord,
     };
 
-    const saveProps = {open: isSave, setOpen: setIsSave, msg: "Crop record is uploaded successfully!", tag: "success"};
+    const saveProps = {open: isSave, setOpen: setIsSave, msg: "Spray record is uploaded successfully!", tag: "success"};
 
-    const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Crop record has been deleted!", tag: "success"};
+    const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Spray record has been deleted!", tag: "success"};
 
     useEffect(() => {
         const fetchData = async () => {
