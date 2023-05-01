@@ -904,12 +904,8 @@ export default function Site(props) {
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                await Promise.all([SiteTypeGet(), UnitGet(), CropListGet(uid)]);
-                await SiteListGet(uid);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
+            await Promise.all([SiteTypeGet(), UnitGet(), CropListGet(uid)]);
+            await SiteListGet(uid);
         };
 
         fetchData();

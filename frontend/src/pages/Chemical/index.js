@@ -336,6 +336,7 @@ export default function Chemical(props) {
     const [unitOptions, setUnitOptions] = useState([]);
     const [chemicalProductBaseOptions, setChemicalProductBaseOptions] = useState([]);
 
+    const [mounted, setMounted] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
     const [isSave, setIsSave] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
@@ -594,7 +595,7 @@ export default function Chemical(props) {
         },
         {
             field: 'epa_reg_no',
-            headerName: 'EAP REG NO.',
+            headerName: 'EPA REG NO.',
             sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => (
@@ -942,8 +943,13 @@ export default function Chemical(props) {
     };
 
     useEffect(() => {
-        UnitGet();
+        const fetchData = async () => {
+            await Promise.all([UnitGet(), ChemicalListGet(uid)]);
+        };
+
+        fetchData();
         clearInputError();
+        setMounted(true);
     }, []);
 
     useEffect(() => {
@@ -955,7 +961,9 @@ export default function Chemical(props) {
     }, [chemicalProductBase]);
 
     useEffect(() => {
-        ChemicalListGet(uid);
+        if (mounted) {
+            ChemicalListGet(uid);
+        }
     }, [refreshRecord]);
 
     return (<div>

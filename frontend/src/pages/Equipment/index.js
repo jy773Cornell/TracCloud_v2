@@ -158,6 +158,7 @@ export default function Equipment(props) {
     const [formData, setFormData] = useState({});
     const [fieldValues, setFieldValues] = useState({});
 
+    const [mounted, setMounted] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
     const [isSave, setIsSave] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
@@ -444,16 +445,34 @@ export default function Equipment(props) {
         setRefreshRecord,
     };
 
-    const saveProps = {open: isSave, setOpen: setIsSave, msg: "Equipment record is uploaded successfully!", tag: "success"};
+    const saveProps = {
+        open: isSave,
+        setOpen: setIsSave,
+        msg: "Equipment record is uploaded successfully!",
+        tag: "success"
+    };
 
-    const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Equipment record has been deleted!", tag: "success"};
+    const deleteProps = {
+        open: isDelete,
+        setOpen: setIsDelete,
+        msg: "Equipment record has been deleted!",
+        tag: "success"
+    };
 
     useEffect(() => {
+        const fetchData = async () => {
+            await Promise.all([EquipmentListGet(uid)]);
+        };
+
+        fetchData();
         clearInputError();
+        setMounted(true);
     }, []);
 
     useEffect(() => {
-        EquipmentListGet(uid);
+        if (mounted) {
+            EquipmentListGet(uid);
+        }
     }, [refreshRecord]);
 
     return (<div>

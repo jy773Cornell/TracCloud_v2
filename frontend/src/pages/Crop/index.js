@@ -192,6 +192,7 @@ export default function Crop(props) {
     const [cropVarietyOptions, setCropVarietyOptions] = useState([]);
     const [cropGrowthStageOptions, setCropGrowthStageOptions] = useState([]);
 
+    const [mounted, setMounted] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
     const [isSave, setIsSave] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
@@ -574,10 +575,18 @@ export default function Crop(props) {
     const deleteProps = {open: isDelete, setOpen: setIsDelete, msg: "Crop record has been deleted!", tag: "success"};
 
     useEffect(() => {
-        CropCategoryGet();
-        CropVarietyGet();
-        CropGrowthStageGet();
+        const fetchData = async () => {
+            await Promise.all([
+                CropCategoryGet(),
+                CropVarietyGet(),
+                CropGrowthStageGet(),
+                CropListGet(uid)
+            ]);
+        };
+
+        fetchData();
         clearInputError();
+        setMounted(true);
     }, []);
 
     useEffect(() => {
@@ -590,7 +599,9 @@ export default function Crop(props) {
     }, [formData.crop]);
 
     useEffect(() => {
-        CropListGet(uid);
+        if (mounted) {
+            CropListGet(uid);
+        }
     }, [refreshRecord]);
 
     return (<div>
