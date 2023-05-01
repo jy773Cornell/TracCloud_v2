@@ -274,9 +274,9 @@ function AddSprayRecord({
                             <TimePicker
                                 variant="outlined"
                                 label={columns[5].headerName}
-                                value={dayjs(`1970-01-01T${dayjs(fieldValues[field_names[5]], "h:mm A").format("HH:mm")}`)}
+                                value={dayjs(`1970-01-01T${dayjs(fieldValues[field_names[5]], 'HH:mm').format('HH:mm')}`)}
                                 onChange={(event) => {
-                                    handleAddInputChange(event, dayjs(event).format('HH:mm A'), field_names[5]);
+                                    handleAddInputChange(event, dayjs(event).format('HH:mm'), field_names[5]);
                                 }}
                                 sx={{width: '100%'}}
                             />
@@ -287,9 +287,9 @@ function AddSprayRecord({
                             <TimePicker
                                 variant="outlined"
                                 label={columns[6].headerName}
-                                value={dayjs(`1970-01-01T${dayjs(fieldValues[field_names[6]], "h:mm A").format("HH:mm")}`)}
+                                value={dayjs(`1970-01-01T${dayjs(fieldValues[field_names[6]], 'HH:mm').format('HH:mm')}`)}
                                 onChange={(event) => {
-                                    handleAddInputChange(event, dayjs(event).format('HH:mm A'), field_names[6]);
+                                    handleAddInputChange(event, dayjs(event).format('HH:mm'), field_names[6]);
                                 }}
                                 sx={{width: '100%'}}
                             />
@@ -888,15 +888,15 @@ export default function SprayRecord(props) {
             "user_id": uid,
             "type_id": applicationType.find(item => item.name === "Spray").atid,
             [field_names[4]]: dayjs().format('YYYY-MM-DD'),
-            [field_names[5]]: dayjs().format('HH:mm A'),
-            [field_names[6]]: dayjs().format('HH:mm A')
+            [field_names[5]]: dayjs().format('HH:mm'),
+            [field_names[6]]: dayjs().format('HH:mm')
         });
 
         const defaultValues = {
             1: [],
             4: dayjs().format('YYYY-MM-DD'),
-            5: dayjs().format('HH:mm A'),
-            6: dayjs().format('HH:mm A')
+            5: dayjs().format('HH:mm'),
+            6: dayjs().format('HH:mm')
         };
         setFieldValues(Object.fromEntries(field_names.map(item => [item, defaultValues[field_names.indexOf(item)] ?? ""])));
 
@@ -1347,7 +1347,7 @@ export default function SprayRecord(props) {
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <TimePicker
                                 variant="standard"
-                                value={dayjs(`1970-01-01T${dayjs(fieldValues[field_names[5]], "h:mm A").format("HH:mm")}`)}
+                                value={dayjs(`1970-01-01T${dayjs(fieldValues[field_names[5]], 'HH:mm').format('HH:mm')}`)}
                                 sx={{width: columnWidth - 20}}
                                 slotProps={{
                                     textField: {
@@ -1355,7 +1355,7 @@ export default function SprayRecord(props) {
                                     },
                                 }}
                                 onChange={(event) => {
-                                    handleAddInputChange(event, dayjs(event).format('HH:mm A'), field_names[5]);
+                                    handleAddInputChange(event, dayjs(event).format('HH:mm'), field_names[5]);
                                 }}
                             />
                         </LocalizationProvider>
@@ -1379,7 +1379,7 @@ export default function SprayRecord(props) {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <TimePicker
                             variant="standard"
-                            value={dayjs(`1970-01-01T${dayjs(fieldValues[field_names[6]], "h:mm A").format("HH:mm")}`)}
+                            value={dayjs(`1970-01-01T${dayjs(fieldValues[field_names[6]], 'HH:mm').format('HH:mm')}`)}
                             sx={{width: columnWidth - 20}}
                             slotProps={{
                                 textField: {
@@ -1387,7 +1387,7 @@ export default function SprayRecord(props) {
                                 },
                             }}
                             onChange={(event) => {
-                                handleAddInputChange(event, dayjs(event).format('HH:mm A'), field_names[6]);
+                                handleAddInputChange(event, dayjs(event).format('HH:mm'), field_names[6]);
                             }}
                         />
                     </LocalizationProvider>)
