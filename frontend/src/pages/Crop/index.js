@@ -19,11 +19,8 @@ import {
     GridToolbarFilterButton
 } from "@mui/x-data-grid";
 import ConfirmPopover from "../../components/ConfirmPopover";
-
-const columnWidth = 200;
-const editWidth = 180;
-
-const field_names = ["crop", "variety", "crop_code", "category", "growth_stage"]
+import {observer} from 'mobx-react-lite'
+import {useStore} from '../../store'
 
 function createAPIData(data) {
     const {crop: crop_id, variety: variety_id, growth_stage: growth_stage_id, ...rest} = data;
@@ -52,6 +49,7 @@ function CustomToolbar() {
 }
 
 function AddCropRecord({
+                           field_names,
                            fieldValues,
                            formData,
                            columns,
@@ -179,7 +177,12 @@ function AddCropRecord({
     </Modal>);
 }
 
-export default function Crop(props) {
+function Crop(props) {
+    const {cropStore} = useStore()
+    const field_names = cropStore.field_names;
+    const columnWidth = cropStore.columnWidth;
+    const editWidth = cropStore.editWidth;
+
     const uid = props.uid;
     const [cropCategory, setCropCategory] = useState([]);
     const [cropVariety, setCropVariety] = useState([]);
@@ -554,6 +557,7 @@ export default function Crop(props) {
     ];
 
     const addProps = {
+        field_names,
         fieldValues,
         formData,
         columns,
@@ -628,3 +632,5 @@ export default function Crop(props) {
         <OperationSnackbars  {...deleteProps}/>
     </div>);
 }
+
+export default observer(Crop);

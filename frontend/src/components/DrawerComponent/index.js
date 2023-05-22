@@ -20,15 +20,23 @@ import {Box} from "@mui/system";
 import {useLocation, useNavigate} from "react-router-dom";
 import Collapse from "@mui/material/Collapse";
 import {grey} from "@mui/material/colors";
+import useMediaQuery from '@mui/material/useMediaQuery';
+import {useTheme} from '@mui/material/styles';
 
 export default function LayoutDrawer(props) {
     const navigate = useNavigate();
     const location = useLocation();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+    const width = isMobile ? '100%' : drawerWidth;
     const [recordOpen, setRecordOpen] = useState(false);
 
     const handleMenuButtonPressed = (url) => {
         navigate(url);
+        if (isMobile) {
+            props.setMenuOpen(false);
+        }
     }
 
     const GrowerList = () => (
@@ -178,7 +186,7 @@ export default function LayoutDrawer(props) {
         <StyledDrawer variant="permanent" anchor="left"
                       PaperProps={{
                           style: {
-                              width: drawerWidth,
+                              width: width,
                           }
                       }}>
             {MenuList()}
