@@ -51,7 +51,7 @@ export default function Layout(props) {
 
     return (
         <StyledRoot>
-            {menuOpen ? <LayoutDrawer userType={userType} toggleMenuOpen={toggleMenuOpen}/> : null}
+            {menuOpen ? <LayoutDrawer userType={userType} setMenuOpen={setMenuOpen}/> : null}
             <StyledContainer>
                 <LayoutAppBar
                     username={username}
