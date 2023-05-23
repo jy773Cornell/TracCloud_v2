@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django_redis',
     'api.apps.ApiConfig',
     'frontend.apps.FrontendConfig',
+    'workflows.apps.WorkflowsConfig'
 ]
 
 MIDDLEWARE = [

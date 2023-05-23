@@ -429,13 +429,21 @@ class ApplicationRecord(models.Model):
     wind_direction = models.CharField(verbose_name="Wind Direction", null=True, blank=True, max_length=32)
     average_temp = models.CharField(verbose_name="Average Temperature", null=True, blank=True, max_length=32)
 
+    assign_to = models.ForeignKey(verbose_name="User", to="User", to_field="uid", related_name="assign_user",
+                                  null=True, blank=True, on_delete=models.SET_NULL)
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+    ]
+    application_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+
     note = models.TextField(verbose_name="Note", null=True, blank=True)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
 
     def __str__(self):
-        return "{} ({})".format(self.site, self.app_datetime)
+        return "{} ({})".format(self.site, self.app_date)
 
     objects = MyModelManager()
 
