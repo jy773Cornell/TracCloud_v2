@@ -25,9 +25,7 @@ class UserLoginView(APIView):
                 if user.is_active:
                     login(request, user)
                     expiry = self.remember_expiry_sec if remember else self.normal_expiry_sec
-                    uid = UserProfile.objects.get(user=user).uid
                     token = make_token(username, expiry)
-                    request.session["uid"] = uid
                     request.session["token"] = token
                     request.session.set_expiry(expiry)
 
@@ -51,6 +49,7 @@ class UserLogoutView(APIView):
 class UserAuthCheckView(APIView):
     def post(self, request, format=None):
         if request.user.is_authenticated:
-            return Response({'Succeeded': 'Authorized.', "uid": request.session.get("uid")}, status=status.HTTP_200_OK)
+            uid = UserProfile.objects.get(user=request.user).uid
+            return Response({'Succeeded': 'Authorized.', "uid": uid}, status=status.HTTP_200_OK)
         else:
             return Response({'Failed': 'Unauthorized.'}, status=status.HTTP_401_UNAUTHORIZED)

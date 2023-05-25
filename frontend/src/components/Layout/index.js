@@ -61,6 +61,7 @@ export default function Layout(props) {
             <StyledContainer>
                 <LayoutAppBar
                     username={username}
+                    userType={userType}
                     toggleMenuOpen={toggleMenuOpen}
                     handleLogout={handleLogout}
                 />

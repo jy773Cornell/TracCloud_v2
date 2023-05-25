@@ -10,8 +10,12 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import LogoutIcon from '@mui/icons-material/Logout';
 import {StyledInputBase, StyledSearch, StyledSearchIconWrapper} from "./styles";
 import {Typography} from "@mui/material";
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import {useNavigate} from "react-router-dom";
 
 export default function LayoutAppBar(props) {
+    const navigate = useNavigate();
+
     return (
         <Box>
             <AppBar position="static">
@@ -40,11 +44,12 @@ export default function LayoutAppBar(props) {
                         <Typography sx={{display: 'flex', alignItems: "center", padding: 1.5}}>
                             Hello, {props.username}
                         </Typography>
-                        <IconButton size="large" aria-label="new notifications" color="inherit">
-                            <Badge badgeContent={16} color="error">
-                                <NotificationsIcon/>
-                            </Badge>
-                        </IconButton>
+                        {props.userType === "Admin" ? (
+                            <IconButton size="large" aria-label="admin panel" color="inherit"
+                                        onClick={() => navigate("/admin")}>
+                                <AdminPanelSettingsIcon/>
+                            </IconButton>
+                        ) : null}
                         <IconButton size="large" aria-label="new notifications" color="inherit"
                                     onClick={props.handleLogout}>
                             <LogoutIcon/>
