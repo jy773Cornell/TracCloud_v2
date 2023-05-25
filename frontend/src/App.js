@@ -1,4 +1,4 @@
-import React, {lazy, Suspense, useRef, useState} from "react";
+import React, {lazy, Suspense, useRef, useState, useEffect} from "react";
 import {unstable_HistoryRouter as HistoryRouter, Routes, Route, Navigate} from "react-router-dom";
 import {history} from './utils'
 
@@ -20,6 +20,13 @@ const Report = lazy(() => import('./pages/Report'))
 function App() {
     const [uid, setUID] = useState("")
 
+    function RedirectToAdmin() {
+        useEffect(() => {
+            window.location.href = "/admin";
+        }, []);
+        return null;
+    }
+
     return (
         <HistoryRouter history={history}>
             <Suspense
@@ -39,6 +46,7 @@ function App() {
                         <Route path="record/harvest" element={<HarvestRecord uid={uid}/>}/>
                         <Route path="record/purchase" element={<PurchaseRecord uid={uid}/>}/>
                         <Route path="report" element={<Report uid={uid}/>}/>
+                        <Route path="admin" element={<RedirectToAdmin/>}/>
                     </Route>
                     <Route path='*' element={<Navigate to="home" replace/>}/>
                 </Routes>
