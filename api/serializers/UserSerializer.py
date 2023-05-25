@@ -1,17 +1,14 @@
 from rest_framework import serializers
-from api.models import User, UserType, UserRelation, UserRelationType
+from api.models import UserProfile, UserType, UserRelation, UserRelationType
+from django.contrib.auth.models import User
 
 
 class UserLoginSerializer(serializers.ModelSerializer):
+    remember = serializers.BooleanField()
+
     class Meta:
         model = User
-        fields = ("username", "password",)
-
-
-class UserCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ("username", "password", "type", "email",)
+        fields = ("username", "password", "remember",)
 
 
 class UserGetSerializer(serializers.ModelSerializer):
@@ -19,22 +16,14 @@ class UserGetSerializer(serializers.ModelSerializer):
     added_by = serializers.StringRelatedField()
 
     class Meta:
-        model = User
-        exclude = ("password",)
+        model = UserProfile
+        fields = "__all__"
 
 
 class UserProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        exclude = ("username", "password", "type", "added_by", "self_activated", "is_active", "create_time",)
-
-
-class UserPasswordChangeSerializer(serializers.ModelSerializer):
-    original_password = serializers.CharField(label="Original Password", required=True, allow_null=False)
-
-    class Meta:
-        model = User
-        fields = ("uid", "password", "original_password",)
+        model = UserProfile
+        exclude = ("type", "added_by", "self_activated", "is_active", "create_time",)
 
 
 class UserRelationCreateSerializer(serializers.ModelSerializer):
@@ -65,24 +54,23 @@ class UserRelationDeleteSerializer(serializers.ModelSerializer):
         model = UserRelation
         fields = ("urid", "requester", "provider",)
 
-
-class DummyUserCreateSerializer(serializers.ModelSerializer):
-    relation_type = serializers.PrimaryKeyRelatedField(queryset=UserRelationType.objects.filter(is_active=True))
-    type_id = serializers.PrimaryKeyRelatedField(source='type', queryset=UserType.objects.filter(is_active=True))
-    added_by_id = serializers.PrimaryKeyRelatedField(source='added_by', queryset=User.objects.filter(is_active=True))
-
-    class Meta:
-        model = User
-        exclude = ("uid", "type", "password", "self_activated", "added_by", "is_active", "create_time",)
-
-
-class DummyUserActivateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ("uid", "username", "password",)
-
-
-class DummyUserDeleteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ("uid", "added_by",)
+# class DummyUserCreateSerializer(serializers.ModelSerializer):
+#     relation_type = serializers.PrimaryKeyRelatedField(queryset=UserRelationType.objects.filter(is_active=True))
+#     type_id = serializers.PrimaryKeyRelatedField(source='type', queryset=UserType.objects.filter(is_active=True))
+#     added_by_id = serializers.PrimaryKeyRelatedField(source='added_by', queryset=User.objects.filter(is_active=True))
+#
+#     class Meta:
+#         model = UserProfile
+#         exclude = ("type", "password", "self_activated", "added_by", "is_active", "create_time",)
+#
+#
+# class DummyUserActivateSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = ("uid", "username", "password",)
+#
+#
+# class DummyUserDeleteSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = ("uid", "added_by",)

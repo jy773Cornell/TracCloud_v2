@@ -1,12 +1,11 @@
 from django.core.cache import cache
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from api.serializers.OperationSerializer import *
 from api.models import *
 from django.utils import timezone
-from api.utils.ModelManager import model_delete, request_data_transform
+from api.utils.ModelManager import request_data_transform
 from api.utils.UUIDGen import gen_uuid
 
 
@@ -15,7 +14,6 @@ from api.utils.UUIDGen import gen_uuid
 class PurchaseCreateView(APIView):
     serializer_class = PurchaseCreateSerializer
 
-    @csrf_exempt
     def post(self, request, format=None):
         data = request_data_transform(request.data)
         required_fields = ["user_id", "chemical_id", ]
@@ -59,7 +57,7 @@ class PurchaseListGetView(APIView):
     def get(self, request, format=None):
         uid = request.GET.get(self.lookup_url_kwarg)
         if uid:
-            user = User.objects.filter(uid=uid).alive()
+            user = UserProfile.objects.filter(uid=uid).alive()
             if user:
                 purchase_list = PurchaseRecord.objects.filter(user_id=uid).alive().order_by('-update_time')
                 data = []
@@ -76,7 +74,6 @@ class PurchaseListGetView(APIView):
 class PurchaseUpdateView(APIView):
     serializer_class = PurchaseUpdateSerializer
 
-    @csrf_exempt
     def put(self, request, format=None):
         data = request_data_transform(request.data)
         prid = data.pop("prid")
@@ -96,14 +93,13 @@ class PurchaseUpdateView(APIView):
 class PurchaseDeleteView(APIView):
     serializer_class = PurchaseDeleteSerializer
 
-    @csrf_exempt
     def put(self, request, format=None):
-        arid = request.data.get("arid")
-        user = request.data.get("user")
-        if arid and user:
-            purchase = PurchaseRecord.objects.filter(arid=arid, user_id=user).alive()
+        prid = request.data.get("prid")
+        user_id = request.data.get("user_id")
+        if prid and user_id:
+            purchase = PurchaseRecord.objects.filter(prid=prid, user_id=user_id).alive()
             if purchase:
-                operation = Operation.objects.filter(opid=purchase.first().opid_id, user_id=user).alive()
+                operation = Operation.objects.filter(opid=purchase.first().opid_id, user_id=user_id).alive()
                 operation.delete()
                 purchase.delete()
                 return Response({'Succeeded': 'Purchase record has been deleted.'}, status=status.HTTP_200_OK)
@@ -118,7 +114,6 @@ class PurchaseDeleteView(APIView):
 class HarvestCreateView(APIView):
     serializer_class = HarvestCreateSerializer
 
-    @csrf_exempt
     def post(self, request, format=None):
         data = request_data_transform(request.data)
         if data.get("opid_id"):
@@ -179,7 +174,7 @@ class HarvestListGetView(APIView):
     def get(self, request, format=None):
         uid = request.GET.get(self.lookup_url_kwarg)
         if uid:
-            user = User.objects.filter(uid=uid).alive()
+            user = UserProfile.objects.filter(uid=uid).alive()
             if user:
                 op_harvest_list = Operation.objects.filter(
                     user_id=uid,
@@ -204,7 +199,6 @@ class HarvestListGetView(APIView):
 class HarvestUpdateView(APIView):
     serializer_class = HarvestUpdateSerializer
 
-    @csrf_exempt
     def put(self, request, format=None):
         data = request_data_transform(request.data)
         hrid = data.pop("hrid")
@@ -225,9 +219,8 @@ class HarvestUpdateView(APIView):
 class HarvestDeleteView(APIView):
     serializer_class = HarvestDeleteSerializer
 
-    @csrf_exempt
     def put(self, request, format=None):
-        uid = request.data.get("user")
+        uid = request.data.get("user_id")
         opid = request.data.get("opid")
         hrid = request.data.get("hrid")
         operation_type_id = next((op_type["optid"] for op_type in cache.get("OperationType") if
@@ -260,7 +253,6 @@ class HarvestDeleteView(APIView):
 class ApplicationCreateView(APIView):
     serializer_class = ApplicationCreateSerializer
 
-    @csrf_exempt
     def post(self, request, format=None):
         data = request_data_transform(request.data)
         if data.get("opid_id"):
@@ -322,7 +314,7 @@ class ApplicationListGetView(APIView):
     def get(self, request, format=None):
         uid = request.GET.get(self.lookup_url_kwarg)
         if uid:
-            user = User.objects.filter(uid=uid).alive()
+            user = UserProfile.objects.filter(uid=uid).alive()
             if user:
                 op_application_list = Operation.objects.filter(
                     user_id=uid,
@@ -347,7 +339,6 @@ class ApplicationListGetView(APIView):
 class ApplicationUpdateView(APIView):
     serializer_class = ApplicationUpdateSerializer
 
-    @csrf_exempt
     def put(self, request, format=None):
         data = request_data_transform(request.data)
         arid = data.pop("arid")
@@ -368,9 +359,8 @@ class ApplicationUpdateView(APIView):
 class ApplicationDeleteView(APIView):
     serializer_class = ApplicationDeleteSerializer
 
-    @csrf_exempt
     def put(self, request, format=None):
-        uid = request.data.get("user")
+        uid = request.data.get("user_id")
         opid = request.data.get("opid")
         arid = request.data.get("arid")
         operation_type_id = next((op_type["optid"] for op_type in cache.get("OperationType") if

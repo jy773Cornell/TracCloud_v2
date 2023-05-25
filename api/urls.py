@@ -1,5 +1,5 @@
 from django.urls import path
-from api.views.LoginAPI import *
+from api.views.AuthAPI import *
 from api.views.UserAPI import *
 from api.views.EquipmentAPI import *
 from api.views.CropAPI import *
@@ -31,10 +31,6 @@ urlpatterns = [
     path('user/relation/list/get/', UserRelationListGetView.as_view()),
     path('user/relation/update/', UserRelationUpdateView.as_view()),
     path('user/relation/delete/', UserRelationDeleteView.as_view()),
-
-    path('user/dummy/create/', DummyUserCreate.as_view()),
-    path('user/dummy/activate/', DummyUserActivate.as_view()),
-    path('user/dummy/delete/', DummyUserDeleteView.as_view()),
 
     # EquipmentAPI
 

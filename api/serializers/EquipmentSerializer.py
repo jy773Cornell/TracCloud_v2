@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from api.models import User, Equipment, EquipmentType
+from api.models import UserProfile, Equipment, EquipmentType
 
 
 class EquipmentCreateSerializer(serializers.ModelSerializer):
-    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=User.objects.filter(is_active=True))
+    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=UserProfile.objects.filter(is_active=True))
     type_id = serializers.PrimaryKeyRelatedField(source='type', queryset=EquipmentType.objects.filter(is_active=True))
-    owner_id = serializers.PrimaryKeyRelatedField(source='owner', queryset=User.objects.filter(is_active=True))
+    owner_id = serializers.PrimaryKeyRelatedField(source='owner', queryset=UserProfile.objects.filter(is_active=True))
 
     class Meta:
         model = Equipment
@@ -22,7 +22,7 @@ class EquipmentGetSerializer(serializers.ModelSerializer):
 
 class EquipmentUpdateSerializer(serializers.ModelSerializer):
     type_id = serializers.PrimaryKeyRelatedField(source='type', queryset=EquipmentType.objects.filter(is_active=True))
-    owner_id = serializers.PrimaryKeyRelatedField(source='owner', queryset=User.objects.filter(is_active=True))
+    owner_id = serializers.PrimaryKeyRelatedField(source='owner', queryset=UserProfile.objects.filter(is_active=True))
 
     class Meta:
         model = Equipment

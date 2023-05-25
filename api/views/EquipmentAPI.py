@@ -1,4 +1,3 @@
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -11,7 +10,6 @@ from api.utils.UUIDGen import gen_uuid
 class EquipmentCreateView(APIView):
     serializer_class = EquipmentCreateSerializer
 
-    @csrf_exempt
     def post(self, request, format=None):
         data = request_data_transform(request.data)
         if data.get("user_id") and data.get("name") and data.get("owner"):
@@ -47,7 +45,7 @@ class EquipmentListGetView(APIView):
     def get(self, request, format=None):
         uid = request.GET.get(self.lookup_url_kwarg)
         if uid:
-            user = User.objects.filter(uid=uid).alive()
+            user = UserProfile.objects.filter(uid=uid).alive()
             if user:
                 equipment_list = Equipment.objects.filter(user_id=uid).alive().order_by('-update_time')
                 data = []
@@ -63,7 +61,6 @@ class EquipmentListGetView(APIView):
 class EquipmentUpdateView(APIView):
     serializer_class = EquipmentUpdateSerializer
 
-    @csrf_exempt
     def put(self, request, format=None):
         data = request_data_transform(request.data)
         eid = data.pop("eid")
@@ -81,7 +78,6 @@ class EquipmentUpdateView(APIView):
 class EquipmentDeleteView(APIView):
     serializer_class = EquipmentDeleteSerializer
 
-    @csrf_exempt
     def put(self, request, format=None):
         eid = request.data.get("eid")
         user = request.data.get("user")

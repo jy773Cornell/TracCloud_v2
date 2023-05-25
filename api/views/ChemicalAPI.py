@@ -1,5 +1,4 @@
 from django.core.cache import cache
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -12,7 +11,6 @@ from api.utils.UUIDGen import gen_uuid
 class ChemicalCreateView(APIView):
     serializer_class = ChemicalCreateSerializer
 
-    @csrf_exempt
     def post(self, request, format=None):
         data = request_data_transform(request.data)
         if data.get("user_id") \
@@ -56,7 +54,7 @@ class ChemicalListGetView(APIView):
     def get(self, request, format=None):
         uid = request.GET.get(self.lookup_url_kwarg)
         if uid:
-            user = User.objects.filter(uid=uid).alive()
+            user = UserProfile.objects.filter(uid=uid).alive()
             if user:
                 chemical_list = Chemical.objects.filter(user_id=uid).alive().order_by('-update_time')
                 data = []
@@ -72,7 +70,6 @@ class ChemicalListGetView(APIView):
 class ChemicalUpdateView(APIView):
     serializer_class = ChemicalUpdateSerializer
 
-    @csrf_exempt
     def put(self, request, format=None):
         data = request_data_transform(request.data)
         chemid = data.pop("chemid")
@@ -90,7 +87,6 @@ class ChemicalUpdateView(APIView):
 class ChemicalDeleteView(APIView):
     serializer_class = ChemicalDeleteSerializer
 
-    @csrf_exempt
     def put(self, request, format=None):
         chemid = request.data.get("chemid")
         user = request.data.get("user")

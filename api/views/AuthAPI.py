@@ -1,11 +1,10 @@
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.hashers import check_password
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from api.serializers.UserSerializer import UserLoginSerializer
-from api.models import User
 from api.utils.Token import make_token
+from api.models import UserProfile
+from django.contrib.auth import authenticate, login, logout
 
 
 class UserLoginView(APIView):
@@ -13,7 +12,6 @@ class UserLoginView(APIView):
     normal_expiry_sec = 60 * 60 * 24
     remember_expiry_sec = 60 * 60 * 24 * 7
 
-    @csrf_exempt
     def post(self, request, format=None):
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
@@ -22,45 +20,37 @@ class UserLoginView(APIView):
         password = request.data.get("password")
         remember = request.data.get("remember")
         if username and password:
-            user = User.objects.filter(username=username, self_activated=True, is_active=True).first()
+            user = authenticate(request, username=username, password=password)
             if user:
-                if check_password(password, user.password):
+                if user.is_active:
+                    login(request, user)
                     expiry = self.remember_expiry_sec if remember else self.normal_expiry_sec
+                    uid = UserProfile.objects.get(user=user).uid
                     token = make_token(username, expiry)
+                    request.session["uid"] = uid
                     request.session["token"] = token
-                    request.session["uid"] = user.uid
                     request.session.set_expiry(expiry)
 
                     return Response({"Succeeded": "User Info Verified.", "token": token},
                                     status=status.HTTP_200_OK)
 
-                return Response({'Failed': 'Wrong Password.'},
+                return Response({'Failed': 'User account is not active.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            return Response({'Failed': 'Invalid Username.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'Failed': 'Invalid Username or Password.'}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserLogoutView(APIView):
-    @csrf_exempt
     def delete(self, request, format=None):
-        if self.request.session.exists(self.request.session.session_key):
-            self.request.session.delete()
-
+        logout(request)
         return Response({'Succeeded': 'Session Has Been Cleared.'}, status=status.HTTP_200_OK)
 
 
 class UserAuthCheckView(APIView):
-    @csrf_exempt
     def post(self, request, format=None):
-        if not self.request.session.exists(self.request.session.session_key):
-            self.request.session.create()
-
-        if not request.data.get("token"):
-            return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
-
-        if not request.session.get("token") or request.session.get("token") != request.data.get("token"):
+        if request.user.is_authenticated:
+            return Response({'Succeeded': 'Authorized.', "uid": request.session.get("uid")}, status=status.HTTP_200_OK)
+        else:
             return Response({'Failed': 'Unauthorized.'}, status=status.HTTP_401_UNAUTHORIZED)
-
-        return Response({'Succeeded': 'Authorized.', "uid": request.session.get("uid")}, status=status.HTTP_200_OK)

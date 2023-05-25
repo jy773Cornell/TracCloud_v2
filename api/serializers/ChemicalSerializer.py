@@ -1,10 +1,10 @@
 from django.core.cache import cache
 from rest_framework import serializers
-from api.models import User, Unit, Chemical
+from api.models import UserProfile, Unit, Chemical
 
 
 class ChemicalCreateSerializer(serializers.ModelSerializer):
-    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=User.objects.filter(is_active=True))
+    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=UserProfile.objects.filter(is_active=True))
     unit_id = serializers.PrimaryKeyRelatedField(source='unit', queryset=Unit.objects.filter(usage=2, is_active=True))
 
     class Meta:

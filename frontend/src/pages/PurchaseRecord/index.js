@@ -34,6 +34,7 @@ import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
+import {getCookie} from "../../utils";
 
 const columnWidth = 200;
 const columnMidWidth = 250;
@@ -80,8 +81,11 @@ function AddPurchaseRecord({
     async function PurchaseRecordSave() {
         const apiData = createAPIData(formData);
         console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
+            method: "POST",
+            headers: {"Content-Type": "application/json", 'X-CSRFToken': csrftoken,},
+            body: JSON.stringify(apiData),
         };
         await fetch("/api/operation/purchase/create/", requestOptions)
             .then((response) => {
@@ -296,8 +300,11 @@ export default function PurchaseRecord(props) {
     async function PurchaseRecordUpdate() {
         const apiData = createAPIData(formData);
         console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
+            method: "PUT",
+            headers: {"Content-Type": "application/json", 'X-CSRFToken': csrftoken,},
+            body: JSON.stringify(apiData),
         };
         await fetch("/api/operation/purchase/update/", requestOptions)
             .then((response) => {
@@ -310,10 +317,13 @@ export default function PurchaseRecord(props) {
     }
 
     async function PurchaseRecordDelete(prid) {
-        const apiData = {"user": uid, "prid": prid}
+        const apiData = {"user_id": uid, "prid": prid}
         console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
+            method: "PUT",
+            headers: {"Content-Type": "application/json", 'X-CSRFToken': csrftoken,},
+            body: JSON.stringify(apiData),
         };
         await fetch("/api/operation/purchase/delete/", requestOptions)
             .then((response) => {

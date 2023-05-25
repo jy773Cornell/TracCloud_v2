@@ -20,10 +20,6 @@ const Report = lazy(() => import('./pages/Report'))
 function App() {
     const [uid, setUID] = useState("")
 
-    function handleAuthUID(uid) {
-        setUID(uid);
-    }
-
     return (
         <HistoryRouter history={history}>
             <Suspense
@@ -31,10 +27,10 @@ function App() {
                 <Routes>
                     <Route path="login" element={<Login/>}/>
                     <Route eaxct path='/' element={<Navigate to="home" replace/>}/>
-                    <Route path='/' element={<AuthComponent onUIDReceived={handleAuthUID}/>}>
+                    <Route path='/' element={<AuthComponent uid={uid} setUID={setUID}/>}>
                         <Route path="home" element={<HomePage/>}/>
-                        <Route path="profile" element={<UserProfile/>}/>
-                        <Route path="network" element={<Network/>}/>
+                        <Route path="profile" element={<UserProfile uid={uid}/>}/>
+                        <Route path="network" element={<Network uid={uid}/>}/>
                         <Route path="crop" element={<Crop uid={uid}/>}/>
                         <Route path="site" element={<Site uid={uid}/>}/>
                         <Route path="chemical" element={<Chemical uid={uid}/>}/>

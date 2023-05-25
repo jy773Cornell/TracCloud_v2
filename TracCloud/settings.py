@@ -38,9 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'django_redis',
+    'viewflow',
     'api.apps.ApiConfig',
     'frontend.apps.FrontendConfig',
-    'workflows.apps.WorkflowsConfig'
+    'workflows.apps.WorkflowsConfig',
 ]
 
 MIDDLEWARE = [

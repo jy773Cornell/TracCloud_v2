@@ -1,7 +1,7 @@
 import React, {lazy, useEffect, useState} from 'react'
 import {Outlet, useNavigate} from "react-router-dom";
 import {StyledContainer, StyledRoot} from './styles'
-import {removeToken} from "../../utils";
+import {removeToken, getCookie} from "../../utils";
 
 const LayoutAppBar = lazy(() => import('../AppBarComponent'))
 const LayoutDrawer = lazy(() => import('../DrawerComponent'))
@@ -18,8 +18,14 @@ export default function Layout(props) {
     }
 
     async function handleLogout() {
+        const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "DELETE", headers: {"Content-Type": "application/json"},
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                'X-CSRFToken': csrftoken,
+            },
+
         };
         await fetch("/api/logout/", requestOptions)
             .then((response) => {

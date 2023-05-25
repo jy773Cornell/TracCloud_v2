@@ -1,14 +1,16 @@
 import React from 'react';
 import dayjs from "dayjs";
+import {getCookie} from "../../../utils";
 
 const reportGenerateUrl = '/api/report/central-posting';
 
 export default function CentralPostingGenerator(reportData, format) {
     return new Promise(async (resolve, reject) => {
         try {
+            const csrftoken = getCookie('csrftoken');
             const requestOptions = {
                 method: "POST",
-                headers: {"Content-Type": "application/json"},
+                headers: {"Content-Type": "application/json", 'X-CSRFToken': csrftoken,},
                 body: JSON.stringify({reportData: reportData, format: format}),
             };
             const response = await fetch(reportGenerateUrl, requestOptions);

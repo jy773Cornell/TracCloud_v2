@@ -16,8 +16,8 @@ class OperationDeleteSerializer(serializers.ModelSerializer):
 
 
 class PurchaseCreateSerializer(serializers.ModelSerializer):
-    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=User.objects.filter(is_active=True))
-    operator_id = serializers.PrimaryKeyRelatedField(source='operator', queryset=User.objects.filter(is_active=True))
+    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=UserProfile.objects.filter(is_active=True))
+    operator_id = serializers.PrimaryKeyRelatedField(source='operator', queryset=UserProfile.objects.filter(is_active=True))
     chemical_id = serializers.PrimaryKeyRelatedField(source='chemical',
                                                      queryset=Chemical.objects.filter(is_active=True))
     operation_type = serializers.SerializerMethodField()
@@ -39,7 +39,7 @@ class PurchaseGetSerializer(serializers.ModelSerializer):
 
 
 class PurchaseUpdateSerializer(serializers.ModelSerializer):
-    operator_id = serializers.PrimaryKeyRelatedField(source='operator', queryset=User.objects.filter(is_active=True))
+    operator_id = serializers.PrimaryKeyRelatedField(source='operator', queryset=UserProfile.objects.filter(is_active=True))
     chemical_id = serializers.PrimaryKeyRelatedField(source='chemical',
                                                      queryset=Chemical.objects.filter(is_active=True))
 
@@ -56,8 +56,8 @@ class PurchaseDeleteSerializer(serializers.ModelSerializer):
 
 class HarvestCreateSerializer(serializers.ModelSerializer):
     opid_id = serializers.PrimaryKeyRelatedField(source='opid', queryset=Operation.objects.filter(is_active=True))
-    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=User.objects.filter(is_active=True))
-    operator_id = serializers.PrimaryKeyRelatedField(source='operator', queryset=User.objects.filter(is_active=True))
+    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=UserProfile.objects.filter(is_active=True))
+    operator_id = serializers.PrimaryKeyRelatedField(source='operator', queryset=UserProfile.objects.filter(is_active=True))
     crop_id = serializers.PrimaryKeyRelatedField(source='crop', queryset=Crop.objects.filter(is_active=True))
     site_id = serializers.PrimaryKeyRelatedField(source='site',
                                                  queryset=Site.objects.filter(
@@ -104,7 +104,7 @@ class HarvestDeleteSerializer(serializers.ModelSerializer):
 
 
 class ApplicationCreateSerializer(serializers.ModelSerializer):
-    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=User.objects.filter(is_active=True))
+    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=UserProfile.objects.filter(is_active=True))
     opid_id = serializers.PrimaryKeyRelatedField(source='opid', queryset=Operation.objects.filter(is_active=True))
     type_id = serializers.PrimaryKeyRelatedField(source='type', queryset=ApplicationType.objects.filter(is_active=True))
     target_id = serializers.PrimaryKeyRelatedField(source='target',

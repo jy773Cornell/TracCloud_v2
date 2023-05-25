@@ -21,6 +21,7 @@ import {
 import ConfirmPopover from "../../components/ConfirmPopover";
 import {observer} from 'mobx-react-lite'
 import {useStore} from '../../store'
+import {getCookie} from "../../utils";
 
 function createAPIData(data) {
     const {crop: crop_id, variety: variety_id, growth_stage: growth_stage_id, ...rest} = data;
@@ -69,8 +70,14 @@ function AddCropRecord({
     async function CropRecordSave() {
         const apiData = createAPIData(formData);
         console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify(apiData),
         };
         await fetch("/api/crop/create/", requestOptions)
             .then((response) => {
@@ -266,8 +273,11 @@ function Crop(props) {
     async function CropRecordUpdate() {
         const apiData = createAPIData(formData);
         console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
+            method: "PUT",
+            headers: {"Content-Type": "application/json", 'X-CSRFToken': csrftoken,},
+            body: JSON.stringify(apiData),
         };
         await fetch("/api/crop/update/", requestOptions)
             .then((response) => {
@@ -282,8 +292,11 @@ function Crop(props) {
     async function CropRecordDelete(cid) {
         const apiData = {"user": uid, "cid": cid}
         console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
+            method: "PUT",
+            headers: {"Content-Type": "application/json", 'X-CSRFToken': csrftoken,},
+            body: JSON.stringify(apiData),
         };
         await fetch("/api/crop/delete/", requestOptions)
             .then((response) => {
