@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {Grid, Avatar, Button, Typography, Link, TextField, Checkbox, FormControlLabel} from '@mui/material'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {StyledCard, StyledGrid, StyledTypography} from "./styles";
-import {setToken} from "../../utils";
+import {setToken, getCookie} from "../../utils";
 import {useNavigate} from "react-router-dom";
 
 export default function Login() {
@@ -44,9 +44,13 @@ export default function Login() {
                 "status": [false, true], "message": ["", "This field is required."],
             })
         } else {
+            const csrftoken = getCookie('csrftoken');
             const requestOptions = {
                 method: "POST",
-                headers: {"Content-Type": "application/json"},
+                headers: {
+                    "Content-Type": "application/json",
+                    'X-CSRFToken': csrftoken,
+                },
                 body: JSON.stringify({
                     username: username,
                     password: password,

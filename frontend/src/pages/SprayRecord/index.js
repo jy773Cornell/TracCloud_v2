@@ -28,6 +28,7 @@ import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {TimePicker} from '@mui/x-date-pickers/TimePicker';
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
+import {getCookie} from "../../utils";
 
 const columnWidth = 200;
 const columnMidWidth = 250;
@@ -145,8 +146,11 @@ function AddSprayRecord({
     async function OperationApplicationRecordSave() {
         const apiData = createAddAPIData(formData);
         console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
+            method: "POST",
+            headers: {"Content-Type": "application/json", 'X-CSRFToken': csrftoken,},
+            body: JSON.stringify(apiData),
         };
         await fetch("/api/operation/application/create/", requestOptions)
             .then((response) => {
@@ -710,8 +714,11 @@ export default function SprayRecord(props) {
     async function ApplicationRecordUpdate() {
         const apiData = createEditAPIData(formData);
         console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
+            method: "PUT",
+            headers: {"Content-Type": "application/json", 'X-CSRFToken': csrftoken,},
+            body: JSON.stringify(apiData),
         };
         await fetch("/api/operation/application/update/", requestOptions)
             .then((response) => {
@@ -724,10 +731,13 @@ export default function SprayRecord(props) {
     }
 
     async function ApplicationRecordDelete(arid) {
-        const apiData = {"user": uid, "arid": arid}
+        const apiData = {"user_id": uid, "arid": arid}
         console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
+            method: "PUT",
+            headers: {"Content-Type": "application/json", 'X-CSRFToken': csrftoken,},
+            body: JSON.stringify(apiData),
         };
         await fetch("/api/operation/application/delete/", requestOptions)
             .then((response) => {

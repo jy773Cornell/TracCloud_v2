@@ -1,5 +1,4 @@
 from django.core.cache import cache
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -15,7 +14,6 @@ from api.utils.SiteTree import site_tree_data
 class SiteCreateView(APIView):
     serializer_class = SiteCreateSerializer
 
-    @csrf_exempt
     def post(self, request, format=None):
         data = request_data_transform(request.data)
         if data.get("user_id") and data.get("name") and data.get("type_id"):
@@ -51,7 +49,7 @@ class SiteListGetView(APIView):
     def get(self, request, format=None):
         uid = request.GET.get(self.lookup_url_kwarg)
         if uid:
-            user = User.objects.filter(uid=uid).alive()
+            user = UserProfile.objects.filter(uid=uid).alive()
             if user:
                 site_list = Site.objects.filter(user_id=uid).alive().order_by('-update_time')
                 site_list = [SiteGetSerializer(site).data for site in site_list]
@@ -70,7 +68,6 @@ class SiteListGetView(APIView):
 class SiteUpdateView(APIView):
     serializer_class = SiteUpdateSerializer
 
-    @csrf_exempt
     def put(self, request, format=None):
         data = request_data_transform(request.data)
         sid = data.pop("sid")
@@ -88,7 +85,6 @@ class SiteUpdateView(APIView):
 class SiteDeleteView(APIView):
     serializer_class = SiteDeleteSerializer
 
-    @csrf_exempt
     def put(self, request, format=None):
         sid = request.data.get("sid")
         user = request.data.get("user")

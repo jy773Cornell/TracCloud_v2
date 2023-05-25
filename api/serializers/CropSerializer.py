@@ -1,10 +1,10 @@
 from django.core.cache import cache
 from rest_framework import serializers
-from api.models import User, Crop, CropCategory, CropVariety, CropGrowthStage
+from api.models import UserProfile, Crop, CropCategory, CropVariety, CropGrowthStage
 
 
 class CropCreateSerializer(serializers.ModelSerializer):
-    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=User.objects.all().alive())
+    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=UserProfile.objects.all().alive())
     crop_id = serializers.PrimaryKeyRelatedField(source='crop', queryset=CropCategory.objects.all())
     variety_id = serializers.PrimaryKeyRelatedField(source='variety', queryset=CropVariety.objects.all())
     growth_stage_id = serializers.PrimaryKeyRelatedField(source='growth_stage', queryset=CropGrowthStage.objects.all())

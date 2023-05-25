@@ -29,6 +29,7 @@ import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import {DateTimePicker} from '@mui/x-date-pickers/DateTimePicker';
+import {getCookie} from "../../utils";
 
 const columnWidth = 200;
 const columnMidWidth = 250;
@@ -101,8 +102,11 @@ function AddHarvestRecord({
     async function OperationHarvestRecordSave() {
         const apiData = createAddAPIData(formData);
         console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
+            method: "POST",
+            headers: {"Content-Type": "application/json", 'X-CSRFToken': csrftoken,},
+            body: JSON.stringify(apiData),
         };
         await fetch("/api/operation/harvest/create/", requestOptions)
             .then((response) => {
@@ -385,8 +389,11 @@ export default function HarvestRecord(props) {
     async function HarvestRecordUpdate() {
         const apiData = createEditAPIData(formData);
         console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
+            method: "PUT",
+            headers: {"Content-Type": "application/json", 'X-CSRFToken': csrftoken,},
+            body: JSON.stringify(apiData),
         };
         await fetch("/api/operation/harvest/update/", requestOptions)
             .then((response) => {
@@ -398,11 +405,14 @@ export default function HarvestRecord(props) {
             })
     }
 
-    async function HarvestRecordDelete(arid) {
-        const apiData = {"user": uid, "arid": arid}
+    async function HarvestRecordDelete(hrid) {
+        const apiData = {"user_id": uid, "hrid": hrid}
         console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
+            method: "PUT",
+            headers: {"Content-Type": "application/json", 'X-CSRFToken': csrftoken,},
+            body: JSON.stringify(apiData),
         };
         await fetch("/api/operation/harvest/delete/", requestOptions)
             .then((response) => {

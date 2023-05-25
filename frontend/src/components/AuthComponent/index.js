@@ -1,19 +1,22 @@
 import React, {lazy, useEffect} from 'react';
 import {Navigate} from 'react-router-dom'
 import {useState} from "react";
-import {getToken} from "../../utils";
+import {getToken, getCookie} from "../../utils";
 
 const Loading = lazy(() => import('../Loading'))
 const Layout = lazy(() => import('../Layout'))
 
-export default function AuthComponent({onUIDReceived}) {
+export default function AuthComponent({uid, setUID}) {
     const [authStatus, setAuthStatus] = useState("loading")
-    const [uid, setUID] = useState("")
 
     async function AuthCheck() {
+        const csrftoken = getCookie('csrftoken');
         const requestOptions = {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: {
+                "Content-Type": "application/json",
+                'X-CSRFToken': csrftoken,
+            },
             body: JSON.stringify({
                 token: getToken(),
             }),
@@ -23,7 +26,6 @@ export default function AuthComponent({onUIDReceived}) {
                 if (response.ok) {
                     response.json().then((data) => {
                         setUID(data.uid);
-                        onUIDReceived(data.uid);
                         setAuthStatus("authorized");
                     })
                 } else {

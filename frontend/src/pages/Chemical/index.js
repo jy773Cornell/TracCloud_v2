@@ -23,6 +23,7 @@ import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 import ConfirmPopover from "../../components/ConfirmPopover";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import {getCookie} from "../../utils";
 
 const columnWidth = 200;
 const editWidth = 180;
@@ -101,8 +102,11 @@ function AddChemicalRecord({
     async function ChemicalRecordSave() {
         const apiData = createAPIData(formData);
         console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
+            method: "POST",
+            headers: {"Content-Type": "application/json", 'X-CSRFToken': csrftoken,},
+            body: JSON.stringify(apiData),
         };
         await fetch("/api/chemical/create/", requestOptions)
             .then((response) => {
@@ -393,8 +397,11 @@ export default function Chemical(props) {
     async function ChemicalRecordUpdate() {
         const apiData = createAPIData(formData);
         console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
+            method: "PUT",
+            headers: {"Content-Type": "application/json", 'X-CSRFToken': csrftoken,},
+            body: JSON.stringify(apiData),
         };
         await fetch("/api/chemical/update/", requestOptions)
             .then((response) => {
@@ -409,8 +416,11 @@ export default function Chemical(props) {
     async function ChemicalRecordDelete(chemid) {
         const apiData = {"user": uid, "chemid": chemid}
         console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
+            method: "PUT",
+            headers: {"Content-Type": "application/json", 'X-CSRFToken': csrftoken,},
+            body: JSON.stringify(apiData),
         };
         await fetch("/api/chemical/delete/", requestOptions)
             .then((response) => {

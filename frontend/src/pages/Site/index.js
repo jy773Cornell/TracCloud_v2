@@ -23,6 +23,7 @@ import {
 } from "@mui/x-data-grid";
 import ConfirmPopover from "../../components/ConfirmPopover";
 import SiteTreeView from "../../components/SiteTreeView";
+import {getCookie} from "../../utils";
 
 const columnWidth = 200;
 const editWidth = 180;
@@ -302,8 +303,11 @@ export default function Site(props) {
     async function SiteRecordSave() {
         const apiData = createAPIData(formData);
         console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
+            method: "POST",
+            headers: {"Content-Type": "application/json", 'X-CSRFToken': csrftoken,},
+            body: JSON.stringify(apiData),
         };
         await fetch("/api/site/create/", requestOptions)
             .then((response) => {
@@ -318,8 +322,11 @@ export default function Site(props) {
     async function SiteRecordUpdate() {
         const apiData = createAPIData(formData);
         console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
+            method: "PUT",
+            headers: {"Content-Type": "application/json", 'X-CSRFToken': csrftoken,},
+            body: JSON.stringify(apiData),
         };
         await fetch("/api/site/update/", requestOptions)
             .then((response) => {
@@ -334,8 +341,11 @@ export default function Site(props) {
     async function SiteRecordDelete(sid) {
         const apiData = {"user": uid, "sid": sid}
         console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(apiData),
+            method: "PUT",
+            headers: {"Content-Type": "application/json", 'X-CSRFToken': csrftoken,},
+            body: JSON.stringify(apiData),
         };
         await fetch("/api/site/delete/", requestOptions)
             .then((response) => {

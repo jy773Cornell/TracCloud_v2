@@ -1,16 +1,16 @@
 from django.db import models
 from api.utils.ModelManager import MyModelManager
+from django.contrib.auth.models import User
 
 '''
 User Entity 
 '''
 
 
-class User(models.Model):
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     uid = models.CharField(verbose_name="UID", primary_key=True, max_length=48)
-    username = models.CharField(verbose_name="Username", unique=True, max_length=64)
-    password = models.CharField(verbose_name="Password", max_length=128)
-    type = models.ForeignKey(verbose_name="User Type", to="UserType", to_field="utid", related_name="user_type",
+    type = models.ForeignKey(verbose_name="User Type", to="UserType", to_field="utid", related_name="user_profile_type",
                              null=True, blank=True, on_delete=models.SET_NULL)
 
     name = models.CharField(verbose_name="Actual Name", null=True, blank=True, max_length=64)
@@ -28,14 +28,16 @@ class User(models.Model):
     cell = models.CharField(verbose_name="Cell Number", null=True, blank=True, max_length=32)
     email = models.EmailField(verbose_name="Email", null=True, blank=True)
 
-    added_by = models.ForeignKey(verbose_name="Added By", to="User", to_field="uid", related_name="user_added_by",
+    added_by = models.ForeignKey(verbose_name="Added By", to="UserProfile", to_field="uid",
+                                 related_name="user_profile_added_by",
                                  null=True, blank=True, on_delete=models.SET_NULL)
     self_activated = models.BooleanField(verbose_name="Self Activated", default=False)
     is_active = models.BooleanField(verbose_name="Is Active", default=False)
+    update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
 
     def __str__(self):
-        return "{} ({})".format(self.username, self.type)
+        return "{} ({})".format(self.user, self.type)
 
     objects = MyModelManager()
 
@@ -53,20 +55,24 @@ class UserType(models.Model):
 
 class UserRelation(models.Model):
     urid = models.CharField(verbose_name="URID", primary_key=True, max_length=48)
-    requester = models.ForeignKey(verbose_name="Requester", to="User", to_field="uid", related_name="requester_user",
-                                  null=True, blank=True, on_delete=models.SET_NULL)
-    provider = models.ForeignKey(verbose_name="Provider", to="User", to_field="uid", related_name="provider_user",
-                                 null=True, blank=True, on_delete=models.SET_NULL)
+    requester = models.ForeignKey(verbose_name="Requester", to="UserProfile", to_field="uid",
+                                  related_name="requester_user",
+                                  null=True, blank=True, on_delete=models.CASCADE)
+    provider = models.ForeignKey(verbose_name="Provider", to="UserProfile", to_field="uid",
+                                 related_name="provider_user",
+                                 null=True, blank=True, on_delete=models.CASCADE)
     type = models.ForeignKey(verbose_name="Relation Type", to="UserRelationType", to_field="urtid",
                              related_name="relationtype", null=True, blank=True, on_delete=models.SET_NULL)
-    added_by = models.ForeignKey(verbose_name="Added By", to="User", to_field="uid", related_name="relation_added_by",
-                                 null=True, blank=True, on_delete=models.SET_NULL)
+    added_by = models.ForeignKey(verbose_name="Added By", to="UserProfile", to_field="uid",
+                                 related_name="relation_added_by", null=True, blank=True, on_delete=models.CASCADE)
     is_resolved = models.BooleanField(verbose_name="Is Resolved", default=False)
     is_active = models.BooleanField(verbose_name="Is Active", default=False)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
 
     def __str__(self):
         return "Relation: {}, Requester: {}, Provider: {}".format(self.type, self.requester, self.provider)
+
+    objects = MyModelManager()
 
 
 class UserRelationType(models.Model):
@@ -87,11 +93,9 @@ Equipment Entity
 
 class Equipment(models.Model):
     eid = models.CharField(verbose_name="EID", primary_key=True, max_length=48)
-    user = models.ForeignKey(verbose_name="User", to="User", to_field="uid", related_name="equip_user",
-                             null=True, blank=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(verbose_name="User", to="UserProfile", to_field="uid", related_name="equip_user",
+                             null=True, blank=True, on_delete=models.CASCADE)
     name = models.CharField(verbose_name="Equipment Name", max_length=64)
-    # type = models.ForeignKey(verbose_name="Type", to="EquipmentType", to_field="etid",
-    #                          related_name="equip_type", null=True, blank=True, on_delete=models.SET_NULL)
     owner = models.CharField(verbose_name="Owner Name", max_length=64)
     code = models.CharField(verbose_name="Code", null=True, blank=True, max_length=64)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
@@ -122,8 +126,8 @@ Crop Entity
 
 class Crop(models.Model):
     cid = models.CharField(verbose_name="CID", primary_key=True, max_length=48)
-    user = models.ForeignKey(verbose_name="User", to="User", to_field="uid", related_name="crop_user",
-                             null=True, blank=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(verbose_name="User", to="UserProfile", to_field="uid", related_name="crop_user",
+                             null=True, blank=True, on_delete=models.CASCADE)
     crop = models.ForeignKey(verbose_name="Crop Name", to="CropCategory", to_field="ccid",
                              related_name="crop_category", null=True, blank=True, on_delete=models.SET_NULL)
     variety = models.ForeignKey(verbose_name="Variety", to="CropVariety", to_field="cvid",
@@ -187,14 +191,14 @@ Site Entity
 
 class Site(models.Model):
     sid = models.CharField(verbose_name="SID", primary_key=True, max_length=48)
-    user = models.ForeignKey(verbose_name="User", to="User", to_field="uid", related_name="site_user",
-                             null=True, blank=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(verbose_name="User", to="UserProfile", to_field="uid", related_name="site_user",
+                             null=True, blank=True, on_delete=models.CASCADE)
     type = models.ForeignKey(verbose_name="Type", to="SiteType", to_field="stid", related_name="site_type",
                              null=True, blank=True, on_delete=models.SET_NULL)
     name = models.CharField(verbose_name="Site Name", max_length=256)
     owner_name = models.CharField(verbose_name="Owner Name", null=True, blank=True, max_length=64)
     crop = models.ForeignKey(verbose_name="Crop", to="Crop", to_field="cid", related_name="site_crop",
-                             null=True, blank=True, on_delete=models.CASCADE)
+                             null=True, blank=True, on_delete=models.SET_NULL)
     crop_year = models.CharField(verbose_name="Crop Year", max_length=32, null=True, blank=True)
     size = models.CharField(verbose_name="Size", null=True, blank=True, max_length=32)
     size_unit = models.ForeignKey(verbose_name="Size Unit", to="Unit", to_field="unitid", related_name="site_unit",
@@ -232,8 +236,8 @@ Chemical Entity
 
 class Chemical(models.Model):
     chemid = models.CharField(verbose_name="ChemID", primary_key=True, max_length=48)
-    user = models.ForeignKey(verbose_name="User", to="User", to_field="uid", related_name="chem_user",
-                             null=True, blank=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(verbose_name="User", to="UserProfile", to_field="uid", related_name="chem_user",
+                             null=True, blank=True, on_delete=models.CASCADE)
 
     epa_reg_no = models.CharField(verbose_name="EPA Registration No.", max_length=32)
     trade_name = models.CharField(verbose_name="Trade Name", max_length=128)
@@ -302,8 +306,8 @@ Operation Entity
 
 class Operation(models.Model):
     opid = models.CharField(verbose_name="OPID", primary_key=True, max_length=48)
-    user = models.ForeignKey(verbose_name="User", to="User", to_field="uid", related_name="op_user",
-                             null=True, blank=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(verbose_name="User", to="UserProfile", to_field="uid", related_name="op_user",
+                             null=True, blank=True, on_delete=models.CASCADE)
     type = models.ForeignKey(verbose_name="Operation Type", to="OperationType", to_field="optid",
                              related_name="op_type", null=True, blank=True, on_delete=models.SET_NULL)
     datetime = models.DateTimeField(verbose_name="Operation Datetime", auto_now=True)
@@ -332,12 +336,12 @@ class OperationType(models.Model):
 
 class PurchaseRecord(models.Model):
     prid = models.CharField(verbose_name="PRID", primary_key=True, max_length=48)
-    user = models.ForeignKey(verbose_name="User", to="User", to_field="uid", related_name="pr_user",
-                             null=True, blank=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(verbose_name="User", to="UserProfile", to_field="uid", related_name="pr_user",
+                             null=True, blank=True, on_delete=models.CASCADE)
     opid = models.ForeignKey(verbose_name="OPID", to="Operation", to_field="opid", related_name="pr_op",
                              null=True, blank=True, on_delete=models.CASCADE)
     chemical = models.ForeignKey(verbose_name="Chemical", to="Chemical", to_field="chemid",
-                                 related_name="pr_chem", null=True, blank=True, on_delete=models.CASCADE)
+                                 related_name="pr_chem", null=True, blank=True, on_delete=models.SET_NULL)
     cost_per_unit = models.CharField(verbose_name="Cost Per Unit", max_length=32)
     amount = models.CharField(verbose_name="Amount", max_length=32)
     total_cost = models.CharField(verbose_name="Total Cost", max_length=32)
@@ -357,12 +361,12 @@ class PurchaseRecord(models.Model):
 
 class HarvestRecord(models.Model):
     hrid = models.CharField(verbose_name="HRID", primary_key=True, max_length=48)
-    user = models.ForeignKey(verbose_name="User", to="User", to_field="uid", related_name="hr_user",
-                             null=True, blank=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(verbose_name="User", to="UserProfile", to_field="uid", related_name="hr_user",
+                             null=True, blank=True, on_delete=models.CASCADE)
     opid = models.ForeignKey(verbose_name="OPID", to="Operation", to_field="opid", related_name="hr_op",
                              null=True, blank=True, on_delete=models.CASCADE)
     crop = models.ForeignKey(verbose_name="Crop", to="Crop", to_field="cid", related_name="hr_crop",
-                             null=True, blank=True, on_delete=models.CASCADE)
+                             null=True, blank=True, on_delete=models.SET_NULL)
     site = models.ForeignKey(verbose_name="Site", to="Site", to_field="sid", related_name="hr_site",
                              null=True, blank=True, on_delete=models.SET_NULL)
     hr_area = models.CharField(verbose_name="Harvest Area", max_length=32)
@@ -388,14 +392,14 @@ class HarvestRecord(models.Model):
 
 class ApplicationRecord(models.Model):
     arid = models.CharField(verbose_name="ARID", primary_key=True, max_length=48)
-    user = models.ForeignKey(verbose_name="User", to="User", to_field="uid", related_name="ar_user",
-                             null=True, blank=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(verbose_name="User", to="UserProfile", to_field="uid", related_name="ar_user",
+                             null=True, blank=True, on_delete=models.CASCADE)
     opid = models.ForeignKey(verbose_name="OPID", to="Operation", to_field="opid", related_name="ar_op",
                              null=True, blank=True, on_delete=models.CASCADE)
     type = models.ForeignKey(verbose_name="Application Type", to="ApplicationType", to_field="atid",
                              related_name="ar_type", null=True, blank=True, on_delete=models.SET_NULL)
     crop = models.ForeignKey(verbose_name="Crop", to="Crop", to_field="cid", related_name="ar_crop",
-                             null=True, blank=True, on_delete=models.CASCADE)
+                             null=True, blank=True, on_delete=models.SET_NULL)
     site = models.ForeignKey(verbose_name="Site", to="Site", to_field="sid", related_name="ar_site",
                              null=True, blank=True, on_delete=models.SET_NULL)
     applied_area = models.CharField(verbose_name="Applied Area", max_length=32)
@@ -429,7 +433,7 @@ class ApplicationRecord(models.Model):
     wind_direction = models.CharField(verbose_name="Wind Direction", null=True, blank=True, max_length=32)
     average_temp = models.CharField(verbose_name="Average Temperature", null=True, blank=True, max_length=32)
 
-    assign_to = models.ForeignKey(verbose_name="User", to="User", to_field="uid", related_name="assign_user",
+    assign_to = models.ForeignKey(verbose_name="User", to="UserProfile", to_field="uid", related_name="assign_user",
                                   null=True, blank=True, on_delete=models.SET_NULL)
     STATUS_CHOICES = [
         ('pending', 'Pending'),

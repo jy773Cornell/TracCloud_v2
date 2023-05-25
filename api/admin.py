@@ -3,9 +3,8 @@ from api.models import *
 from .utils.UUIDGen import gen_uuid
 
 
-class UserAdmin(admin.ModelAdmin):
-    list_display = ('uid', 'username', 'type', 'business_name',
-                    'added_by', 'self_activated', 'is_active', 'create_time',)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('uid', 'user', 'type', 'self_activated', 'is_active', 'create_time',)
 
     list_filter = ('type', 'self_activated', 'is_active',)
 
@@ -399,7 +398,7 @@ class UnitAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-admin.site.register(User, UserAdmin)
+admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(UserType, UserTypeAdmin)
 admin.site.register(UserRelation, UserRelationAdmin)
 admin.site.register(UserRelationType, UserRelationTypeAdmin)
