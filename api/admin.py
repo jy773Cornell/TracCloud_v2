@@ -1,6 +1,7 @@
 from django.contrib import admin
 from api.models import *
-from .utils.UUIDGen import gen_uuid
+from api.utils.UUIDGen import gen_uuid
+from django.contrib import messages
 
 
 class UserProfileAdmin(admin.ModelAdmin):
@@ -12,12 +13,27 @@ class UserProfileAdmin(admin.ModelAdmin):
 
     list_editable = ('self_activated', 'is_active',)
 
+    actions = ["hard_delete"]
+
     exclude = ["uid"]
 
     def save_model(self, request, obj, form, change):
         if not change:
             obj.uid = gen_uuid("UID")
         super().save_model(request, obj, form, change)
+
+    def hard_delete(self, request, queryset):
+        try:
+            queryset.hard_delete()
+            self.message_user(request, f"{queryset} has been deleted.")
+        except Exception as e:
+            self.message_user(
+                request,
+                f"Error occurred while deleting user profile for {queryset}: {str(e)}",
+                level=messages.ERROR
+            )
+
+    hard_delete.short_description = 'Hard delete selected UserProfile'
 
 
 class UserTypeAdmin(admin.ModelAdmin):

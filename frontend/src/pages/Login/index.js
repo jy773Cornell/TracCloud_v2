@@ -105,10 +105,10 @@ export default function Login() {
                 <Button type='submit' color='primary' variant="contained" fullWidth onClick={SignInBtnPressed}>Sign
                     in</Button>
                 <StyledTypography>
-                    <Link href="#">Forgot password?</Link>
+                    <Link href="/workflow/password_reset">Forgot password?</Link>
                 </StyledTypography>
                 <Typography> Do you have an account?
-                    <Link href="#"> Sign Up </Link>
+                    <Link href="/workflow/registration"> Sign Up </Link>
                 </Typography>
             </StyledCard>
         </StyledGrid>
