@@ -20,9 +20,11 @@ const Report = lazy(() => import('./pages/Report'))
 function App() {
     const [uid, setUID] = useState("")
 
-    function RedirectToAdmin() {
+    // Using Django inner views
+
+    function RedirectToURL({url}) {
         useEffect(() => {
-            window.location.href = "/admin";
+            window.location.href = url;
         }, []);
         return null;
     }
@@ -33,6 +35,8 @@ function App() {
                 fallback={<Loading/>}>
                 <Routes>
                     <Route path="login" element={<Login/>}/>
+                    <Route path="workflow/registration" element={<RedirectToURL url={'/workflow/registration'}/>}/>
+                    <Route path="workflow/password_reset" element={<RedirectToURL url={'/workflow/password_reset'}/>}/>
                     <Route eaxct path='/' element={<Navigate to="home" replace/>}/>
                     <Route path='/' element={<AuthComponent uid={uid} setUID={setUID}/>}>
                         <Route path="home" element={<HomePage/>}/>
@@ -46,7 +50,7 @@ function App() {
                         <Route path="record/harvest" element={<HarvestRecord uid={uid}/>}/>
                         <Route path="record/purchase" element={<PurchaseRecord uid={uid}/>}/>
                         <Route path="report" element={<Report uid={uid}/>}/>
-                        <Route path="admin" element={<RedirectToAdmin/>}/>
+                        <Route path="admin" element={<RedirectToURL url={'/admin'}/>}/>
                     </Route>
                     <Route path='*' element={<Navigate to="home" replace/>}/>
                 </Routes>

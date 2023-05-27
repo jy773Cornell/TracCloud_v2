@@ -31,8 +31,8 @@ class UserProfile(models.Model):
     added_by = models.ForeignKey(verbose_name="Added By", to="UserProfile", to_field="uid",
                                  related_name="user_profile_added_by",
                                  null=True, blank=True, on_delete=models.SET_NULL)
-    self_activated = models.BooleanField(verbose_name="Self Activated", default=False)
-    is_active = models.BooleanField(verbose_name="Is Active", default=False)
+    self_activated = models.BooleanField(verbose_name="Self Activated", default=True)
+    is_active = models.BooleanField(verbose_name="Is Active", default=True)
     update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
 

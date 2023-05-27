@@ -5,6 +5,8 @@ from api.serializers.UserSerializer import UserLoginSerializer
 from api.utils.Token import make_token
 from api.models import UserProfile
 from django.contrib.auth import authenticate, login, logout
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.models import User
 
 
 class UserLoginView(APIView):
@@ -20,22 +22,24 @@ class UserLoginView(APIView):
         password = request.data.get("password")
         remember = request.data.get("remember")
         if username and password:
+            try:
+                User.objects.get(username=username)
+            except ObjectDoesNotExist:
+                return Response({'Failed': 'Invalid Username.'}, status=status.HTTP_404_NOT_FOUND)
+
             user = authenticate(request, username=username, password=password)
-            if user:
-                if user.is_active:
-                    login(request, user)
-                    expiry = self.remember_expiry_sec if remember else self.normal_expiry_sec
-                    token = make_token(username, expiry)
-                    request.session["token"] = token
-                    request.session.set_expiry(expiry)
+            if user and user.is_active:
+                login(request, user)
+                expiry = self.remember_expiry_sec if remember else self.normal_expiry_sec
+                token = make_token(username, expiry)
+                request.session["token"] = token
+                request.session.set_expiry(expiry)
 
-                    return Response({"Succeeded": "User Info Verified.", "token": token},
-                                    status=status.HTTP_200_OK)
+                return Response({"Succeeded": "User Info Verified.", "token": token},
+                                status=status.HTTP_200_OK)
 
-                return Response({'Failed': 'User account is not active.'},
-                                status=status.HTTP_403_FORBIDDEN)
-
-            return Response({'Failed': 'Invalid Username or Password.'}, status=status.HTTP_404_NOT_FOUND)
+            else:
+                return Response({'Failed': 'Wrong Password Or Not Active.'}, status=status.HTTP_403_FORBIDDEN)
 
         return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
 
