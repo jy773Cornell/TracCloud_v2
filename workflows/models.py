@@ -112,3 +112,29 @@ class PasswordReset(models.Model):
         )
 
         self.is_active = False
+
+
+'''
+    Spray Card Process (demo: Owner, Manager and Applicator):
+    1.Owner and Manager initiates the process
+    2.Owner and Manager assigns the process
+    3.Applicator completes or returns the process
+    4.Process back to 2. or  ends
+'''
+
+
+class SprayCard(models.Model):
+    scpid = models.CharField(verbose_name="SCPID", primary_key=True, max_length=48)
+
+    STATE_CHOICES = (
+        ('initiated', 'Initiated'),
+        ('assigned', 'Assigned'),
+        ('completed', 'Completed'),
+    )
+    state = FSMField(default='initiated', choices=STATE_CHOICES)
+
+    user = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
+    assign_to = models.ForeignKey(User, verbose_name="Assign To", null=True, blank=True, on_delete=models.SET_NULL)
+    is_active = models.BooleanField(verbose_name="Is Active", default=True)
+    update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)

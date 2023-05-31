@@ -20,8 +20,7 @@ urlpatterns = [
 
     # UserAPI
 
-    path('user/create/', UserCreateView.as_view()),
-    path('user/get/', UserGetView.as_view()),
+    path('user/get/', UserProfileGetView.as_view()),
     path('user/profile/update/', UserProfileUpdateView.as_view()),
     path('user/password/change/', UserPasswordChangeView.as_view()),
 

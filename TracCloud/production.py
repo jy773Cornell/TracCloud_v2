@@ -1,6 +1,5 @@
 import os
-from .settings import *  # noqa
-from .settings import BASE_DIR
+from .settings import *
 
 SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
@@ -9,22 +8,6 @@ SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 ALLOWED_HOSTS = [os.environ['WEBSITE_HOSTNAME']] if 'WEBSITE_HOSTNAME' in os.environ else []
 CSRF_TRUSTED_ORIGINS = ['https://' + os.environ['WEBSITE_HOSTNAME']] if 'WEBSITE_HOSTNAME' in os.environ else []
 DEBUG = os.environ.get('DJANGO_DEBUG', False) == "True"
-
-# WhiteNoise configuration
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    # Add whitenoise middleware after the security middleware
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
-
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Configure Postgres database based on connection string of the libpq Keyword/Value form
 # https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING
@@ -41,6 +24,7 @@ DATABASES = {
 }
 
 # CACHES SETTING
+
 redis_conn_str = os.environ['AZURE_REDIS_CONNECTIONSTRING']
 redis_conn_str_params = {pair.split(':')[0]: pair.split(':')[1] for pair in redis_conn_str.split(' ')}
 CACHES = {
@@ -51,6 +35,17 @@ CACHES = {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             'PASSWORD': redis_conn_str_params['password'],
             'SSL': True,
+        },
+    },
+}
+
+# CHANNEL SETTING
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [f'rediss://:{redis_conn_str_params["password"]}@{redis_conn_str_params["host"]}:6380/0'],
         },
     },
 }

@@ -15,22 +15,25 @@ export default function Login() {
 
     const navigate = useNavigate();
 
-    function handleUsernameChange(e) {
-        setUsername(e.target.value);
+    function handleUsernameChange(event) {
+        setUsername(event.target.value);
     }
 
-    function handlePasswordChange(e) {
-        setPassword(e.target.value);
+    function handlePasswordChange(event) {
+        setPassword(event.target.value);
     }
 
-    function handleRememberChange(e) {
-        setRemember(e.target.checked);
+    function handleRememberChange(event) {
+        setRemember(event.target.checked);
     }
 
-    async function SignInBtnPressed() {
+    async function SignInBtnPressed(event) {
+        event.preventDefault();
+
         setErrors({
             "status": [false, false], "message": ["", ""],
         })
+
         if (username === "" && password === "") {
             setErrors({
                 "status": [true, true], "message": ["This field is required.", "This field is required."],
@@ -46,15 +49,10 @@ export default function Login() {
         } else {
             const csrftoken = getCookie('csrftoken');
             const requestOptions = {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    'X-CSRFToken': csrftoken,
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: password,
-                    remember: remember,
+                method: "POST", headers: {
+                    "Content-Type": "application/json", 'X-CSRFToken': csrftoken,
+                }, body: JSON.stringify({
+                    username: username, password: password, remember: remember,
                 }),
             };
             await fetch("/api/login/", requestOptions)
@@ -81,36 +79,43 @@ export default function Login() {
         }
     }
 
-    return (
-        <StyledGrid container>
+    return (<StyledGrid container>
             <StyledCard elevation={10}>
-                <Grid align='center'>
-                    <Avatar sx={{backgroundColor: '#1bbd7e'}}> < LockOutlinedIcon/> < /Avatar>
-                    <Typography variant="h4" component="h4">Sign In</Typography>
-                </Grid>
-                <TextField label='Username' placeholder='Enter username'
-                           variant="standard" fullWidth required
-                           error={errors.status[0]}
-                           helperText={errors.message[0]}
-                           onChange={handleUsernameChange}/>
-                <TextField label='Password' placeholder='Enter password'
-                           variant="standard" type='password' fullWidth required
-                           error={errors.status[1]}
-                           helperText={errors.message[1]}
-                           onChange={handlePasswordChange}/>
-                <FormControlLabel
-                    control={<Checkbox name="remember" color="primary" onChange={handleRememberChange}/>}
-                    label="Remember me"
-                />
-                <Button type='submit' color='primary' variant="contained" fullWidth onClick={SignInBtnPressed}>Sign
-                    in</Button>
-                <StyledTypography>
-                    <Link href="/workflow/password_reset">Forgot password?</Link>
-                </StyledTypography>
-                <Typography> Do you have an account?
-                    <Link href="/workflow/registration"> Sign Up </Link>
-                </Typography>
+                <form onSubmit={(event) => SignInBtnPressed(event)}>
+                    <Grid align='center'>
+                        <Avatar sx={{backgroundColor: '#1bbd7e'}}> <LockOutlinedIcon/> </Avatar>
+                        <Typography variant="h4" component="h4">Sign In</Typography>
+                    </Grid>
+                    <TextField label='Username' placeholder='Enter username'
+                               variant="standard" fullWidth required
+                               error={errors.status[0]}
+                               helperText={errors.message[0]}
+                               onChange={handleUsernameChange}/>
+                    <TextField label='Password' placeholder='Enter password'
+                               variant="standard" type='password' fullWidth required
+                               error={errors.status[1]}
+                               helperText={errors.message[1]}
+                               onChange={handlePasswordChange}/>
+                    <FormControlLabel
+                        control={<Checkbox name="remember" color="primary" onChange={handleRememberChange}/>}
+                        label="Remember me"
+                    />
+                    <Button
+                        type='submit'
+                        color='primary'
+                        variant="contained"
+                        fullWidth>
+                        Sign in
+                    </Button>
+                    <StyledTypography>
+                        <Link href="/workflow/password_reset">Forgot password?</Link>
+                    </StyledTypography>
+                    <Typography> Do you have an account?
+                        <Link href="/workflow/registration"> Sign Up </Link>
+                    </Typography>
+                </form>
             </StyledCard>
         </StyledGrid>
+
     )
 }
