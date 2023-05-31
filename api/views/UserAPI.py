@@ -13,27 +13,27 @@ User
 '''
 
 
-class UserCreateView(APIView):
+# class UserCreateView(APIView):
+#
+#     def post(self, request, format=None):
+#         username = request.data.get("username")
+#         password = request.data.get("password")
+#         user_type = request.data.get("type")
+#         email = request.data.get("email")
+#         if username and password and user_type and email:
+#             if User.objects.filter(username=username):
+#                 return Response({'Failed': 'Username already exists.'},
+#                                 status=status.HTTP_406_NOT_ACCEPTABLE)
+#
+#             uid = gen_uuid("UID")
+#             User(uid=uid, username=username, password=make_password(password), type_id=user_type, email=email,
+#                  added_by_id=uid).save()
+#             return Response({'Succeeded': 'User account created.'}, status=status.HTTP_201_CREATED)
+#
+#         return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request, format=None):
-        username = request.data.get("username")
-        password = request.data.get("password")
-        user_type = request.data.get("type")
-        email = request.data.get("email")
-        if username and password and user_type and email:
-            if User.objects.filter(username=username):
-                return Response({'Failed': 'Username already exists.'},
-                                status=status.HTTP_406_NOT_ACCEPTABLE)
 
-            uid = gen_uuid("UID")
-            User(uid=uid, username=username, password=make_password(password), type_id=user_type, email=email,
-                 added_by_id=uid).save()
-            return Response({'Succeeded': 'User account created.'}, status=status.HTTP_201_CREATED)
-
-        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class UserGetView(APIView):
+class UserProfileGetView(APIView):
     serializer_class = UserGetSerializer
     lookup_url_kwarg = "uid"
 
@@ -58,9 +58,9 @@ class UserProfileUpdateView(APIView):
         data = request_data_transform(request.data)
         uid = data.pop("uid")
         if uid:
-            user = User.objects.filter(uid=uid, is_active=True)
-            if user:
-                user.update(**data)
+            profile = UserProfile.objects.filter(uid=uid).alive()
+            if profile:
+                profile.update(**data)
                 return Response({'Succeeded': 'User profile has been updated.'}, status=status.HTTP_200_OK)
 
             return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)

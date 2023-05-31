@@ -923,7 +923,6 @@ export default function Site(props) {
         setMounted(true);
     }, []);
 
-
     useEffect(() => {
         CropOptionsFresh();
         UnitOptionsFresh();
