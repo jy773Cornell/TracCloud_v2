@@ -1,6 +1,11 @@
-.PHONY: runserver
+.PHONY: migrate collectstatic runserver
+
+migrate:
+	python manage.py migrate --noinput
+
+collectstatic:
+	python manage.py collectstatic --noinput
 
 runserver:
-	python manage.py migrate --noinput
-	python manage.py collectstatic --noinput
 	daphne TracCloud.asgi:application
+
