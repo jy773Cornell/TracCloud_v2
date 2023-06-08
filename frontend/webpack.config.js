@@ -18,25 +18,23 @@ module.exports = {
                 },
             },
             {
+                test: /\.css$/,
+                exclude: /node_modules/,
+                use: ['style-loader', 'css-loader'],
+            },
+            {
                 test: /\.scss$/,
                 exclude: /node_modules/,
                 use: [
-                    {
-                        loader: 'style-loader',
-                    },
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            sourceMap: true,
-                        },
-                    },
-                    {
-                        loader: 'sass-loader',
-                        options: {
-                            sourceMap: true,
-                        },
-                    },
+                    'style-loader',
+                    'css-loader',
+                    'sass-loader',
                 ],
+            },
+            {
+                test: /\.css$/,
+                include: /node_modules/,
+                use: ['style-loader', 'css-loader'],
             },
         ],
     },

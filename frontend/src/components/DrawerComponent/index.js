@@ -13,7 +13,7 @@ import ConstructionIcon from "@mui/icons-material/Construction";
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import AgricultureIcon from '@mui/icons-material/Agriculture';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import WaterfallChartIcon from '@mui/icons-material/WaterfallChart';
 import EmojiNatureIcon from '@mui/icons-material/EmojiNature';
 import {Box} from "@mui/system";
@@ -102,6 +102,15 @@ export default function LayoutDrawer(props) {
                         <ConstructionIcon/>
                     </ListItemIcon>
                     <ListItemText primary="Equipment"/>
+                </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/spraycard')}
+                                selected={location.pathname === "/spraycard"}>
+                    <ListItemIcon>
+                        <AssignmentTurnedInIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="Spray Card"/>
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>

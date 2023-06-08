@@ -122,7 +122,7 @@ function AddPurchaseRecord({
                         <Grid item xs={12}>
                             <Autocomplete
                                 value={fieldValues[field_names[0]]}
-                                options={addChemicalOptions}
+                                options={addChemicalOptions || []}
                                 onChange={(event, value) => {
                                     handleInputChange(event, value, field_names[0]);
                                 }}
@@ -549,7 +549,7 @@ export default function PurchaseRecord(props) {
             width: columnMidWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
-                    options={editChemicalOptions}
+                    options={editChemicalOptions || []}
                     disableClearable
                     readOnly={editRowId !== rowID}
                     value={editRowId === rowID ? fieldValues[field_names[0]] : params.value}

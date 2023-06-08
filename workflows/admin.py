@@ -7,7 +7,7 @@ from django.db import transaction
 class RegistrationAdmin(admin.ModelAdmin):
     list_display = ('rpid', 'state', 'username', 'email', 'update_time', 'create_time', 'is_active')
 
-    list_filter = ('state',)
+    list_filter = ('state', 'is_active',)
 
     list_per_page = 10
 
@@ -16,11 +16,6 @@ class RegistrationAdmin(admin.ModelAdmin):
     ordering = ('-state', '-create_time')
 
     exclude = ["prid"]
-
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.rpid = gen_uuid("RPID")
-        super().save_model(request, obj, form, change)
 
     def approve_registration(self, request, queryset):
         for registration in queryset:
@@ -58,7 +53,7 @@ class RegistrationAdmin(admin.ModelAdmin):
 class PasswordResetAdmin(admin.ModelAdmin):
     list_display = ('prpid', 'state', 'user', 'update_time', 'create_time', 'is_active')
 
-    list_filter = ('state',)
+    list_filter = ('state', 'is_active',)
 
     list_per_page = 10
 
@@ -66,11 +61,32 @@ class PasswordResetAdmin(admin.ModelAdmin):
 
     exclude = ["prpid"]
 
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.prpid = gen_uuid("PRPID")
-        super().save_model(request, obj, form, change)
+
+class SprayCardAdmin(admin.ModelAdmin):
+    list_display = ('scpid', 'state', 'owner', 'holder', 'update_time', 'create_time', 'is_active')
+
+    list_filter = ('state', 'is_active',)
+
+    list_per_page = 10
+
+    ordering = ('owner',)
+
+    exclude = ["scpid"]
+
+
+class SprayCardAssignmentAdmin(admin.ModelAdmin):
+    list_display = ('scaid', 'spray_card', 'order', 'assign_to', 'assign_time', 'is_active')
+
+    list_filter = ('is_active',)
+
+    list_per_page = 10
+
+    ordering = ('spray_card', '-is_active', 'order')
+
+    exclude = ["scaid"]
 
 
 admin.site.register(Registration, RegistrationAdmin)
 admin.site.register(PasswordReset, PasswordResetAdmin)
+admin.site.register(SprayCard, SprayCardAdmin)
+admin.site.register(SprayCardAssignment, SprayCardAssignmentAdmin)

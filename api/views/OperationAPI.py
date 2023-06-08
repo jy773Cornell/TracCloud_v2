@@ -256,7 +256,7 @@ class ApplicationCreateView(APIView):
     def post(self, request, format=None):
         data = request_data_transform(request.data)
         if data.get("opid_id"):
-            required_fields = ["user_id", "type_id", "crop_id", "site_id", "chemical_purchase_id"]
+            required_fields = ["user_id", "crop_id", "site_id", "chemical_purchase_id"]
             if all(field in list(data.keys()) for field in required_fields):
                 operation = Operation.objects.filter(opid_id=data.get("opid_id"), user_id=data.get("user_id")).alive()
                 data.update({"arid": gen_uuid("ARID"), })
@@ -266,7 +266,7 @@ class ApplicationCreateView(APIView):
 
             return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            required_fields = ["user_id", "type_id", "crop_id", "site_list", "chemical_purchase_id"]
+            required_fields = ["user_id", "crop_id", "site_list", "chemical_purchase_id"]
             if all(field in list(data.keys()) for field in required_fields):
                 opid = gen_uuid("OPID")
                 operation_type = next((op_type["optid"] for op_type in cache.get("OperationType") if

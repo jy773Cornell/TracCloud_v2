@@ -572,8 +572,7 @@ export default function Report(props) {
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        const sprayList = data.data.filter(item => item.type === "Spray")
-                        setSprayApplicationList(sprayList);
+                        setSprayApplicationList(data.data);
                     })
                 }
             })

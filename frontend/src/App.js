@@ -12,6 +12,7 @@ const Crop = lazy(() => import('./pages/Crop'))
 const Chemical = lazy(() => import('./pages/Chemical'))
 const Site = lazy(() => import('./pages/Site'))
 const Equipment = lazy(() => import('./pages/Equipment'))
+const SprayCard = lazy(() => import('./pages/SprayCard'))
 const SprayRecord = lazy(() => import('./pages/SprayRecord'))
 const HarvestRecord = lazy(() => import('./pages/HarvestRecord'))
 const PurchaseRecord = lazy(() => import('./pages/PurchaseRecord'))
@@ -21,7 +22,6 @@ function App() {
     const [uid, setUID] = useState("")
 
     // Using Django inner views
-
     function RedirectToURL({url}) {
         useEffect(() => {
             window.location.href = url;
@@ -46,6 +46,7 @@ function App() {
                         <Route path="site" element={<Site uid={uid}/>}/>
                         <Route path="chemical" element={<Chemical uid={uid}/>}/>
                         <Route path="equipment" element={<Equipment uid={uid}/>}/>
+                        <Route path="spraycard" element={<SprayCard uid={uid}/>}/>
                         <Route path="record/spray" element={<SprayRecord uid={uid}/>}/>
                         <Route path="record/harvest" element={<HarvestRecord uid={uid}/>}/>
                         <Route path="record/purchase" element={<PurchaseRecord uid={uid}/>}/>

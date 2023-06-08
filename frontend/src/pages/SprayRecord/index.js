@@ -193,7 +193,7 @@ function AddSprayRecord({
                     <Grid item xs={6}>
                         <Autocomplete
                             value={fieldValues[field_names[0]]}
-                            options={cropOptions}
+                            options={cropOptions || []}
                             onChange={(event, value) => {
                                 handleAddInputChange(event, value, field_names[0]);
                             }}
@@ -213,7 +213,7 @@ function AddSprayRecord({
                             multiple
                             value={fieldValues[field_names[1]]}
                             getOptionLabel={(option) => option.label}
-                            options={siteOptions}
+                            options={siteOptions || []}
                             disableCloseOnSelect
                             onChange={(event, value) => {
                                 handleAddInputChange(event, value, field_names[1]);
@@ -251,7 +251,7 @@ function AddSprayRecord({
                     <Grid item xs={2.4}>
                         <Autocomplete
                             value={fieldValues[field_names[3]]}
-                            options={siteUnitOptions}
+                            options={siteUnitOptions || []}
                             onChange={(event, value) => {
                                 handleAddInputChange(event, value, field_names[3]);
                             }}
@@ -314,7 +314,7 @@ function AddSprayRecord({
                     <Grid item xs={4.5}>
                         <Autocomplete
                             value={fieldValues[field_names[8]]}
-                            options={applicationTargetOptions}
+                            options={applicationTargetOptions || []}
                             onChange={(event, value) => {
                                 handleAddInputChange(event, value, field_names[8]);
                             }}
@@ -326,7 +326,7 @@ function AddSprayRecord({
                     <Grid item xs={4.5}>
                         <Autocomplete
                             value={fieldValues[field_names[9]]}
-                            options={decisionSupportOptions}
+                            options={decisionSupportOptions || []}
                             onChange={(event, value) => {
                                 handleAddInputChange(event, value, field_names[9]);
                             }}
@@ -338,7 +338,7 @@ function AddSprayRecord({
                     <Grid item xs={12}>
                         <Autocomplete
                             value={fieldValues[field_names[10]]}
-                            options={addChemicalOptions}
+                            options={addChemicalOptions || []}
                             onChange={(event, value) => {
                                 handleAddInputChange(event, value, field_names[10]);
                             }}
@@ -353,7 +353,7 @@ function AddSprayRecord({
                     <Grid item xs={3}>
                         <Autocomplete
                             value={fieldValues[field_names[11]]}
-                            options={equipmentOptions}
+                            options={equipmentOptions || []}
                             onChange={(event, value) => {
                                 handleAddInputChange(event, value, field_names[11]);
                             }}
@@ -389,7 +389,7 @@ function AddSprayRecord({
                     <Grid item xs={2}>
                         <Autocomplete
                             value={fieldValues[field_names[13]]}
-                            options={chemicalUnitOptions}
+                            options={chemicalUnitOptions || []}
                             onChange={(event, value) => {
                                 handleAddInputChange(event, value, field_names[13]);
                             }}
@@ -479,7 +479,7 @@ function AddSprayRecord({
                     <Grid item xs={4}>
                         <Autocomplete
                             value={fieldValues[field_names[21]]}
-                            options={windDirectionOptions}
+                            options={windDirectionOptions || []}
                             onChange={(event, value) => {
                                 handleAddInputChange(event, value, field_names[21]);
                             }}
@@ -634,8 +634,8 @@ export default function SprayRecord(props) {
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        const sprayList = data.data.filter(item => item.type === "Spray")
-                        setSprayApplicationList(sprayList);
+                        // const sprayList = data.data.filter(item => item.type === "Spray")
+                        setSprayApplicationList(data.data);
                     })
                 }
             })
@@ -655,19 +655,19 @@ export default function SprayRecord(props) {
             })
     }
 
-    async function ApplicationTypeGet() {
-        const requestOptions = {
-            method: "GET", headers: {"Content-Type": "application/json"},
-        };
-        await fetch("/api/operation/application/type/", requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        setApplicationType(data.data);
-                    })
-                }
-            })
-    }
+    // async function ApplicationTypeGet() {
+    //     const requestOptions = {
+    //         method: "GET", headers: {"Content-Type": "application/json"},
+    //     };
+    //     await fetch("/api/operation/application/type/", requestOptions)
+    //         .then((response) => {
+    //             if (response.ok) {
+    //                 response.json().then((data) => {
+    //                     setApplicationType(data.data);
+    //                 })
+    //             }
+    //         })
+    // }
 
     async function ApplicationTargetGet() {
         const requestOptions = {
@@ -896,7 +896,7 @@ export default function SprayRecord(props) {
     const onAddClicked = () => {
         setFormData({
             "user_id": uid,
-            "type_id": applicationType.find(item => item.name === "Spray").atid,
+            // "type_id": applicationType.find(item => item.name === "Spray").atid,
             [field_names[4]]: dayjs().format('YYYY-MM-DD'),
             [field_names[5]]: dayjs().format('HH:mm'),
             [field_names[6]]: dayjs().format('HH:mm')
@@ -1219,7 +1219,7 @@ export default function SprayRecord(props) {
             width: columnLongWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
-                    options={cropOptions}
+                    options={cropOptions || []}
                     disableClearable
                     readOnly={editRowId !== rowID}
                     value={editRowId === rowID ? fieldValues[field_names[0]] : params.value}
@@ -1246,7 +1246,7 @@ export default function SprayRecord(props) {
             width: columnLongWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
-                    options={siteOptions}
+                    options={siteOptions || []}
                     disableClearable
                     readOnly={editRowId !== rowID}
                     value={editRowId === rowID ? fieldValues[field_names[1]] : params.value}
@@ -1295,7 +1295,7 @@ export default function SprayRecord(props) {
                                 }}
                                 error={inputError[field_names[2]]}/>
                             <Autocomplete
-                                options={siteUnitOptions}
+                                options={siteUnitOptions || []}
                                 disableClearable
                                 value={fieldValues[field_names[3]]}
                                 onChange={(event, value) => {
@@ -1435,7 +1435,7 @@ export default function SprayRecord(props) {
             width: columnWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
-                    options={applicationTargetOptions}
+                    options={applicationTargetOptions || []}
                     disableClearable
                     readOnly={editRowId !== rowID}
                     value={editRowId === rowID ? fieldValues[field_names[8]] : params.value}
@@ -1461,7 +1461,7 @@ export default function SprayRecord(props) {
             width: columnWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
-                    options={decisionSupportOptions}
+                    options={decisionSupportOptions || []}
                     disableClearable
                     readOnly={editRowId !== rowID}
                     value={editRowId === rowID ? fieldValues[field_names[9]] : params.value}
@@ -1487,7 +1487,7 @@ export default function SprayRecord(props) {
             width: columnMidWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
-                    options={editChemicalOptions}
+                    options={editChemicalOptions || []}
                     disableClearable
                     readOnly={editRowId !== rowID}
                     value={editRowId === rowID ? fieldValues[field_names[10]] : params.value}
@@ -1567,7 +1567,7 @@ export default function SprayRecord(props) {
             sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => (<Autocomplete
-                options={equipmentOptions}
+                options={equipmentOptions || []}
                 disableClearable
                 readOnly={editRowId !== rowID}
                 value={editRowId === rowID ? fieldValues[field_names[11]] : params.value}
@@ -1616,7 +1616,7 @@ export default function SprayRecord(props) {
                                 error={inputError[field_names[12]]}
                             />
                             <Autocomplete
-                                options={chemicalUnitOptions}
+                                options={chemicalUnitOptions || []}
                                 disableClearable
                                 value={fieldValues[field_names[13]]}
                                 onChange={(event, value) => {
@@ -1754,7 +1754,7 @@ export default function SprayRecord(props) {
             width: columnWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
-                    options={windDirectionOptions}
+                    options={windDirectionOptions || []}
                     disableClearable
                     readOnly={editRowId !== rowID}
                     value={editRowId === rowID ? fieldValues[field_names[21]] : params.value}
@@ -1833,7 +1833,7 @@ export default function SprayRecord(props) {
         const fetchData = async () => {
             await Promise.all([
                 CropCategoryGet(),
-                ApplicationTypeGet(),
+                // ApplicationTypeGet(),
                 ApplicationTargetGet(),
                 DecisionSupportGet(),
                 UnitGet(),
@@ -1902,27 +1902,29 @@ export default function SprayRecord(props) {
         }
     }, [fieldValues["cost_per_unit"], fieldValues[field_names[2]], fieldValues[field_names[14]]]);
 
-    return (<div>
-        <AddButton
-            variant="contained"
-            startIcon={<AddIcon/>}
-            onClick={() => onAddClicked()}>
-            Add Spray Record
-        </AddButton>
-        <Paper style={{height: 900, margin: '0px 15px'}}>
-            <DataGrid
-                columns={columns}
-                rows={rows}
-                disableRowSelectionOnClick={true}
-                disableClickEdit={true}
-                rowSelection={false}
-                slots={{
-                    toolbar: CustomToolbar,
-                }}
-            />
-        </Paper>
-        <AddSprayRecord {...addProps}/>
-        <OperationSnackbars  {...saveProps}/>
-        <OperationSnackbars  {...deleteProps}/>
-    </div>);
+    return (
+        <div>
+            <AddButton
+                variant="contained"
+                startIcon={<AddIcon/>}
+                onClick={() => onAddClicked()}>
+                Add Spray Record
+            </AddButton>
+            <Paper style={{height: 900, margin: '0px 15px'}}>
+                <DataGrid
+                    columns={columns}
+                    rows={rows}
+                    disableRowSelectionOnClick={true}
+                    disableClickEdit={true}
+                    rowSelection={false}
+                    slots={{
+                        toolbar: CustomToolbar,
+                    }}
+                />
+            </Paper>
+            <AddSprayRecord {...addProps}/>
+            <OperationSnackbars  {...saveProps}/>
+            <OperationSnackbars  {...deleteProps}/>
+        </div>
+    );
 }

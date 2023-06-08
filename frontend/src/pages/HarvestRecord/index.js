@@ -149,7 +149,7 @@ function AddHarvestRecord({
                         <Grid item xs={6}>
                             <Autocomplete
                                 value={fieldValues[field_names[0]]}
-                                options={cropOptions}
+                                options={cropOptions || []}
                                 onChange={(event, value) => {
                                     handleAddInputChange(event, value, field_names[0]);
                                 }}
@@ -169,7 +169,7 @@ function AddHarvestRecord({
                                 multiple
                                 value={fieldValues[field_names[1]]}
                                 getOptionLabel={(option) => option.label}
-                                options={siteOptions}
+                                options={siteOptions || []}
                                 disableCloseOnSelect
                                 onChange={(event, value) => {
                                     handleAddInputChange(event, value, field_names[1]);
@@ -207,7 +207,7 @@ function AddHarvestRecord({
                         <Grid item xs={4}>
                             <Autocomplete
                                 value={fieldValues[field_names[3]]}
-                                options={siteUnitOptions}
+                                options={siteUnitOptions || []}
                                 onChange={(event, value) => {
                                     handleAddInputChange(event, value, field_names[3]);
                                 }}
@@ -712,7 +712,7 @@ export default function HarvestRecord(props) {
             width: columnLongWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
-                    options={cropOptions}
+                    options={cropOptions || []}
                     disableClearable
                     readOnly={editRowId !== rowID}
                     value={editRowId === rowID ? fieldValues[field_names[0]] : params.value}
@@ -739,7 +739,7 @@ export default function HarvestRecord(props) {
             width: columnLongWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
-                    options={siteOptions}
+                    options={siteOptions || []}
                     disableClearable
                     readOnly={editRowId !== rowID}
                     value={editRowId === rowID ? fieldValues[field_names[1]] : params.value}
@@ -788,7 +788,7 @@ export default function HarvestRecord(props) {
                                 }}
                                 error={inputError[field_names[2]]}/>
                             <Autocomplete
-                                options={siteUnitOptions}
+                                options={siteUnitOptions || []}
                                 disableClearable
                                 value={fieldValues[field_names[3]]}
                                 onChange={(event, value) => {

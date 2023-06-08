@@ -41,12 +41,14 @@ function createRowData(record) {
 }
 
 function CustomToolbar() {
-    return (<GridToolbarContainer>
-        <GridToolbarColumnsButton/>
-        <GridToolbarFilterButton/>
-        <GridToolbarDensitySelector/>
-        <GridToolbarExport/>
-    </GridToolbarContainer>);
+    return (
+        <GridToolbarContainer>
+            <GridToolbarColumnsButton/>
+            <GridToolbarFilterButton/>
+            <GridToolbarDensitySelector/>
+            <GridToolbarExport/>
+        </GridToolbarContainer>
+    );
 }
 
 function AddCropRecord({
@@ -97,91 +99,93 @@ function AddCropRecord({
         }
     };
 
-    return (<Modal
-        open={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        sx={{
-            display: 'flex', justifyContent: 'center', alignItems: 'center',
-        }}
-    >
-        <Card sx={{width: 400}}>
-            <CardContent>
-                <Grid container justifyContent="center" spacing={2}>
-                    <Grid item xs={12} sx={{textAlign: 'center'}}>
-                        <h1>Add Crop Record</h1>
+    return (
+        <Modal
+            open={showAddModal}
+            onClose={() => setShowAddModal(false)}
+            sx={{
+                display: 'flex', justifyContent: 'center', alignItems: 'center',
+            }}
+        >
+            <Card sx={{width: 400}}>
+                <CardContent>
+                    <Grid container justifyContent="center" spacing={2}>
+                        <Grid item xs={12} sx={{textAlign: 'center'}}>
+                            <h1>Add Crop Record</h1>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Autocomplete
+                                value={fieldValues[field_names[0]]}
+                                options={cropCategoryOptions || []}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[0]);
+                                }}
+                                renderInput={(params) => (
+                                    <TextField {...params} required variant="outlined" label={columns[1].headerName}
+                                               error={inputError[field_names[0]]}/>)}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Autocomplete
+                                value={fieldValues[field_names[1]]}
+                                options={cropVarietyOptions || []}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[1]);
+                                }}
+                                renderInput={(params) => (
+                                    <TextField {...params} required variant="outlined" label={columns[2].headerName}
+                                               error={inputError[field_names[1]]}/>)}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                value={fieldValues[field_names[2]]}
+                                InputLabelProps={{
+                                    shrink: true,
+                                    readOnly: true,
+                                }}
+                                variant="outlined"
+                                label={columns[3].headerName}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                value={fieldValues[field_names[3]]}
+                                InputLabelProps={{
+                                    shrink: true,
+                                    readOnly: true,
+                                }}
+                                variant="outlined"
+                                label={columns[4].headerName}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Autocomplete
+                                value={fieldValues[field_names[4]]}
+                                options={cropGrowthStageOptions || []}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[4]);
+                                }}
+                                renderInput={(params) => (
+                                    <TextField {...params} required variant="outlined" label={columns[5].headerName}
+                                               error={inputError[field_names[4]]}/>)}
+                            />
+                        </Grid>
+                        <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
+                            <Button variant="contained" color="success" onClick={() => handleSaveButtonPressed()}>
+                                Save
+                            </Button>
+                        </Grid>
+                        <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
+                            <Button variant="contained" color="secondary" onClick={() => setShowAddModal(false)}>
+                                Cancel
+                            </Button>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12}>
-                        <Autocomplete
-                            value={fieldValues[field_names[0]]}
-                            options={cropCategoryOptions}
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[0]);
-                            }}
-                            renderInput={(params) => (
-                                <TextField {...params} required variant="outlined" label={columns[1].headerName}
-                                           error={inputError[field_names[0]]}/>)}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Autocomplete
-                            value={fieldValues[field_names[1]]}
-                            options={cropVarietyOptions}
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[1]);
-                            }}
-                            renderInput={(params) => (
-                                <TextField {...params} required variant="outlined" label={columns[2].headerName}
-                                           error={inputError[field_names[1]]}/>)}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            value={fieldValues[field_names[2]]}
-                            InputLabelProps={{
-                                shrink: true,
-                                readOnly: true,
-                            }}
-                            variant="outlined"
-                            label={columns[3].headerName}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            value={fieldValues[field_names[3]]}
-                            InputLabelProps={{
-                                shrink: true,
-                                readOnly: true,
-                            }}
-                            variant="outlined"
-                            label={columns[4].headerName}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Autocomplete
-                            value={fieldValues[field_names[4]]}
-                            options={cropGrowthStageOptions}
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[4]);
-                            }}
-                            renderInput={(params) => (
-                                <TextField {...params} required variant="outlined" label={columns[5].headerName}
-                                           error={inputError[field_names[4]]}/>)}
-                        />
-                    </Grid>
-                    <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
-                        <Button variant="contained" color="success" onClick={() => handleSaveButtonPressed()}>
-                            Save
-                        </Button>
-                    </Grid>
-                    <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
-                        <Button variant="contained" color="secondary" onClick={() => setShowAddModal(false)}>
-                            Cancel
-                        </Button>
-                    </Grid>
-                </Grid>
-            </CardContent>
-        </Card>
-    </Modal>);
+                </CardContent>
+            </Card>
+        </Modal>
+    );
 }
 
 function Crop(props) {
@@ -471,7 +475,7 @@ function Crop(props) {
             width: columnWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
-                    options={cropCategoryOptions}
+                    options={cropCategoryOptions || []}
                     disableClearable
                     readOnly={editRowId !== rowID}
                     value={editRowId === rowID ? fieldValues[field_names[0]] : params.value}
@@ -498,7 +502,7 @@ function Crop(props) {
             width: columnWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
-                    options={cropVarietyOptions}
+                    options={cropVarietyOptions || []}
                     disableClearable
                     readOnly={editRowId !== rowID}
                     value={editRowId === rowID ? fieldValues[field_names[1]] : params.value}
@@ -542,7 +546,7 @@ function Crop(props) {
             width: columnWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
-                    options={cropGrowthStageOptions}
+                    options={cropGrowthStageOptions || []}
                     disableClearable
                     readOnly={editRowId !== rowID}
                     value={editRowId === rowID ? fieldValues[field_names[4]] : params.value}

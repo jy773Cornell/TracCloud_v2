@@ -34,7 +34,7 @@ class UserProfile(models.Model):
     self_activated = models.BooleanField(verbose_name="Self Activated", default=True)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
-    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
 
     def __str__(self):
         return "{} ({})".format(self.user, self.type)
@@ -47,7 +47,7 @@ class UserType(models.Model):
     name = models.CharField(verbose_name="Type Name", unique=True, max_length=128)
     note = models.TextField(verbose_name="Note", null=True, blank=True)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
-    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
 
     def __str__(self):
         return self.name
@@ -63,11 +63,9 @@ class UserRelation(models.Model):
                                  null=True, blank=True, on_delete=models.CASCADE)
     type = models.ForeignKey(verbose_name="Relation Type", to="UserRelationType", to_field="urtid",
                              related_name="relationtype", null=True, blank=True, on_delete=models.SET_NULL)
-    added_by = models.ForeignKey(verbose_name="Added By", to="UserProfile", to_field="uid",
-                                 related_name="relation_added_by", null=True, blank=True, on_delete=models.CASCADE)
-    is_resolved = models.BooleanField(verbose_name="Is Resolved", default=False)
     is_active = models.BooleanField(verbose_name="Is Active", default=False)
-    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
+    update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
 
     def __str__(self):
         return "Relation: {}, Requester: {}, Provider: {}".format(self.type, self.requester, self.provider)
@@ -80,7 +78,7 @@ class UserRelationType(models.Model):
     name = models.CharField(verbose_name="Type Name", unique=True, max_length=128)
     note = models.TextField(verbose_name="Note", null=True, blank=True)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
-    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
 
     def __str__(self):
         return self.name
@@ -100,7 +98,7 @@ class Equipment(models.Model):
     code = models.CharField(verbose_name="Code", null=True, blank=True, max_length=64)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
-    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
 
     def __str__(self):
         return self.name
@@ -113,7 +111,7 @@ class EquipmentType(models.Model):
     name = models.CharField(verbose_name="Type Name", max_length=32)
     note = models.TextField(verbose_name="Note", null=True, blank=True)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
-    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
 
     def __str__(self):
         return self.name
@@ -137,7 +135,7 @@ class Crop(models.Model):
 
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
-    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
 
     def __str__(self):
         return "{}: {}".format(self.crop, self.variety)
@@ -209,7 +207,7 @@ class Site(models.Model):
                                null=True, blank=True, on_delete=models.CASCADE)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
-    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
 
     def __str__(self):
         return self.name
@@ -259,7 +257,7 @@ class Chemical(models.Model):
 
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
-    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
 
     def __str__(self):
         return "{} (EPA NO. {})".format(self.trade_name, self.epa_reg_no)
@@ -310,14 +308,18 @@ class Operation(models.Model):
                              null=True, blank=True, on_delete=models.CASCADE)
     type = models.ForeignKey(verbose_name="Operation Type", to="OperationType", to_field="optid",
                              related_name="op_type", null=True, blank=True, on_delete=models.SET_NULL)
-    datetime = models.DateTimeField(verbose_name="Operation Datetime", auto_now=True)
+
+    STATE_CHOICES = [
+        ('initiated', 'Initiated'),
+        ('pending', 'Pending'),
+        ('withdrew', 'Withdrew'),
+        ('completed', 'Completed'),
+    ]
+    state = models.CharField(max_length=20, choices=STATE_CHOICES, default='initiated')
 
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
-    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
-
-    def __str__(self):
-        return "{} Record ({})".format(self.type, self.datetime)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
 
     objects = MyModelManager()
 
@@ -351,7 +353,7 @@ class PurchaseRecord(models.Model):
     note = models.TextField(verbose_name="Note", null=True, blank=True)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
-    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
 
     def __str__(self):
         return "{} ({})".format(self.chemical, self.pur_datetime)
@@ -382,7 +384,7 @@ class HarvestRecord(models.Model):
     note = models.TextField(verbose_name="Note", null=True, blank=True)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
-    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
 
     def __str__(self):
         return "{} ({})".format(self.site, self.har_datetime)
@@ -396,8 +398,6 @@ class ApplicationRecord(models.Model):
                              null=True, blank=True, on_delete=models.CASCADE)
     opid = models.ForeignKey(verbose_name="OPID", to="Operation", to_field="opid", related_name="ar_op",
                              null=True, blank=True, on_delete=models.CASCADE)
-    type = models.ForeignKey(verbose_name="Application Type", to="ApplicationType", to_field="atid",
-                             related_name="ar_type", null=True, blank=True, on_delete=models.SET_NULL)
     crop = models.ForeignKey(verbose_name="Crop", to="Crop", to_field="cid", related_name="ar_crop",
                              null=True, blank=True, on_delete=models.SET_NULL)
     site = models.ForeignKey(verbose_name="Site", to="Site", to_field="sid", related_name="ar_site",
@@ -433,18 +433,10 @@ class ApplicationRecord(models.Model):
     wind_direction = models.CharField(verbose_name="Wind Direction", null=True, blank=True, max_length=32)
     average_temp = models.CharField(verbose_name="Average Temperature", null=True, blank=True, max_length=32)
 
-    assign_to = models.ForeignKey(verbose_name="User", to="UserProfile", to_field="uid", related_name="assign_user",
-                                  null=True, blank=True, on_delete=models.SET_NULL)
-    STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('completed', 'Completed'),
-    ]
-    application_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-
     note = models.TextField(verbose_name="Note", null=True, blank=True)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
-    create_time = models.DateTimeField(verbose_name="Create Time", auto_now=True)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
 
     def __str__(self):
         return "{} ({})".format(self.site, self.app_date)
