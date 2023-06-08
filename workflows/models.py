@@ -7,12 +7,13 @@ from django_fsm import FSMField, transition
 from django.core.mail import send_mail
 from api.utils.UUIDGen import gen_uuid
 from django.urls import reverse
+from api.models import Operation, UserRelation
 
 '''
     Registration Process:
-    1.User submit registration form: username, password, email
-    2.Admin user approve or reject the request
-    3.Process ends
+    1. User submit registration form: username, password, email
+    2. Admin user approve or reject the request
+    3. Process ends
 '''
 
 
@@ -63,10 +64,10 @@ class Registration(models.Model):
 
 '''
     Password Reset Process:
-    1.User submit pass_reset form: username, email
-    2.A reset-link email will be sent to user
-    3.User post new password
-    4.Process ends
+    1. User submit pass_reset form: username, email
+    2. A reset-link email will be sent to user
+    3. User post new password
+    4. Process ends
 '''
 
 
@@ -115,11 +116,13 @@ class PasswordReset(models.Model):
 
 
 '''
-    Spray Card Process (demo: Owner, Manager and Applicator):
-    1.Owner and Manager initiates the process
-    2.Owner and Manager assigns the process
-    3.Applicator completes or returns the process
-    4.Process back to 2. or  ends
+    Spray Card Process:
+    1. The high-level user initiates the process (state: initiated)
+    2. The process is assigned to the applicator user (could be hierarchically assigned or reassigned, state: assigned) 
+    3. The process could be returned to the last assigner by current holder (state: returned) 
+    4. The process could be withdrew by the owner (state: withdrew (ends)) 
+    5. Applicator user complete the spray card and get it back to the owner for approval (state: completed)
+    6: The owner approves the spray card (state: approved (ends))
 '''
 
 
@@ -129,12 +132,166 @@ class SprayCard(models.Model):
     STATE_CHOICES = (
         ('initiated', 'Initiated'),
         ('assigned', 'Assigned'),
-        ('completed', 'Completed'),
+        ('archived', 'Archived'),
     )
     state = FSMField(default='initiated', choices=STATE_CHOICES)
 
-    user = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
-    assign_to = models.ForeignKey(User, verbose_name="Assign To", null=True, blank=True, on_delete=models.SET_NULL)
+    owner = models.ForeignKey(UserProfile, verbose_name="Owner", on_delete=models.CASCADE)
+    holder = models.ForeignKey(UserProfile, verbose_name="Holder", null=True, blank=True, on_delete=models.SET_NULL,
+                               related_name='holder_spraycard')
+    spray_record = models.ForeignKey(Operation, verbose_name="Spray Record", on_delete=models.CASCADE)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
+
+    @property
+    def current_assignment(self):
+        current_assignment = SprayCardAssignment.objects.get(spray_card=self, assign_to=self.holder, is_active=True)
+        return current_assignment
+
+    @transition(field=state, source='initiated', target='initiated')
+    def initiate(self):
+        self.holder = self.owner
+
+        # Create the first assigment flow
+        SprayCardAssignment.objects.create(
+            scaid=gen_uuid("SCAID"),
+            assign_to=self.holder,
+            order=1,
+            spray_card=self,
+            is_active=True
+        )
+
+    @transition(field=state, source=['initiated', 'assigned'], target='assigned')
+    def assign(self, assigner, assignee):
+
+        # If the assigner is the holder
+        if self.holder == assigner:
+            new_order = self.current_assignment.order + 1
+            SprayCardAssignment.objects.create(
+                scaid=gen_uuid("SCAID"),
+                assign_to=assignee,
+                order=new_order,
+                spray_card=self,
+                is_active=True
+            )
+
+        # If the assigner is not the holder
+        else:
+            current_order = SprayCardAssignment.objects.get(spray_card=self, assign_to=assigner, is_active=True).order
+            SprayCardAssignment.objects.filter(spray_card=self, order__gt=current_order).update(is_active=False)
+
+            new_order = current_order + 1
+            SprayCardAssignment.objects.create(
+                scaid=gen_uuid("SCAID"),
+                assign_to=assignee,
+                order=new_order,
+                spray_card=self,
+                is_active=True
+            )
+
+        self.holder = assignee
+
+        self.spray_record.state = 'pending'
+        self.spray_record.save()
+
+    @transition(field=state, source='assigned')
+    def return_assignment(self):
+        current_assignment = SprayCardAssignment.objects.get(spray_card=self, assign_to=self.holder, is_active=True)
+        current_order = current_assignment.order - 1
+        current_assignment.is_active = False
+        current_assignment.save()
+
+        self.holder = SprayCardAssignment.objects.get(spray_card=self, order=current_order, is_active=True).assign_to
+        if current_order == 1:
+            self.state = "initiated"
+            self.spray_record.state = 'initiated'
+            self.spray_record.save()
+        else:
+            self.state = "assigned"
+
+    @transition(field=state, source=['initiated', 'assigned'], target='archived')
+    def withdraw(self):
+        SprayCardAssignment.objects.filter(spray_card=self, is_active=True).update(is_active=False)
+
+        self.spray_record.state = 'withdrew'
+        self.spray_record.is_active = False
+        self.spray_record.save()
+
+        self.is_active = False
+
+    @transition(field=state, source=['initiated', 'assigned'], target='archived')
+    def complete(self):
+        SprayCardAssignment.objects.filter(spray_card=self, is_active=True).update(is_active=False)
+
+        self.spray_record.state = 'completed'
+        self.spray_record.save()
+
+        self.is_active = False
+
+    # @transition(field=state, source='completed', target='archived')
+    # def approve(self):
+    #     SprayCardAssignment.objects.filter(spray_card=self, is_active=True).update(is_active=False)
+    #
+    #     self.spray_record.state = 'completed'
+    #     self.spray_record.save()
+    #
+    #     self.is_active = False
+
+
+class SprayCardAssignment(models.Model):
+    scaid = models.CharField(verbose_name="SCAID", primary_key=True, max_length=48)
+    spray_card = models.ForeignKey('SprayCard', related_name='assignments', on_delete=models.CASCADE)
+    order = models.PositiveIntegerField()
+    assign_to = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    is_active = models.BooleanField(verbose_name="Is Active", default=True)
+    assign_time = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order']
+
+
+'''
+    User Connection Process:
+    1. Requestor submit connection request and select relation type (state: initiated)
+    2. Waiting for provider to approve or reject request (state: pending)
+    3. Process ends (state: connected or rejected)
+'''
+
+
+class Connection(models.Model):
+    cpid = models.CharField(verbose_name="CPID", primary_key=True, max_length=48)
+
+    STATE_CHOICES = (
+        ('initiated', 'Initiated'),
+        ('pending', 'Pending'),
+        ('connected', 'Connected'),
+        ('rejected', 'Rejected'),
+    )
+    state = FSMField(default='initiated', choices=STATE_CHOICES)
+
+    connection_request = models.ForeignKey(UserRelation, verbose_name="Connection Request", on_delete=models.CASCADE)
+    is_active = models.BooleanField(verbose_name="Is Active", default=True)
+    update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
+    create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
+
+    @transition(field=state, source='initiated', target='pending')
+    def initiate(self, requester, provider, relation_type):
+        self.connection_request = UserRelation.objects.create(
+            urid=gen_uuid("URID"),
+            requester=requester,
+            provider=provider,
+            type=relation_type,
+            is_active=False
+        )
+
+    @transition(field=state, source='pending', target='connected')
+    def approve(self):
+        self.connection_request.is_active = True
+        self.connection_request.save()
+
+        self.is_active = False
+
+    @transition(field=state, source='pending', target='rejected')
+    def reject(self):
+        self.is_active = False

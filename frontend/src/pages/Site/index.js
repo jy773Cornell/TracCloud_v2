@@ -126,7 +126,7 @@ function AddSiteRecord({
                     <Grid item xs={12}>
                         <Autocomplete
                             value={fieldValues[field_names[0]]}
-                            options={siteTypeOptions}
+                            options={siteTypeOptions || []}
                             onChange={(event, value) => {
                                 handleInputChange(event, value, field_names[0]);
                             }}
@@ -169,7 +169,7 @@ function AddSiteRecord({
                     <Grid item xs={6}>
                         <Autocomplete
                             value={fieldValues[field_names[6]]}
-                            options={unitOptions}
+                            options={unitOptions || []}
                             onChange={(event, value) => {
                                 handleInputChange(event, value, field_names[6]);
                             }}
@@ -676,7 +676,7 @@ export default function Site(props) {
             sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => (<Autocomplete
-                options={siteTypeOptions}
+                options={siteTypeOptions || []}
                 disableClearable
                 readOnly={editRowId !== rowID}
                 value={editRowId === rowID ? fieldValues[field_names[0]] : params.value}
@@ -744,7 +744,7 @@ export default function Site(props) {
             sortable: false,
             width: 300,
             renderCell: (params, rowID = params.id) => (<Autocomplete
-                options={cropOptions}
+                options={cropOptions || []}
                 disableClearable
                 readOnly={editRowId !== rowID}
                 disabled={(editRowId === rowID) && !(siteTypeOptions.some(value => crop_level_type.includes(value.label)))}
@@ -815,7 +815,7 @@ export default function Site(props) {
             sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => (<Autocomplete
-                options={unitOptions}
+                options={unitOptions || []}
                 disableClearable
                 readOnly={editRowId !== rowID}
                 value={editRowId === rowID ? fieldValues[field_names[6]] : params.value}
@@ -973,5 +973,6 @@ export default function Site(props) {
             <OperationSnackbars  {...saveProps}/>
             <OperationSnackbars  {...deleteProps}/>
             <OperationSnackbars  {...alertProps}/>
-        </div>);
+        </div>
+    );
 }

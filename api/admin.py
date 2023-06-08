@@ -5,7 +5,7 @@ from django.contrib import messages
 
 
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('uid', 'user', 'type', 'self_activated', 'is_active', 'create_time',)
+    list_display = ('uid', 'user', 'type', 'self_activated', 'is_active', 'update_time', 'create_time',)
 
     list_filter = ('type', 'self_activated', 'is_active',)
 
@@ -54,10 +54,9 @@ class UserTypeAdmin(admin.ModelAdmin):
 
 
 class UserRelationAdmin(admin.ModelAdmin):
-    list_display = (
-        'urid', 'requester', 'provider', 'type', 'added_by', 'is_resolved', 'is_active', 'create_time',)
+    list_display = ('urid', 'requester', 'provider', 'type', 'is_active', 'update_time', 'create_time',)
 
-    list_filter = ('type', 'is_resolved', 'is_active',)
+    list_filter = ('type', 'is_active',)
 
     list_per_page = 10
 
@@ -192,7 +191,9 @@ class CropGrowthStageAdmin(admin.ModelAdmin):
 
 
 class SiteAdmin(admin.ModelAdmin):
-    list_display = ('sid', 'user', 'name', 'type', 'crop', 'size', 'size_unit', 'parent', 'is_active', 'create_time',)
+    list_display = (
+        'sid', 'user', 'name', 'type', 'crop', 'size', 'size_unit', 'parent', 'is_active', 'update_time',
+        'create_time',)
 
     list_filter = ('type', 'crop', 'parent', 'is_active',)
 
@@ -226,7 +227,7 @@ class SiteTypeAdmin(admin.ModelAdmin):
 
 
 class ChemicalAdmin(admin.ModelAdmin):
-    list_display = ('chemid', 'user', 'trade_name', 'epa_reg_no', 'type', 'is_active', 'create_time',)
+    list_display = ('chemid', 'user', 'trade_name', 'epa_reg_no', 'type', 'is_active', 'update_time', 'create_time',)
 
     list_filter = ('type', 'is_active',)
 
@@ -262,7 +263,7 @@ class ChemicalProductBaseAdmin(admin.ModelAdmin):
 
 
 class OperationAdmin(admin.ModelAdmin):
-    list_display = ('opid', 'user', 'type', 'datetime', 'is_active', 'create_time',)
+    list_display = ('opid', 'user', 'type', 'state', 'is_active', 'update_time', 'create_time',)
 
     list_filter = ('type', 'is_active',)
 
@@ -296,7 +297,7 @@ class OperationTypeAdmin(admin.ModelAdmin):
 
 
 class PurchaseRecordAdmin(admin.ModelAdmin):
-    list_display = ('prid', 'user', 'pur_datetime', 'chemical', 'is_active', 'create_time',)
+    list_display = ('prid', 'user', 'pur_datetime', 'chemical', 'is_active', 'update_time', 'create_time',)
 
     list_filter = ('is_active',)
 
@@ -313,7 +314,7 @@ class PurchaseRecordAdmin(admin.ModelAdmin):
 
 
 class HarvestRecordAdmin(admin.ModelAdmin):
-    list_display = ('hrid', 'user', 'har_datetime', 'crop', 'site', 'is_active', 'create_time',)
+    list_display = ('hrid', 'user', 'har_datetime', 'crop', 'site', 'is_active', 'update_time', 'create_time',)
 
     list_filter = ('is_active',)
 
@@ -330,7 +331,9 @@ class HarvestRecordAdmin(admin.ModelAdmin):
 
 
 class ApplicationRecordAdmin(admin.ModelAdmin):
-    list_display = ('arid', 'user', 'type', 'app_date', 'crop', 'site', 'is_active', 'create_time',)
+    list_display = (
+        'arid', 'user', 'app_date', 'crop', 'site', 'is_active', 'update_time',
+        'create_time',)
 
     list_filter = ('is_active',)
 
