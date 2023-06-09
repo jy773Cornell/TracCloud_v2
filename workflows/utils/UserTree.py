@@ -20,3 +20,13 @@ class UserTree:
     def is_descendant(self, ancestor_id: str, descendant_id: str) -> bool:
         sub_tree = self.tree.subtree(ancestor_id)
         return descendant_id in sub_tree.nodes.keys()
+
+    def subtree_to_dict(self, node_id):
+        node = self.tree[node_id]
+        children = self.tree.children(node_id)
+
+        if children:
+            children_dict = {child.identifier: self.subtree_to_dict(child.identifier) for child in children}
+            return {"label": node.tag, "children": children_dict}
+        else:
+            return {"label": node.tag, "children": {}}

@@ -12,24 +12,21 @@ export default function SprayCardStepper({
                                              steps,
                                              activeStep,
                                              setActiveStep,
-                                             fieldValues,
-                                             field_names,
+                                             completed,
+                                             setCompleted,
+                                             setWarningSnackbar,
                                              saveChemicals,
                                              saveCrops,
-                                             saveSites
+                                             saveSites,
+                                             checkSubmit,
+                                             submitSprayCardData
                                          }) {
-    const [completed, setCompleted] = React.useState({});
-
     const totalSteps = () => {
         return steps.length;
     };
 
     const completedSteps = () => {
-        return Object.keys(completed).length;
-    };
-
-    const allStepsCompleted = () => {
-        return completedSteps() === totalSteps();
+        return Object.values(completed).filter(complete => complete === true).length;
     };
 
     const handleNext = () => {
@@ -45,6 +42,8 @@ export default function SprayCardStepper({
     const handleStep = (step) => () => {
         if (step < 3 || (step === 3 && completed[0] && completed[1] && completed[2])) {
             setActiveStep(step);
+        } else {
+            setWarningSnackbar(true);
         }
     };
 
@@ -55,6 +54,8 @@ export default function SprayCardStepper({
             completeStep();
         } else if (activeStep === 2 && saveSites()) {
             completeStep();
+        } else if (activeStep === 3 && checkSubmit()) {
+            submitSprayCardData();
         }
     };
 
@@ -64,10 +65,6 @@ export default function SprayCardStepper({
         setCompleted(newCompleted);
     };
 
-    const handleReset = () => {
-        setActiveStep(0);
-        setCompleted({});
-    };
 
     return (
         <Box sx={{width: '100%'}}>
@@ -81,42 +78,30 @@ export default function SprayCardStepper({
                 ))}
             </Stepper>
             <div>
-                {allStepsCompleted() ? (
-                    <React.Fragment>
-                        <Typography sx={{mt: 2, mb: 1}}>
-                            All steps completed - you&apos;re finished
-                        </Typography>
-                        <Box sx={{display: 'flex', flexDirection: 'row', pt: 2}}>
-                            <Box sx={{flex: '1 1 auto'}}/>
-                            <Button onClick={handleReset}>Reset</Button>
-                        </Box>
-                    </React.Fragment>
-                ) : (
-                    <React.Fragment>
-                        <Box sx={{display: 'flex', flexDirection: 'row', pt: 2}}>
-                            <Button
-                                color="inherit"
-                                disabled={activeStep === 0}
-                                onClick={handleBack}
-                                sx={{mr: 1}}
-                            >
-                                Back
-                            </Button>
-                            <Box sx={{flex: '1 1 auto'}}/>
-                            <Button onClick={handleNext} sx={{mr: 1}}>
-                                Next
-                            </Button>
-                            {activeStep !== steps.length &&
-                                (completed[activeStep] ? null : (
-                                    <Button onClick={handleComplete}>
-                                        {completedSteps() === totalSteps() - 1
-                                            ? 'Submit Process'
-                                            : 'Save'}
-                                    </Button>
-                                ))}
-                        </Box>
-                    </React.Fragment>
-                )}
+                <React.Fragment>
+                    <Box sx={{display: 'flex', flexDirection: 'row', pt: 2}}>
+                        <Button
+                            color="inherit"
+                            disabled={activeStep === 0}
+                            onClick={handleBack}
+                            sx={{mr: 1}}
+                        >
+                            Back
+                        </Button>
+                        <Box sx={{flex: '1 1 auto'}}/>
+                        <Button onClick={handleNext} sx={{mr: 1}}>
+                            Next
+                        </Button>
+                        {activeStep !== steps.length &&
+                            (completed[activeStep] ? null : (
+                                <Button onClick={handleComplete}>
+                                    {completedSteps() === totalSteps() - 1
+                                        ? 'Submit Process'
+                                        : 'Save'}
+                                </Button>
+                            ))}
+                    </Box>
+                </React.Fragment>
             </div>
         </Box>
     );

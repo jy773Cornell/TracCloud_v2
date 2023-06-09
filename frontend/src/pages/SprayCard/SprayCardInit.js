@@ -8,8 +8,9 @@ import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import {GroupHeader, GroupItems} from "./styles";
 import OperationSnackbars from "../../components/Snackbars";
 
-const SprayCardStepper = lazy(() => import('../../components/Stepper'))
-const SprayCardSiteTreeView = lazy(() => import('../../components/SprayCardSiteTreeView'))
+const SprayCardStepper = lazy(() => import('./Stepper'))
+const SprayCardSiteTreeView = lazy(() => import('./SprayCardSiteTreeView'))
+const UserTreeView = lazy(() => import('./UserTreeView'))
 
 const steps = ['Select Chemicals', 'Select Crops', 'Select Sites', 'Assign Process'];
 
@@ -38,7 +39,9 @@ export default function SprayCardInit({
     const [checked, setChecked] = useState([]);
     const [expanded, setExpanded] = useState([]);
     const [activeStep, setActiveStep] = React.useState(0);
-    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [completed, setCompleted] = React.useState({0: false, 1: false, 2: false, 3: false});
+    const [errorSnackbar, setErrorSnackbar] = useState(false);
+    const [warningSnackbar, setWarningSnackbar] = useState(false);
 
     const [applicationTargetOptions, setApplicationTargetOptions] = useState([]);
     const [siteOptions, setSiteOptions] = useState([]);
@@ -70,9 +73,7 @@ export default function SprayCardInit({
         if (field === field_names[2]) {
             ApplicationTargeOptionsFresh(value.id, index)
             setFieldValues({
-                ...fieldValues,
-                [field]: fieldObj,
-                [field_names[4]]: cropsToSites(fieldObj)
+                ...fieldValues, [field]: fieldObj, [field_names[4]]: cropsToSites(fieldObj)
             });
         } else if (field === field_names[4]) {
             const [newCropObj, newApplicationTargetObj] = sitesToCrops(fieldObj);
@@ -82,12 +83,31 @@ export default function SprayCardInit({
                 [field_names[2]]: newCropObj,
                 [field_names[3]]: newApplicationTargetObj,
             });
-
-
+        } else if (field === field_names[5]) {
+            setFieldValues({
+                ...fieldValues,
+                [field]: fieldObj,
+            });
+            setFormData({
+                ...formData,
+                [field]: fieldObj,
+            });
         } else {
             setFieldValues({
                 ...fieldValues, [field]: fieldObj,
             });
+        }
+
+        if ([field_names[0], field_names[1]].includes(field)) {
+            updateCompleted(0);
+        }
+        if ([field_names[2], field_names[3]].includes(field)) {
+            updateCompleted(1);
+            updateCompleted(2);
+        }
+        if ([field_names[4]].includes(field)) {
+            updateCompleted(1);
+            updateCompleted(2);
         }
     };
 
@@ -201,6 +221,15 @@ export default function SprayCardInit({
             setNodes(sprayData["siteList"].map(transformTreeData));
         }
     };
+
+    const updateCompleted = (stepValue) => {
+        setCompleted(prevCompleted => (
+            {
+                ...prevCompleted,
+                [stepValue]: false
+            }
+        ));
+    }
 
     const updateSiteFields = () => {
         const checkedItems = Object.values(checked).flat();
@@ -453,54 +482,48 @@ export default function SprayCardInit({
     }
 
     const siteSelectionRender = () => {
-        return (
-            <>
-                <Grid item xs={9}>
-                    <Grid container spacing={2}>
-                        <SprayCardSiteTreeView {...treeProps}/>
-                    </Grid>
+        return (<>
+            <Grid item xs={9}>
+                <Grid container spacing={2}>
+                    <SprayCardSiteTreeView {...siteTreeProps}/>
                 </Grid>
-                <Grid item xs={3}>
-                    <Autocomplete
-                        multiple
-                        size="small"
-                        value={fieldValues[field_names[4]]}
-                        options={sortSiteOptions(siteOptions, fieldValues[field_names[2]])}
-                        getOptionLabel={(option) => option.label}
-                        groupBy={(option) => option.crop}
-                        disableCloseOnSelect
-                        onChange={(event, value) => {
-                            handleInputChange(event, value, field_names[4]);
-                        }}
-                        renderOption={(props, option, {selected}) => (
-                            <li {...props} style={{padding: '2px'}}>
-                                <Checkbox
-                                    icon={icon}
-                                    checkedIcon={checkedIcon}
-                                    style={{marginRight: 8}}
-                                    checked={selected}
-                                />
-                                {option.label}
-                            </li>
-                        )}
-                        renderInput={(params) => (<TextField
-                            {...params}
-                            variant="outlined"
-                            label="Selected Sites"
-                            error={fieldErrors?.[field_names[4]] || false}
-                        />)}
-                        renderGroup={(params) => {
-                            return (
-                                <li key={params.key}>
-                                    <GroupHeader>{params.group}</GroupHeader>
-                                    <GroupItems>{params.children}</GroupItems>
-                                </li>
-                            );
-                        }}
-                    />
-                </Grid>
-            </>
-        );
+            </Grid>
+            <Grid item xs={3}>
+                <Autocomplete
+                    multiple
+                    size="small"
+                    value={fieldValues[field_names[4]]}
+                    options={sortSiteOptions(siteOptions, fieldValues[field_names[2]])}
+                    getOptionLabel={(option) => option.label}
+                    groupBy={(option) => option.crop}
+                    disableCloseOnSelect
+                    onChange={(event, value) => {
+                        handleInputChange(event, value, field_names[4]);
+                    }}
+                    renderOption={(props, option, {selected}) => (<li {...props} style={{padding: '2px'}}>
+                        <Checkbox
+                            icon={icon}
+                            checkedIcon={checkedIcon}
+                            style={{marginRight: 8}}
+                            checked={selected}
+                        />
+                        {option.label}
+                    </li>)}
+                    renderInput={(params) => (<TextField
+                        {...params}
+                        variant="outlined"
+                        label="Selected Sites"
+                        error={fieldErrors?.[field_names[4]] || false}
+                    />)}
+                    renderGroup={(params) => {
+                        return (<li key={params.key}>
+                            <GroupHeader>{params.group}</GroupHeader>
+                            <GroupItems>{params.children}</GroupItems>
+                        </li>);
+                    }}
+                />
+            </Grid>
+        </>);
     }
 
     const siteStepRender = () => {
@@ -510,6 +533,28 @@ export default function SprayCardInit({
             </Grid>
             {siteSelectionRender()}
         </Grid>);
+    }
+
+    const assignRender = () => {
+        return (
+            <>
+                <Grid item xs={4}/>
+                <Grid item xs={4}>
+                    <UserTreeView {...userTreeProps}/>
+                </Grid>
+                <Grid item xs={4}/>
+            </>
+        );
+    }
+
+    const assignStepRender = () => {
+        return (
+            <Grid container justifyContent="center" spacing={2}>
+                <Grid item xs={12} sx={{textAlign: 'center'}}>
+                    <h1>Add Spray Card Process</h1>
+                </Grid>
+                {assignRender()}
+            </Grid>);
     }
 
     const updateError = (fieldValue, fieldName) => {
@@ -545,14 +590,14 @@ export default function SprayCardInit({
         const isValidField2 = checkFields(fieldValues[field_names[1]], field_names[1]);
 
         if (isValidField1 && isValidField2) {
-            setFormData({
-                ...fieldValues,
-                [field_names[0]]: fieldValues[field_names[0]],
-                [field_names[1]]: fieldValues[field_names[1]]
-            });
-            return true
+            setFormData(prevFormData => ({
+                ...prevFormData,
+                [field_names[0]]: Object.values(fieldValues[field_names[0]]),
+                [field_names[1]]: Object.values(fieldValues[field_names[1]])
+            }));
+            return true;
         } else {
-            setOpenSnackbar(true);
+            setErrorSnackbar(true);
             return false;
         }
     }
@@ -563,13 +608,13 @@ export default function SprayCardInit({
 
         if (isValidField1 && isValidField2) {
             setFormData({
-                ...fieldValues,
+                ...formData,
                 [field_names[2]]: fieldValues[field_names[2]],
                 [field_names[3]]: fieldValues[field_names[3]]
             });
             return true
         } else {
-            setOpenSnackbar(true);
+            setErrorSnackbar(true);
             return false;
         }
     }
@@ -578,34 +623,50 @@ export default function SprayCardInit({
         const isValidField = fieldValues[field_names[4]].length !== 0;
 
         setFieldErrors({
-            ...fieldErrors,
-            [field_names[4]]: !isValidField
+            ...fieldErrors, [field_names[4]]: !isValidField
         });
 
         if (isValidField) {
             setFormData({
-                ...fieldValues,
-                [field_names[4]]: fieldValues[field_names[4]],
+                ...formData, [field_names[4]]: fieldValues[field_names[4]],
             });
             return true
         } else {
-            setOpenSnackbar(true);
+            setErrorSnackbar(true);
             return false;
         }
+    }
+
+    const checkSubmit = () => {
+        const isValidField = formData.hasOwnProperty(field_names[5]) && formData[field_names[5]] !== "";
+
+        if (isValidField && Object.values(completed).filter(value => value === true).length === 3) {
+            return true
+        } else {
+            setErrorSnackbar(true);
+            return false;
+        }
+    }
+
+    const submitSprayCardData = () => {
+        setAddSprayCard(false);
     }
 
     const stepperProps = {
         steps,
         activeStep,
         setActiveStep,
-        fieldValues,
-        field_names,
+        completed,
+        setCompleted,
+        setWarningSnackbar,
         saveChemicals,
         saveCrops,
-        saveSites
+        saveSites,
+        checkSubmit,
+        submitSprayCardData
     };
 
-    const treeProps = {
+    const siteTreeProps = {
         sprayData,
         field_names,
         fieldValues,
@@ -619,11 +680,18 @@ export default function SprayCardInit({
         nodes
     };
 
+    const userTreeProps = {
+        sprayData,
+        field_names,
+        handleInputChange
+    };
+
     const saveErrorProps = {
-        open: openSnackbar,
-        setOpen: setOpenSnackbar,
-        msg: "None data or uncompleted data found.",
-        tag: "error"
+        open: errorSnackbar, setOpen: setErrorSnackbar, msg: "None data or uncompleted data found.", tag: "error"
+    };
+
+    const warningProps = {
+        open: warningSnackbar, setOpen: setWarningSnackbar, msg: "Please complete the first three sections.", tag: "warning"
     };
 
     useEffect(() => {
@@ -639,6 +707,7 @@ export default function SprayCardInit({
         setFieldErrors({});
         setFormData({});
         setActiveStep(0);
+        setCompleted({0: false, 1: false, 2: false, 3: false})
         siteTreeFresh();
     }, [addSprayCard]);
 
@@ -668,6 +737,9 @@ export default function SprayCardInit({
                                 <div style={{display: activeStep === 2 ? 'block' : 'none'}}>
                                     {siteStepRender()}
                                 </div>
+                                <div style={{display: activeStep === 3 ? 'block' : 'none'}}>
+                                    {assignStepRender()}
+                                </div>
                             </Box>
                             <SprayCardStepper {...stepperProps}/>
                         </Box>
@@ -675,6 +747,7 @@ export default function SprayCardInit({
                 </Card>
             </Modal>
             <OperationSnackbars  {...saveErrorProps}/>
+            <OperationSnackbars  {...warningProps}/>
         </>
     );
 }

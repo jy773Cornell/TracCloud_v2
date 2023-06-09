@@ -3,6 +3,7 @@ from workflows.views.RegistrationAPI import *
 from workflows.views.PasswordResetAPI import *
 from workflows.views.SprayCardAPI import *
 from workflows.views.ConnectionAPI import *
+from workflows.views.UserTreeAPI import *
 
 app_name = 'workflow'
 
@@ -23,4 +24,6 @@ urlpatterns = [
     path('connection/initiate/', ConnectionInitiateView.as_view()),
     path('connection/approve/', ConnectionApproveView.as_view()),
     path('connection/reject/', ConnectionRejectView.as_view()),
+
+    path('usertree/subtree/get/', UserSubTreeGetView.as_view()),
 ]

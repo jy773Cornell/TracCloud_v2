@@ -34,7 +34,9 @@ class SprayCardStore {
             fetch("/api/crop/category/", requestOptions),
             fetch("/api/operation/application/target/", requestOptions),
             fetch("/api/operation/application/desicisionsupport/", requestOptions),
-            fetch("/api/unit/", requestOptions)
+            fetch("/api/unit/", requestOptions),
+
+            fetch("/workflow/usertree/subtree/get/?" + "uid=" + uid, requestOptions),
         ]);
 
         const jsonDataPromises = responses.map((response) => {
@@ -59,7 +61,8 @@ class SprayCardStore {
                 cropCategory: jsonData[6].data,
                 applicationTarget: jsonData[7].data,
                 decisionSupport: jsonData[8].data,
-                unit: jsonData[9].data
+                unit: jsonData[9].data,
+                userSubTree: jsonData[10].data,
             },
             "option_data": {
                 chemicalOptions: jsonData[4].data.map(item => {
