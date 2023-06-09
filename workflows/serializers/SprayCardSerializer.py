@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from workflows.models import SprayCard, SprayCardAssignment
-from api.models import Operation, OperationType
+from api.models import *
 from api.utils.UUIDGen import gen_uuid
 from workflows.utils.UserTree import *
 
@@ -14,6 +14,21 @@ class SprayCardGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = SprayCard
         fields = "__all__"
+
+
+class SprayCardCreateSerializer(serializers.ModelSerializer):
+    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=UserProfile.objects.all().alive())
+    crop_id = serializers.PrimaryKeyRelatedField(source='crop', queryset=Crop.objects.all().alive())
+    site_id = serializers.PrimaryKeyRelatedField(source='site', queryset=Site.objects.all().alive())
+    chemical_purchase_id = serializers.PrimaryKeyRelatedField(source='chemical_purchase',
+                                                              queryset=PurchaseRecord.objects.all().alive())
+    target_id = serializers.PrimaryKeyRelatedField(source='target', queryset=ApplicationTarget.objects.all())
+    decision_support_id = serializers.PrimaryKeyRelatedField(source='decision_support',
+                                                             queryset=DecisionSupport.objects.all())
+
+    class Meta:
+        model = ApplicationRecord
+        fields = ("user_id", "crop_id", "site_id", "chemical_purchase_id", "target_id", "decision_support_id")
 
 
 class SprayCardInitiateSerializer(serializers.ModelSerializer):

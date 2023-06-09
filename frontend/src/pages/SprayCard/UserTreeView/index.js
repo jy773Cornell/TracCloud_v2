@@ -59,7 +59,7 @@ export default function UserTreeView({
 
     return (
         <Box sx={{height: 280, flexGrow: 1, maxWidth: 400, overflowY: 'auto', overflowX: 'auto'}}>
-            <Box sx={{mb: 1}}>
+            <Box>
                 <Button onClick={handleExpandClick}>
                     {expanded.length === 0 ? 'Expand all' : 'Collapse all'}
                 </Button>

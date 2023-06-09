@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -25,6 +26,36 @@ class SprayCardListGetView(APIView):
             return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SprayCardCreateView(APIView):
+    serializer_class = SprayCardCreateSerializer
+
+    def post(self, request, format=None):
+        request_data = request.data
+        serializer = self.serializer_class(data=request_data[0])
+
+        if serializer.is_valid():
+            with transaction.atomic():
+                uid = request_data[0]["user_id"]
+                opid = gen_uuid("OPID")
+                operation_type = next((op_type["optid"] for op_type in cache.get("OperationType") if
+                                       op_type["name"] == "Spray"), None)
+                operation = Operation(opid=opid, user_id=uid, type_id=operation_type)
+                operation.save()
+
+                for data in request_data:
+                    serializer = self.serializer_class(data=data)
+                    if serializer.is_valid():
+                        data["arid"] = gen_uuid("ARID")
+                        data["opid"] = operation
+                        ApplicationRecord(**data).save()
+                    else:
+                        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({'Succeeded': 'Spray Card Process Created.', "data": opid}, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SprayCardInitiateView(APIView):

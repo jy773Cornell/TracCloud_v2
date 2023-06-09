@@ -26,6 +26,8 @@ function SprayCard(props) {
         setAddSprayCard,
         sprayData,
         sprayOptions,
+        refreshRecord,
+        setRefreshRecord
     };
 
     const dataGridProps = {
@@ -37,7 +39,6 @@ function SprayCard(props) {
 
     const detailsProps = {
         uid,
-        refreshRecord,
         sprayCardSelected,
     };
 

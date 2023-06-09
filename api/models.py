@@ -402,13 +402,14 @@ class ApplicationRecord(models.Model):
                              null=True, blank=True, on_delete=models.SET_NULL)
     site = models.ForeignKey(verbose_name="Site", to="Site", to_field="sid", related_name="ar_site",
                              null=True, blank=True, on_delete=models.SET_NULL)
-    applied_area = models.CharField(verbose_name="Applied Area", max_length=32)
+    applied_area = models.CharField(verbose_name="Applied Area", null=True, blank=True, max_length=32)
     area_unit = models.ForeignKey(verbose_name="Area Unit", to="Unit", to_field="unitid", related_name="ar_area_unit",
                                   null=True, blank=True, on_delete=models.SET_NULL)
     app_date = models.CharField(verbose_name="Application Date", null=True, blank=True, max_length=64)
     start_time = models.CharField(verbose_name="Start Time", null=True, blank=True, max_length=64)
     finish_time = models.CharField(verbose_name="Finish Time", null=True, blank=True, max_length=64)
-    operator = models.CharField(verbose_name="Operator", null=True, blank=True, max_length=64)
+    operator = models.ForeignKey(verbose_name="Operator", to="UserProfile", to_field="uid",
+                                 related_name="ar_operator_user", null=True, blank=True, on_delete=models.SET_NULL)
     target = models.ForeignKey(verbose_name="Application Target", to="ApplicationTarget", to_field="attid",
                                related_name="ar_pd", null=True, blank=True, on_delete=models.SET_NULL)
     decision_support = models.ForeignKey(verbose_name="Decision Support", to="DecisionSupport", to_field="dsid",
@@ -421,20 +422,20 @@ class ApplicationRecord(models.Model):
     water_use = models.CharField(verbose_name="Water Use", null=True, blank=True, max_length=32)
     water_unit = models.ForeignKey(verbose_name="Water Unit", to="Unit", to_field="unitid",
                                    related_name="ar_water_unit", null=True, blank=True, on_delete=models.SET_NULL)
-    application_rate = models.CharField(verbose_name="Application Rate", max_length=32)
+    application_rate = models.CharField(verbose_name="Application Rate", null=True, blank=True, max_length=32)
     rate_unit = models.ForeignKey(verbose_name="Rate Unit", to="Unit", to_field="unitid",
                                   related_name="ar_rate_unit", null=True, blank=True, on_delete=models.SET_NULL)
-    total_amount = models.CharField(verbose_name="Total Amount", max_length=32)
+    total_amount = models.CharField(verbose_name="Total Amount", null=True, blank=True, max_length=32)
     amount_unit = models.ForeignKey(verbose_name="Amount Unit", to="Unit", to_field="unitid",
                                     related_name="ar_amount_opu", null=True, blank=True, on_delete=models.SET_NULL)
-    total_cost = models.CharField(verbose_name="Total Cost", max_length=32)
+    total_cost = models.CharField(verbose_name="Total Cost", null=True, blank=True, max_length=32)
     customer = models.CharField(verbose_name="Customer", null=True, blank=True, max_length=64)
     wind_speed = models.CharField(verbose_name="Wind Speed", null=True, blank=True, max_length=32)
     wind_direction = models.CharField(verbose_name="Wind Direction", null=True, blank=True, max_length=32)
     average_temp = models.CharField(verbose_name="Average Temperature", null=True, blank=True, max_length=32)
 
     note = models.TextField(verbose_name="Note", null=True, blank=True)
-    is_active = models.BooleanField(verbose_name="Is Active", default=True)
+    is_active = models.BooleanField(verbose_name="Is Active", default=False)
     update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
 

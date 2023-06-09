@@ -7,6 +7,7 @@ import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import {GroupHeader, GroupItems} from "./styles";
 import OperationSnackbars from "../../components/Snackbars";
+import {getCookie} from "../../utils";
 
 const SprayCardStepper = lazy(() => import('./Stepper'))
 const SprayCardSiteTreeView = lazy(() => import('./SprayCardSiteTreeView'))
@@ -14,12 +15,18 @@ const UserTreeView = lazy(() => import('./UserTreeView'))
 
 const steps = ['Select Chemicals', 'Select Crops', 'Select Sites', 'Assign Process'];
 
-const field_names = ["chemical_purchase", "decision_support", "crop", "target", "site", "operator", "customer",]
+const field_names = ["chemical_purchase", "decision_support", "crop", "target", "site", "assign_to", "customer",]
 
 const end_site_types = ["Row", "Hole Code#", "Section", "Block"]
 
 export default function SprayCardInit({
-                                          uid, addSprayCard, setAddSprayCard, sprayData, sprayOptions
+                                          uid,
+                                          addSprayCard,
+                                          setAddSprayCard,
+                                          sprayData,
+                                          sprayOptions,
+                                          refreshRecord,
+                                          setRefreshRecord
                                       }) {
 
     const initialFieldValues = field_names.reduce((acc, cur) => {
@@ -40,12 +47,56 @@ export default function SprayCardInit({
     const [expanded, setExpanded] = useState([]);
     const [activeStep, setActiveStep] = React.useState(0);
     const [completed, setCompleted] = React.useState({0: false, 1: false, 2: false, 3: false});
+    const [successSnackbar, setSuccessSnackbar] = useState(false);
     const [errorSnackbar, setErrorSnackbar] = useState(false);
     const [warningSnackbar, setWarningSnackbar] = useState(false);
 
     const [applicationTargetOptions, setApplicationTargetOptions] = useState([]);
     const [siteOptions, setSiteOptions] = useState([]);
     const [nodes, setNodes] = useState([]);
+
+    async function SprayCardCreate() {
+        const apiData = reformatSubmitData();
+        console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
+        const requestOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify(apiData),
+        };
+        const response = await fetch("/workflow/spraycard/create/", requestOptions)
+        if (response.ok) {
+            const data = await response.json()
+            return data.data;
+        } else {
+            return null;
+        }
+    }
+
+    async function SprayCardInitiated(opid) {
+        const apiData = {"spray_record_id": opid};
+        console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
+        const requestOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify(apiData),
+        };
+        await fetch("/workflow/spraycard/initiate/", requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    setAddSprayCard(false);
+                    setSuccessSnackbar(true);
+                    setRefreshRecord(~refreshRecord);
+                }
+            })
+    }
 
     const flatten = (data) => {
         let result = [];
@@ -101,13 +152,12 @@ export default function SprayCardInit({
         if ([field_names[0], field_names[1]].includes(field)) {
             updateCompleted(0);
         }
-        if ([field_names[2], field_names[3]].includes(field)) {
+        if ([field_names[2], field_names[4]].includes(field)) {
             updateCompleted(1);
             updateCompleted(2);
         }
-        if ([field_names[4]].includes(field)) {
+        if ([field_names[3]].includes(field)) {
             updateCompleted(1);
-            updateCompleted(2);
         }
     };
 
@@ -592,8 +642,8 @@ export default function SprayCardInit({
         if (isValidField1 && isValidField2) {
             setFormData(prevFormData => ({
                 ...prevFormData,
-                [field_names[0]]: Object.values(fieldValues[field_names[0]]),
-                [field_names[1]]: Object.values(fieldValues[field_names[1]])
+                [field_names[0]]: fieldValues[field_names[0]],
+                [field_names[1]]: fieldValues[field_names[1]]
             }));
             return true;
         } else {
@@ -648,8 +698,34 @@ export default function SprayCardInit({
         }
     }
 
-    const submitSprayCardData = () => {
-        setAddSprayCard(false);
+    const reformatSubmitData = () => {
+        const getKey = (dict, val) => {
+            for (let key in dict) {
+                if ((dict[key]).id === val) {
+                    return key;
+                }
+            }
+        }
+
+        let submitData = [];
+        for (let chemical_key in Object.keys(formData[field_names[0]])) {
+            for (let site of formData[field_names[4]]) {
+                let applicationRecord = {};
+                applicationRecord["user_id"] = uid;
+                applicationRecord["crop_id"] = site.cid;
+                applicationRecord["site_id"] = site.id;
+                applicationRecord["chemical_purchase_id"] = (formData[field_names[0]][chemical_key]).id;
+                applicationRecord["target_id"] = (formData[field_names[3]][getKey(formData[field_names[2]], site.cid)]).id;
+                applicationRecord["decision_support_id"] = (formData[field_names[1]][chemical_key]).id;
+                submitData.push(applicationRecord);
+            }
+        }
+        return submitData
+    }
+
+    async function submitSprayCardData() {
+        const opid = await SprayCardCreate();
+        SprayCardInitiated(opid);
     }
 
     const stepperProps = {
@@ -686,16 +762,28 @@ export default function SprayCardInit({
         handleInputChange
     };
 
+    const createSuccessProps = {
+        open: successSnackbar,
+        setOpen: setAddSprayCard,
+        msg: "Spray Card Process Initiated Successfully.",
+        tag: "success"
+    };
+
     const saveErrorProps = {
         open: errorSnackbar, setOpen: setErrorSnackbar, msg: "None data or uncompleted data found.", tag: "error"
     };
 
     const warningProps = {
-        open: warningSnackbar, setOpen: setWarningSnackbar, msg: "Please complete the first three sections.", tag: "warning"
+        open: warningSnackbar,
+        setOpen: setWarningSnackbar,
+        msg: "Please complete the first three sections.",
+        tag: "warning"
     };
 
     useEffect(() => {
         updateSiteFields();
+        updateCompleted(1);
+        updateCompleted(2);
     }, [checked]);
 
     useEffect(() => {
@@ -746,6 +834,7 @@ export default function SprayCardInit({
                     </CardContent>
                 </Card>
             </Modal>
+            <OperationSnackbars  {...createSuccessProps}/>
             <OperationSnackbars  {...saveErrorProps}/>
             <OperationSnackbars  {...warningProps}/>
         </>
