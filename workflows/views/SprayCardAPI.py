@@ -70,7 +70,12 @@ class SprayCardInitiateView(APIView):
                 spray_card_process = SprayCard(**data)
                 spray_card_process.initiate()
                 spray_card_process.save()
-            return Response({'Succeeded': 'Process Has Been Initiated.'}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    'Succeeded': 'Process Has Been Initiated.',
+                    "data": SprayCardGetSerializer(spray_card_process).data
+                },
+                status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

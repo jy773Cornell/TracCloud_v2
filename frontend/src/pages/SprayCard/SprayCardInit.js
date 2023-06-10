@@ -11,9 +11,8 @@ import {getCookie} from "../../utils";
 
 const SprayCardStepper = lazy(() => import('./Stepper'))
 const SprayCardSiteTreeView = lazy(() => import('./SprayCardSiteTreeView'))
-const UserTreeView = lazy(() => import('./UserTreeView'))
 
-const steps = ['Select Chemicals', 'Select Crops', 'Select Sites', 'Assign Process'];
+const steps = ['Select Chemicals', 'Select Crops', 'Select Sites'];
 
 const field_names = ["chemical_purchase", "decision_support", "crop", "target", "site", "assign_to", "customer",]
 
@@ -26,7 +25,9 @@ export default function SprayCardInit({
                                           sprayData,
                                           sprayOptions,
                                           refreshRecord,
-                                          setRefreshRecord
+                                          setRefreshRecord,
+                                          setAssignSprayCard,
+                                          setSprayCardSelected
                                       }) {
 
     const initialFieldValues = field_names.reduce((acc, cur) => {
@@ -43,13 +44,13 @@ export default function SprayCardInit({
     const [formData, setFormData] = useState({});
     const [fieldValues, setFieldValues] = useState(initialFieldValues);
     const [fieldErrors, setFieldErrors] = useState({});
+
     const [checked, setChecked] = useState([]);
     const [expanded, setExpanded] = useState([]);
     const [activeStep, setActiveStep] = React.useState(0);
-    const [completed, setCompleted] = React.useState({0: false, 1: false, 2: false, 3: false});
+    const [completed, setCompleted] = React.useState({0: false, 1: false, 2: false});
     const [successSnackbar, setSuccessSnackbar] = useState(false);
     const [errorSnackbar, setErrorSnackbar] = useState(false);
-    const [warningSnackbar, setWarningSnackbar] = useState(false);
 
     const [applicationTargetOptions, setApplicationTargetOptions] = useState([]);
     const [siteOptions, setSiteOptions] = useState([]);
@@ -76,7 +77,7 @@ export default function SprayCardInit({
         }
     }
 
-    async function SprayCardInitiated(opid) {
+    async function SprayCardInitiate(opid) {
         const apiData = {"spray_record_id": opid};
         console.log(apiData);
         const csrftoken = getCookie('csrftoken');
@@ -88,14 +89,15 @@ export default function SprayCardInit({
             },
             body: JSON.stringify(apiData),
         };
-        await fetch("/workflow/spraycard/initiate/", requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    setAddSprayCard(false);
-                    setSuccessSnackbar(true);
-                    setRefreshRecord(~refreshRecord);
-                }
-            })
+        const response = await fetch("/workflow/spraycard/initiate/", requestOptions)
+        if (response.ok) {
+            const data = await response.json();
+            setSprayCardSelected(data.data);
+            setAddSprayCard(false);
+            setAssignSprayCard(true);
+            setSuccessSnackbar(true);
+            setRefreshRecord(~refreshRecord);
+        }
     }
 
     const flatten = (data) => {
@@ -433,18 +435,20 @@ export default function SprayCardInit({
     }
 
     const chemicalStepRender = () => {
-        return (<Grid container justifyContent="center" spacing={2}>
-            <Grid item xs={12} sx={{textAlign: 'center'}}>
-                <h1>Add Spray Card Process</h1>
+        return (
+            <Grid container justifyContent="center" spacing={2}>
+                <Grid item xs={12} sx={{textAlign: 'center'}}>
+                    <h1>Add Spray Card Process</h1>
+                </Grid>
+                {chemicalSelectionRender()}
+                <Grid item xs={12} sx={{textAlign: 'center'}}>
+                    <Button variant="contained" color="primary" sx={{mb: 2}}
+                            onClick={() => handleAddField(field_names[0])}>
+                        Add Chemical
+                    </Button>
+                </Grid>
             </Grid>
-            {chemicalSelectionRender()}
-            <Grid item xs={12} sx={{textAlign: 'center'}}>
-                <Button variant="contained" color="primary" sx={{mb: 2}}
-                        onClick={() => handleAddField(field_names[0])}>
-                    Add Chemical
-                </Button>
-            </Grid>
-        </Grid>);
+        );
     }
 
     const cropSelectionRender = () => {
@@ -585,28 +589,6 @@ export default function SprayCardInit({
         </Grid>);
     }
 
-    const assignRender = () => {
-        return (
-            <>
-                <Grid item xs={4}/>
-                <Grid item xs={4}>
-                    <UserTreeView {...userTreeProps}/>
-                </Grid>
-                <Grid item xs={4}/>
-            </>
-        );
-    }
-
-    const assignStepRender = () => {
-        return (
-            <Grid container justifyContent="center" spacing={2}>
-                <Grid item xs={12} sx={{textAlign: 'center'}}>
-                    <h1>Add Spray Card Process</h1>
-                </Grid>
-                {assignRender()}
-            </Grid>);
-    }
-
     const updateError = (fieldValue, fieldName) => {
         setFieldErrors(prevErrors => {
             let newErrors = {...prevErrors};
@@ -687,17 +669,6 @@ export default function SprayCardInit({
         }
     }
 
-    const checkSubmit = () => {
-        const isValidField = formData.hasOwnProperty(field_names[5]) && formData[field_names[5]] !== "";
-
-        if (isValidField && Object.values(completed).filter(value => value === true).length === 3) {
-            return true
-        } else {
-            setErrorSnackbar(true);
-            return false;
-        }
-    }
-
     const reformatSubmitData = () => {
         const getKey = (dict, val) => {
             for (let key in dict) {
@@ -725,7 +696,7 @@ export default function SprayCardInit({
 
     async function submitSprayCardData() {
         const opid = await SprayCardCreate();
-        SprayCardInitiated(opid);
+        await SprayCardInitiate(opid);
     }
 
     const stepperProps = {
@@ -734,11 +705,9 @@ export default function SprayCardInit({
         setActiveStep,
         completed,
         setCompleted,
-        setWarningSnackbar,
         saveChemicals,
         saveCrops,
         saveSites,
-        checkSubmit,
         submitSprayCardData
     };
 
@@ -756,28 +725,15 @@ export default function SprayCardInit({
         nodes
     };
 
-    const userTreeProps = {
-        sprayData,
-        field_names,
-        handleInputChange
-    };
-
     const createSuccessProps = {
         open: successSnackbar,
-        setOpen: setAddSprayCard,
+        setOpen: setSuccessSnackbar,
         msg: "Spray Card Process Initiated Successfully.",
         tag: "success"
     };
 
     const saveErrorProps = {
         open: errorSnackbar, setOpen: setErrorSnackbar, msg: "None data or uncompleted data found.", tag: "error"
-    };
-
-    const warningProps = {
-        open: warningSnackbar,
-        setOpen: setWarningSnackbar,
-        msg: "Please complete the first three sections.",
-        tag: "warning"
     };
 
     useEffect(() => {
@@ -795,7 +751,7 @@ export default function SprayCardInit({
         setFieldErrors({});
         setFormData({});
         setActiveStep(0);
-        setCompleted({0: false, 1: false, 2: false, 3: false})
+        setCompleted({0: false, 1: false, 2: false})
         siteTreeFresh();
     }, [addSprayCard]);
 
@@ -825,9 +781,6 @@ export default function SprayCardInit({
                                 <div style={{display: activeStep === 2 ? 'block' : 'none'}}>
                                     {siteStepRender()}
                                 </div>
-                                <div style={{display: activeStep === 3 ? 'block' : 'none'}}>
-                                    {assignStepRender()}
-                                </div>
                             </Box>
                             <SprayCardStepper {...stepperProps}/>
                         </Box>
@@ -836,7 +789,6 @@ export default function SprayCardInit({
             </Modal>
             <OperationSnackbars  {...createSuccessProps}/>
             <OperationSnackbars  {...saveErrorProps}/>
-            <OperationSnackbars  {...warningProps}/>
         </>
     );
 }

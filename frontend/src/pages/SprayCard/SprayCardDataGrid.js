@@ -27,6 +27,7 @@ export default function SprayCardDataGrid({
                                               sprayCardSelected,
                                               setSprayCardSelected
                                           }) {
+    const [sprayCardRecords, setSprayCardRecords] = useState([]);
     const [rows, setRows] = useState([]);
     const [mounted, setMounted] = useState(false);
 
@@ -39,6 +40,7 @@ export default function SprayCardDataGrid({
                 if (response.ok) {
                     response.json().then((data) => {
                         const record_list = data.data;
+                        setSprayCardRecords(record_list);
                         const record_row = record_list.map((record) => createRowData(record))
                         setRows(record_row);
                     })
@@ -57,26 +59,31 @@ export default function SprayCardDataGrid({
         };
     }
 
-    const handleStateClick = (record_id) => {
-        setSprayCardSelected(record_id);
+    const handleStateClick = (record) => {
+        setSprayCardSelected(record);
     };
 
     const columnWidth = 150;
-    const columns = [{
-        field: 'state', headerName: 'State', width: columnWidth, renderCell: (params) => (<Button
-            variant="text"
-            onClick={() => handleStateClick(params.row.id)}>
-            {params.row.state}
-        </Button>)
-    }, {
-        field: 'owner', headerName: 'Owner', width: columnWidth,
-    }, {
-        field: 'holder', headerName: 'Holder', width: columnWidth,
-    }, {
-        field: 'update_time', headerName: 'Update Time', width: 200,
-    }, {
-        field: 'create_time', headerName: 'Create Time', width: 200,
-    },]
+    const columns = [
+        {
+            field: 'state', headerName: 'State', width: columnWidth, renderCell: (params) => (<Button
+                variant="text"
+                onClick={() => handleStateClick(sprayCardRecords.find(record => record.scpid === params.row.id))}>
+                {params.row.state}
+            </Button>)
+        },
+        {
+            field: 'owner', headerName: 'Owner', width: columnWidth,
+        },
+        {
+            field: 'holder', headerName: 'Holder', width: columnWidth,
+        },
+        {
+            field: 'update_time', headerName: 'Update Time', width: 200,
+        },
+        {
+            field: 'create_time', headerName: 'Create Time', width: 200,
+        },]
 
     useEffect(() => {
         const fetchData = async () => {
@@ -102,7 +109,7 @@ export default function SprayCardDataGrid({
                     disableRowSelectionOnClick={true}
                     disableClickEdit={true}
                     rowSelection={false}
-                    getRowClassName={(params) => params.id === sprayCardSelected ? `highlight` : null}
+                    getRowClassName={(params) => params.id === sprayCardSelected?.scpid ? `highlight` : null}
                     slots={{
                         toolbar: CustomToolbar,
                     }}

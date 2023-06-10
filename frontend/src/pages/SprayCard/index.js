@@ -7,6 +7,7 @@ import {observer} from 'mobx-react-lite'
 import {useStore} from '../../store'
 
 const SprayCardInit = lazy(() => import('./SprayCardInit'))
+const SprayCardAssign = lazy(() => import('./SprayCardAssign'))
 const SprayCardDataGrid = lazy(() => import('./SprayCardDataGrid'))
 const SprayCardDetails = lazy(() => import('./SprayCardDetails'))
 
@@ -16,7 +17,9 @@ function SprayCard(props) {
 
     const [sprayData, setSprayData] = React.useState({});
     const [sprayOptions, setSprayOption] = React.useState({});
+
     const [addSprayCard, setAddSprayCard] = React.useState(false);
+    const [assignSprayCard, setAssignSprayCard] = React.useState(false);
     const [sprayCardSelected, setSprayCardSelected] = React.useState(null);
     const [refreshRecord, setRefreshRecord] = useState(false);
 
@@ -26,6 +29,18 @@ function SprayCard(props) {
         setAddSprayCard,
         sprayData,
         sprayOptions,
+        refreshRecord,
+        setRefreshRecord,
+        setAssignSprayCard,
+        setSprayCardSelected
+    };
+
+    const assignSprayCardProps = {
+        uid,
+        sprayData,
+        assignSprayCard,
+        setAssignSprayCard,
+        sprayCardSelected,
         refreshRecord,
         setRefreshRecord
     };
@@ -72,6 +87,7 @@ function SprayCard(props) {
                 </Grid>
             </div>
             <SprayCardInit {...addSprayCardProps}/>
+            <SprayCardAssign {...assignSprayCardProps}/>
         </div>
     );
 }

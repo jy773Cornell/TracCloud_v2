@@ -22,7 +22,7 @@ import {
     GridToolbarFilterButton,
 } from "@mui/x-data-grid";
 import ConfirmPopover from "../../components/ConfirmPopover";
-import SiteTreeView from "../../components/SiteTreeView";
+import SiteTreeView from "./SiteTreeView";
 import {getCookie} from "../../utils";
 
 const columnWidth = 200;

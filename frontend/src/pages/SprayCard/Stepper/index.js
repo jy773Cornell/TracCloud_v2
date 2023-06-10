@@ -14,25 +14,13 @@ export default function SprayCardStepper({
                                              setActiveStep,
                                              completed,
                                              setCompleted,
-                                             setWarningSnackbar,
                                              saveChemicals,
                                              saveCrops,
                                              saveSites,
-                                             checkSubmit,
                                              submitSprayCardData
                                          }) {
-    const totalSteps = () => {
-        return steps.length;
-    };
-
-    const completedSteps = () => {
-        return Object.values(completed).filter(complete => complete === true).length;
-    };
-
     const handleNext = () => {
-        if ((activeStep < 2) || (activeStep === 2 && completed[0] && completed[1])) {
-            setActiveStep(activeStep + 1);
-        }
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
     };
 
     const handleBack = () => {
@@ -40,11 +28,13 @@ export default function SprayCardStepper({
     };
 
     const handleStep = (step) => () => {
-        if (step < 3 || (step === 3 && completed[0] && completed[1] && completed[2])) {
-            setActiveStep(step);
-        } else {
-            setWarningSnackbar(true);
-        }
+        setActiveStep(step);
+    };
+
+    const completeStep = () => {
+        const newCompleted = completed;
+        newCompleted[activeStep] = true;
+        setCompleted(newCompleted);
     };
 
     const handleComplete = () => {
@@ -54,17 +44,8 @@ export default function SprayCardStepper({
             completeStep();
         } else if (activeStep === 2 && saveSites()) {
             completeStep();
-        } else if (activeStep === 3 && checkSubmit()) {
-            submitSprayCardData();
         }
     };
-
-    const completeStep = () => {
-        const newCompleted = completed;
-        newCompleted[activeStep] = true;
-        setCompleted(newCompleted);
-    };
-
 
     return (
         <Box sx={{width: '100%'}}>
@@ -89,17 +70,24 @@ export default function SprayCardStepper({
                             Back
                         </Button>
                         <Box sx={{flex: '1 1 auto'}}/>
-                        <Button onClick={handleNext} sx={{mr: 1}}>
+                        <Button
+                            disabled={activeStep === 2}
+                            onClick={handleNext}
+                            sx={{mr: 1}}>
                             Next
                         </Button>
-                        {activeStep !== steps.length &&
-                            (completed[activeStep] ? null : (
-                                <Button onClick={handleComplete}>
-                                    {completedSteps() === totalSteps() - 1
-                                        ? 'Submit Process'
-                                        : 'Save'}
-                                </Button>
-                            ))}
+                        <Button
+                            disabled={completed[activeStep]}
+                            onClick={handleComplete}
+                            sx={{mr: 1}}>
+                            Save
+                        </Button>
+                        <Button
+                            disabled={Object.values(completed).some(value => value === false)}
+                            onClick={submitSprayCardData}
+                        >
+                            Create
+                        </Button>
                     </Box>
                 </React.Fragment>
             </div>
