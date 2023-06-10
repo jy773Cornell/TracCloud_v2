@@ -61,7 +61,7 @@ export default function SprayCardAssign({
         return (
             <Grid container justifyContent="center" spacing={2}>
                 <Grid item xs={12} sx={{textAlign: 'center'}}>
-                    <h1>Add Spray Card Process</h1>
+                    <h1>Assign Spray Card Process</h1>
                 </Grid>
                 {assignRender()}
             </Grid>);
@@ -107,7 +107,6 @@ export default function SprayCardAssign({
                                     Assign
                                 </Button>
                             </Box>
-
                         </Box>
                     </CardContent>
                 </Card>

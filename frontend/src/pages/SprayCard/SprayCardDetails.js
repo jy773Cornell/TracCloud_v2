@@ -1,6 +1,8 @@
 import * as React from "react";
-import Paper from "@mui/material/Paper";
-import {Card, CardContent, Grid, Typography} from "@mui/material";
+import {Card, CardContent, Grid} from "@mui/material";
+import {lazy} from "react";
+
+const StateStepper = lazy(() => import('./StateStepper'))
 
 export default function SprayCardDetails({
                                              uid,
@@ -9,16 +11,14 @@ export default function SprayCardDetails({
 
     const SprayCardHintRender = () => {
         return (
-            <Card style={{height: '900px'}} sx={{
+            <Card style={{height: '898px'}} sx={{
                 border: '1px solid',
                 borderColor: 'divider',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center'
             }}>
-                <Typography gutterBottom variant="h6" component="div">
-                    Please select a process to view its detailed information.
-                </Typography>
+                <h3>Please select a process to view its detailed information.</h3>
             </Card>
         );
     }
@@ -27,30 +27,39 @@ export default function SprayCardDetails({
         return (
             <Card sx={{width: '90%', border: '1px solid', borderColor: 'divider', m: 'auto', marginTop: '24px'}}>
                 <CardContent>
-                    <Typography gutterBottom variant="h5" component="div" sx={{textAlign: 'center'}}>
-                        Spray Card Process
-                    </Typography>
-                    <Typography variant="body1" color="text.secondary" sx={{textAlign: 'center'}}>
-                        {sprayCardSelected?.scpid}
-                    </Typography>
-                    <Typography variant="body1" sx={{textAlign: 'center'}}>
-                        Owner: {sprayCardSelected?.owner}
-                    </Typography>
-                    <Typography variant="body1" sx={{textAlign: 'center'}}>
-                        Holder: {sprayCardSelected?.holder}
-                    </Typography>
-                    <Typography variant="body1" sx={{textAlign: 'center'}}>
-                        Create Time: {sprayCardSelected?.create_time}
-                    </Typography>
-                    <Typography variant="body1" sx={{textAlign: 'center'}}>
-                        Update Time: {sprayCardSelected?.update_time}
-                    </Typography>
-                    <Typography variant="body1" sx={{textAlign: 'center'}}>
-                        State: {sprayCardSelected?.state}
-                    </Typography>
-                    <Typography variant="body1" sx={{textAlign: 'center'}}>
-                        Active: {sprayCardSelected?.is_active ? "Yes" : "No"}
-                    </Typography>
+                    <Grid container justifyContent="center" spacing={2}>
+                        <Grid item xs={12} sx={{textAlign: 'center'}}>
+                            <h1>Spray Card Process</h1>
+                            <em>{sprayCardSelected?.scpid}</em>
+                        </Grid>
+                        <Grid item xs={1}/>
+                        <Grid item xs={5} sx={{textAlign: 'center'}}>
+                            <strong>State: </strong>{sprayCardSelected?.state}
+                        </Grid>
+                        <Grid item xs={5} sx={{textAlign: 'center'}}>
+                            <strong>Active: </strong>{sprayCardSelected?.is_active ? "Yes" : "No"}
+                        </Grid>
+                        <Grid item xs={1}/>
+                        <Grid item xs={1}/>
+                        <Grid item xs={5} sx={{textAlign: 'center'}}>
+                            <strong>Owner: </strong>{sprayCardSelected?.owner}
+                        </Grid>
+                        <Grid item xs={5} sx={{textAlign: 'center'}}>
+                            <strong>Holder: </strong>{sprayCardSelected?.holder}
+                        </Grid>
+                        <Grid item xs={1}/>
+                        <Grid item xs={1}/>
+                        <Grid item xs={5} sx={{textAlign: 'center'}}>
+                            <strong>Update Time: </strong>{sprayCardSelected?.update_time}
+                        </Grid>
+                        <Grid item xs={5} sx={{textAlign: 'center'}}>
+                            <strong>Create Time: </strong>{sprayCardSelected?.create_time}
+                        </Grid>
+                        <Grid item xs={1}/>
+                        <Grid item xs={12} sx={{textAlign: 'center'}}>
+                            <StateStepper state={sprayCardSelected?.state}/>
+                        </Grid>
+                    </Grid>
                 </CardContent>
             </Card>
         );
@@ -60,9 +69,11 @@ export default function SprayCardDetails({
         return (
             <Card sx={{width: '90%', border: '1px solid', borderColor: 'divider', m: 'auto', marginTop: '24px'}}>
                 <CardContent>
-                    <Typography gutterBottom variant="h5" component="div" sx={{textAlign: 'center'}}>
-                        Assignment History
-                    </Typography>
+                    <Grid container justifyContent="center" spacing={2}>
+                        <Grid item xs={12} sx={{textAlign: 'center'}}>
+                            <h1>Assignment History</h1>
+                        </Grid>
+                    </Grid>
                 </CardContent>
             </Card>
         );
@@ -72,9 +83,11 @@ export default function SprayCardDetails({
         return (
             <Card sx={{width: '90%', border: '1px solid', borderColor: 'divider', m: 'auto', marginTop: '24px'}}>
                 <CardContent>
-                    <Typography gutterBottom variant="h5" component="div" sx={{textAlign: 'center'}}>
-                        Spray Card
-                    </Typography>
+                    <Grid container justifyContent="center" spacing={2}>
+                        <Grid item xs={12} sx={{textAlign: 'center'}}>
+                            <h1>Spray Card</h1>
+                        </Grid>
+                    </Grid>
                 </CardContent>
             </Card>
         );
@@ -82,7 +95,7 @@ export default function SprayCardDetails({
 
     const SprayCardDetailRender = () => {
         return (
-            <Card style={{height: 900}} sx={{border: '1px solid', borderColor: 'divider'}}>
+            <Card style={{height: 898}} sx={{border: '1px solid', borderColor: 'divider'}}>
                 {SprayCardOverviewRender()}
                 {SprayCardAssignmentHistoryRender()}
                 {SprayCardContentRender()}

@@ -4,11 +4,8 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepButton from '@mui/material/StepButton';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import {object} from "prop-types";
 
-export default function SprayCardStepper({
+export default function AddStepper({
                                              steps,
                                              activeStep,
                                              setActiveStep,

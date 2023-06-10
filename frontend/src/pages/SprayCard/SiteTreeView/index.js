@@ -6,7 +6,7 @@ import {Box} from "@mui/system";
 import {Button, Grid} from "@mui/material";
 import {useState} from "react";
 
-export default function SprayCardSiteTreeView({
+export default function SiteTreeView({
                                                   sprayData,
                                                   field_names,
                                                   fieldValues,

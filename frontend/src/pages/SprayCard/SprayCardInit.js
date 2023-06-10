@@ -9,8 +9,8 @@ import {GroupHeader, GroupItems} from "./styles";
 import OperationSnackbars from "../../components/Snackbars";
 import {getCookie} from "../../utils";
 
-const SprayCardStepper = lazy(() => import('./Stepper'))
-const SprayCardSiteTreeView = lazy(() => import('./SprayCardSiteTreeView'))
+const AddStepper = lazy(() => import('./AddStepper'))
+const SiteTreeView = lazy(() => import('./SiteTreeView'))
 
 const steps = ['Select Chemicals', 'Select Crops', 'Select Sites'];
 
@@ -539,7 +539,7 @@ export default function SprayCardInit({
         return (<>
             <Grid item xs={9}>
                 <Grid container spacing={2}>
-                    <SprayCardSiteTreeView {...siteTreeProps}/>
+                    <SiteTreeView {...siteTreeProps}/>
                 </Grid>
             </Grid>
             <Grid item xs={3}>
@@ -782,7 +782,7 @@ export default function SprayCardInit({
                                     {siteStepRender()}
                                 </div>
                             </Box>
-                            <SprayCardStepper {...stepperProps}/>
+                            <AddStepper {...stepperProps}/>
                         </Box>
                     </CardContent>
                 </Card>
