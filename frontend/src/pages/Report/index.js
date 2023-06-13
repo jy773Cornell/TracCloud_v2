@@ -21,7 +21,7 @@ import {
     GridToolbarFilterButton
 } from "@mui/x-data-grid";
 import {grey} from '@mui/material/colors';
-import CentralPostingGenerator from '../../components/ReportGenerators/CentralPosting';
+import CentralPostingGenerator from './ReportGenerators/CentralPosting';
 import {Container} from "@mui/system";
 
 const columnWidth = 200;

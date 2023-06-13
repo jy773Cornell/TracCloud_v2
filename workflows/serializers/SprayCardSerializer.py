@@ -10,9 +10,26 @@ class SprayCardGetSerializer(serializers.ModelSerializer):
     create_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     owner = serializers.StringRelatedField()
     holder = serializers.StringRelatedField()
+    owner_id = serializers.PrimaryKeyRelatedField(source='owner.pk', read_only=True)
+    holder_id = serializers.PrimaryKeyRelatedField(source='holder.pk', read_only=True)
 
     class Meta:
         model = SprayCard
+        fields = "__all__"
+
+
+class AssignmentGetSerializer(serializers.ModelSerializer):
+    assign_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    assign_to = serializers.StringRelatedField()
+
+    class Meta:
+        model = SprayCardAssignment
+        fields = "__all__"
+
+
+class SprayCardContentGetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ApplicationRecord
         fields = "__all__"
 
 

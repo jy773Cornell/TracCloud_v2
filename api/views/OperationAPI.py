@@ -35,12 +35,12 @@ class PurchaseCreateView(APIView):
 
 class PurchaseGetView(APIView):
     serializer_class = PurchaseGetSerializer
-    lookup_url_kwarg = "opid"
+    lookup_url_kwarg = "prid"
 
     def get(self, request, format=None):
-        opid = request.GET.get(self.lookup_url_kwarg)
-        if opid:
-            purchase = PurchaseRecord.objects.filter(opid=opid).alive().first()
+        prid = request.GET.get(self.lookup_url_kwarg)
+        if prid:
+            purchase = PurchaseRecord.objects.filter(prid=prid).alive().first()
             if purchase:
                 data = PurchaseGetSerializer(purchase).data
                 return Response({'Succeeded': 'Purchase Record Info Fetched.', 'data': data}, status=status.HTTP_200_OK)

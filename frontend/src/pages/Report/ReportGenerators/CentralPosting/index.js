@@ -1,6 +1,6 @@
 import React from 'react';
 import dayjs from "dayjs";
-import {getCookie} from "../../../utils";
+import {getCookie} from "../../../../utils";
 
 const reportGenerateUrl = '/api/report/central-posting';
 

@@ -6,11 +6,11 @@ import {lazy, useEffect, useState} from "react";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import {GroupHeader, GroupItems} from "./styles";
-import OperationSnackbars from "../../components/Snackbars";
-import {getCookie} from "../../utils";
+import OperationSnackbars from "../../../components/Snackbars";
+import {getCookie} from "../../../utils";
 
-const AddStepper = lazy(() => import('./AddStepper'))
-const SiteTreeView = lazy(() => import('./SiteTreeView'))
+const AddStepper = lazy(() => import('../AddStepper'))
+const SiteTreeView = lazy(() => import('../SiteTreeView'))
 
 const steps = ['Select Chemicals', 'Select Crops', 'Select Sites'];
 
@@ -18,7 +18,7 @@ const field_names = ["chemical_purchase", "decision_support", "crop", "target", 
 
 const end_site_types = ["Row", "Hole Code#", "Section", "Block"]
 
-export default function SprayCardInit({
+export default function Index({
                                           uid,
                                           addSprayCard,
                                           setAddSprayCard,
@@ -237,26 +237,6 @@ export default function SprayCardInit({
             });
 
             setApplicationTargetOptions(optionObj);
-        }
-    };
-
-    const SiteOptionsFresh = () => {
-        if (sprayData["siteList"]) {
-            const endSiteList = flatten(sprayData["siteList"]).filter(item => end_site_types.includes(item.type))
-            let options = [];
-            endSiteList.map(item => {
-                let site = item;
-                let optionStr = site.name;
-                const sid = site.sid;
-                const cid = site.crop.cid;
-                const crop = `${site.crop.crop} (${site.crop.variety}, ${site.crop.growth_stage})`
-                while (site.parent) {
-                    site = flatten(sprayData["siteList"]).find(item => item.sid === site.parent)
-                    optionStr = `${site.name} - ${optionStr}`;
-                }
-                options.push({id: sid, label: optionStr, cid: cid, crop: crop});
-            })
-            setSiteOptions(options);
         }
     };
 
@@ -756,9 +736,9 @@ export default function SprayCardInit({
     }, [addSprayCard]);
 
     useEffect(() => {
-        SiteOptionsFresh();
+        setSiteOptions(sprayOptions?.siteOptions || []);
         siteTreeFresh();
-    }, [sprayData]);
+    }, [sprayData, sprayOptions]);
 
     return (
         <>

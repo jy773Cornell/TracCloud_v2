@@ -14,6 +14,8 @@ urlpatterns = [
     path('password_reset_confirm/<str:token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
 
     path('spraycard/list/get/', SprayCardListGetView.as_view()),
+    path('spraycard/assignment_history/get/', SprayCardAssignmentHistoryGetView.as_view()),
+    path('spraycard/content/get/', SprayCardContentGetView.as_view()),
     path('spraycard/create/', SprayCardCreateView.as_view()),
     path('spraycard/initiate/', SprayCardInitiateView.as_view()),
     path('spraycard/assign/', SprayCardAssignView.as_view()),

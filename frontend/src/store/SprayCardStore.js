@@ -1,8 +1,10 @@
 import {makeAutoObservable} from 'mobx';
 import {useState} from "react";
 
-class SprayCardStore {
+const end_site_types = ["Row", "Hole Code#", "Section", "Block"]
 
+class SprayCardStore {
+    end_site_types = ["Row", "Hole Code#", "Section", "Block"]
     chemicalOptions = [];
 
     flatten(data) {
@@ -49,6 +51,19 @@ class SprayCardStore {
 
         const jsonData = await Promise.all(jsonDataPromises);
 
+        const flatten = (data) => {
+            let result = [];
+            for (let i = 0; i < data.length; i++) {
+                let obj = {};
+                obj = {...data[i]};
+                delete obj.children;
+                result.push(obj);
+                if (data[i].children) {
+                    result = result.concat(flatten(data[i].children));
+                }
+            }
+            return result;
+        }
 
         return {
             "record_data": {
@@ -81,6 +96,21 @@ class SprayCardStore {
                     label: `${item.crop} (${item.variety}, ${item.growth_stage})`,
                     id: item.cid
                 })),
+                targetOptions: jsonData[7].data.map(item => ({
+                    label: item.name, id: item.attid,
+                })),
+                siteOptions: flatten(jsonData[1].data).filter(item => end_site_types.includes(item.type)).map(item => {
+                    let site = item;
+                    let optionStr = site.name;
+                    const sid = site.sid;
+                    const cid = site.crop.cid;
+                    const crop = `${site.crop.crop} (${site.crop.variety}, ${site.crop.growth_stage})`
+                    while (site.parent) {
+                        site = flatten(jsonData[1].data).find(item => item.sid === site.parent)
+                        optionStr = `${site.name} - ${optionStr}`;
+                    }
+                    return {id: sid, label: optionStr, cid: cid, crop: crop};
+                }),
             }
         };
     }

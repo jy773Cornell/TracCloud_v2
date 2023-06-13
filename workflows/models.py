@@ -212,8 +212,6 @@ class SprayCard(models.Model):
 
     @transition(field=state, source=['initiated', 'assigned'], target='archived')
     def withdraw(self):
-        SprayCardAssignment.objects.filter(spray_card=self, is_active=True).update(is_active=False)
-
         self.spray_record.state = 'withdrew'
         self.spray_record.is_active = False
         self.spray_record.save()
@@ -222,8 +220,6 @@ class SprayCard(models.Model):
 
     @transition(field=state, source=['initiated', 'assigned'], target='archived')
     def complete(self):
-        SprayCardAssignment.objects.filter(spray_card=self, is_active=True).update(is_active=False)
-
         self.spray_record.state = 'completed'
         self.spray_record.save()
 

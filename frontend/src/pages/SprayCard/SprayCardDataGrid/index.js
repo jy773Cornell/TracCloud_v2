@@ -21,12 +21,12 @@ function CustomToolbar() {
     </GridToolbarContainer>);
 }
 
-export default function SprayCardDataGrid({
-                                              uid,
-                                              refreshRecord,
-                                              sprayCardSelected,
-                                              setSprayCardSelected
-                                          }) {
+export default function Index({
+                                  uid,
+                                  refreshRecord,
+                                  sprayCardSelected,
+                                  setSprayCardSelected
+                              }) {
     const [sprayCardRecords, setSprayCardRecords] = useState([]);
     const [rows, setRows] = useState([]);
     const [mounted, setMounted] = useState(false);
@@ -63,6 +63,13 @@ export default function SprayCardDataGrid({
         setSprayCardSelected(record);
     };
 
+    const updateSelectedSprayCard = () => {
+        if (sprayCardSelected) {
+            const updatedSprayCard = sprayCardRecords.find(record => record.scpid === sprayCardSelected.scpid);
+            setSprayCardSelected(updatedSprayCard ? updatedSprayCard : null);
+        }
+    }
+
     const columnWidth = 150;
     const columns = [
         {
@@ -93,6 +100,10 @@ export default function SprayCardDataGrid({
         fetchData();
         setMounted(true);
     }, []);
+
+    useEffect(() => {
+        updateSelectedSprayCard();
+    }, [sprayCardRecords]);
 
     useEffect(() => {
         if (mounted) {

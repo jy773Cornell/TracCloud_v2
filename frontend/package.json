@@ -53,8 +53,11 @@
     "react-checkbox-tree": "^1.8.0",
     "react-data-grid": "^7.0.0-beta.28",
     "react-router-dom": "^6.8.1",
+    "react-syntax-highlighter": "^15.5.0",
     "sort-by": "^0.0.2",
     "styled-components": "^5.3.9",
+    "vis-data": "^7.1.6",
+    "vis-timeline": "^7.7.2",
     "xlsx-populate": "^1.21.0"
   }
 }

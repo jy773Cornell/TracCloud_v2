@@ -37,7 +37,7 @@ class UserProfile(models.Model):
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
 
     def __str__(self):
-        return "{} ({})".format(self.user, self.type)
+        return self.user.username
 
     objects = MyModelManager()
 

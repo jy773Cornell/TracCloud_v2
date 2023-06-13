@@ -55,6 +55,8 @@ function SprayCard(props) {
     const detailsProps = {
         uid,
         sprayCardSelected,
+        sprayOptions,
+        setAssignSprayCard,
     };
 
     useEffect(() => {

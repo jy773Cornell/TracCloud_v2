@@ -28,6 +28,49 @@ class SprayCardListGetView(APIView):
         return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class SprayCardAssignmentHistoryGetView(APIView):
+    serializer_class = AssignmentGetSerializer
+    lookup_url_kwarg = "scpid"
+
+    def get(self, request, format=None):
+        scpid = request.GET.get(self.lookup_url_kwarg)
+        if scpid:
+            spray_card_process = SprayCard.objects.filter(scpid=scpid).first()
+            if spray_card_process:
+                spray_card_assign_list = SprayCardAssignment.objects.filter(spray_card=spray_card_process).order_by(
+                    'assign_time')
+                data = []
+                for assignment in spray_card_assign_list:
+                    data.append(self.serializer_class(assignment).data)
+                return Response({'Succeeded': 'Spray Card Assignment List Info Fetched.', 'data': data},
+                                status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid spcid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SprayCardContentGetView(APIView):
+    serializer_class = SprayCardContentGetSerializer
+    lookup_url_kwarg = "scpid"
+
+    def get(self, request, format=None):
+        scpid = request.GET.get(self.lookup_url_kwarg)
+        if scpid:
+            spray_card_process = SprayCard.objects.filter(scpid=scpid).first()
+            if spray_card_process:
+                spray_card_content_list = ApplicationRecord.objects.filter(opid=spray_card_process.spray_record)
+                data = []
+                for content in spray_card_content_list:
+                    data.append(self.serializer_class(content).data)
+                return Response({'Succeeded': 'Spray Card Contect List Info Fetched.', 'data': data},
+                                status=status.HTTP_200_OK)
+
+            return Response({'Failed': 'Invalid spcid'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class SprayCardCreateView(APIView):
     serializer_class = SprayCardCreateSerializer
 

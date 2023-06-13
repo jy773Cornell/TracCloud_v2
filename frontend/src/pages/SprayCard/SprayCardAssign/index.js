@@ -1,17 +1,14 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import {Autocomplete, Card, CardContent, Checkbox, Grid, Modal, TextField} from "@mui/material";
-import {lazy, useEffect, useState} from "react";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import CheckBoxIcon from "@mui/icons-material/CheckBox";
-import {GroupHeader, GroupItems} from "./styles";
-import OperationSnackbars from "../../components/Snackbars";
-import {getCookie} from "../../utils";
+import {Card, CardContent, Grid, Modal} from "@mui/material";
+import {lazy, useState} from "react";
+import OperationSnackbars from "../../../components/Snackbars";
+import {getCookie} from "../../../utils";
 
-const UserTreeView = lazy(() => import('./UserTreeView'))
+const UserTreeView = lazy(() => import('../UserTreeView'))
 
-export default function SprayCardAssign({
+export default function Index({
                                             uid,
                                             sprayData,
                                             assignSprayCard,
