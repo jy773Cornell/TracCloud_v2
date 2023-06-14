@@ -332,8 +332,7 @@ class HarvestRecordAdmin(admin.ModelAdmin):
 
 class ApplicationRecordAdmin(admin.ModelAdmin):
     list_display = (
-        'arid', 'user', 'app_date', 'crop', 'site', 'is_active', 'update_time',
-        'create_time',)
+        'arid', 'user', 'crop', 'site', 'is_active', 'update_time', 'create_time',)
 
     list_filter = ('is_active',)
 

@@ -17,12 +17,12 @@ urlpatterns = [
     path('spraycard/assignment_history/get/', SprayCardAssignmentHistoryGetView.as_view()),
     path('spraycard/content/get/', SprayCardContentGetView.as_view()),
     path('spraycard/create/', SprayCardCreateView.as_view()),
+    path('spraycard/update/', SprayCardUpdateView.as_view()),
     path('spraycard/initiate/', SprayCardInitiateView.as_view()),
     path('spraycard/assign/', SprayCardAssignView.as_view()),
     path('spraycard/return/', SprayCardReturnView.as_view()),
     path('spraycard/withdraw/', SprayCardWithdrawView.as_view()),
     path('spraycard/complete/', SprayCardCompleteView.as_view()),
-    # path('spraycard/approve/', SprayCardApproveView.as_view()),
 
     path('connection/initiate/', ConnectionInitiateView.as_view()),
     path('connection/approve/', ConnectionApproveView.as_view()),

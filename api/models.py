@@ -405,7 +405,6 @@ class ApplicationRecord(models.Model):
     applied_area = models.CharField(verbose_name="Applied Area", null=True, blank=True, max_length=32)
     area_unit = models.ForeignKey(verbose_name="Area Unit", to="Unit", to_field="unitid", related_name="ar_area_unit",
                                   null=True, blank=True, on_delete=models.SET_NULL)
-    app_date = models.CharField(verbose_name="Application Date", null=True, blank=True, max_length=64)
     start_time = models.CharField(verbose_name="Start Time", null=True, blank=True, max_length=64)
     finish_time = models.CharField(verbose_name="Finish Time", null=True, blank=True, max_length=64)
     operator = models.ForeignKey(verbose_name="Operator", to="UserProfile", to_field="uid",
@@ -438,9 +437,6 @@ class ApplicationRecord(models.Model):
     is_active = models.BooleanField(verbose_name="Is Active", default=False)
     update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
-
-    def __str__(self):
-        return "{} ({})".format(self.site, self.app_date)
 
     objects = MyModelManager()
 

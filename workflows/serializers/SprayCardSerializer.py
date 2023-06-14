@@ -3,6 +3,11 @@ from workflows.models import SprayCard, SprayCardAssignment
 from api.models import *
 from api.utils.UUIDGen import gen_uuid
 from workflows.utils.UserTree import *
+from django.core.cache import cache
+from api.serializers.ChemicalSerializer import *
+from api.serializers.OperationSerializer import *
+from api.serializers.CropSerializer import *
+from api.serializers.SiteSerializer import *
 
 
 class SprayCardGetSerializer(serializers.ModelSerializer):
@@ -12,10 +17,15 @@ class SprayCardGetSerializer(serializers.ModelSerializer):
     holder = serializers.StringRelatedField()
     owner_id = serializers.PrimaryKeyRelatedField(source='owner.pk', read_only=True)
     holder_id = serializers.PrimaryKeyRelatedField(source='holder.pk', read_only=True)
+    state = serializers.SerializerMethodField()
 
     class Meta:
         model = SprayCard
         fields = "__all__"
+
+    def get_state(self, obj):
+        state = obj.state if (obj.state != 'archived') else obj.spray_record.state
+        return state
 
 
 class AssignmentGetSerializer(serializers.ModelSerializer):
@@ -28,12 +38,106 @@ class AssignmentGetSerializer(serializers.ModelSerializer):
 
 
 class SprayCardContentGetSerializer(serializers.ModelSerializer):
+    crop = serializers.SerializerMethodField()
+    chemical_purchase = serializers.SerializerMethodField()
+    site = serializers.SerializerMethodField()
+    water_unit = serializers.SerializerMethodField()
+    rate_unit = serializers.SerializerMethodField()
+    amount_unit = serializers.SerializerMethodField()
+    area_unit = serializers.SerializerMethodField()
+    target = serializers.SerializerMethodField()
+    decision_support = serializers.SerializerMethodField()
+    update_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+
     class Meta:
         model = ApplicationRecord
         fields = "__all__"
 
+    def get_crop(self, obj):
+        crop = CropGetSerializer(obj.crop).data
+        return {"label": "{} ({}, {})".format(crop['crop'], crop['variety'], crop['growth_stage']), "id": crop['cid']}
+
+    def get_chemical_purchase(self, obj):
+        chemical = ChemicalGetSerializer(obj.chemical_purchase.chemical).data
+        chemical_purchase = PurchaseGetSerializer(obj.chemical_purchase).data
+        return {
+            "label": f"{chemical['epa_reg_no']} | {chemical['trade_name']} | {chemical['active_ingredient']} | {chemical_purchase['cost_per_unit']} per ${chemical['unit']} | {chemical_purchase['pur_datetime']}",
+            "unit": chemical['unit'],
+            "cost": chemical_purchase['cost_per_unit'],
+            "cost_per_unit": f"${chemical_purchase['cost_per_unit']} per {chemical['unit']}",
+            "id": obj.chemical_purchase_id,
+        }
+
+    def get_site(self, obj):
+        site = obj.site
+        crop = CropGetSerializer(obj.crop).data
+        option_str = site.name
+        sid = site.sid
+        cid = crop['cid']
+        size = site.size
+        size_unit = SiteGetSerializer(obj.site).data['size_unit']
+        crop = "{} ({}, {})".format(crop['crop'], crop['variety'], crop['growth_stage'])
+
+        while site.parent:
+            site = site.parent
+            option_str = f"{site.name} - {option_str}"
+        option_str = f"{option_str}: {size} {size_unit}"
+
+        return {
+            'id': sid,
+            'label': option_str,
+            'cid': cid,
+            'crop': crop,
+            'size': float(size),
+            'size_unit': size_unit,
+        }
+
+    def get_water_unit(self, obj):
+        return next((item['name'] for item in cache.get("Unit") if item['unitid'] == obj.water_unit_id), None)
+
+    def get_rate_unit(self, obj):
+        return next((item['name'] for item in cache.get("Unit") if item['unitid'] == obj.rate_unit_id), None)
+
+    def get_amount_unit(self, obj):
+        return next((item['name'] for item in cache.get("Unit") if item['unitid'] == obj.amount_unit_id), None)
+
+    def get_area_unit(self, obj):
+        return next((item['name'] for item in cache.get("Unit") if item['unitid'] == obj.area_unit_id), None)
+
+    def get_target(self, obj):
+        return {
+            "label":
+                next((item['name'] for item in cache.get("ApplicationTarget") if item['attid'] == obj.target_id), None),
+            "id":
+                obj.target_id
+        }
+
+    def get_decision_support(self, obj):
+        return {
+            "label":
+                next((item['name'] for item in cache.get("DecisionSupport") if item['dsid'] == obj.decision_support_id),
+                     None),
+            "id":
+                obj.decision_support_id
+        }
+
 
 class SprayCardCreateSerializer(serializers.ModelSerializer):
+    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=UserProfile.objects.all().alive())
+    crop_id = serializers.PrimaryKeyRelatedField(source='crop', queryset=Crop.objects.all().alive())
+    site_id = serializers.PrimaryKeyRelatedField(source='site', queryset=Site.objects.all().alive())
+    chemical_purchase_id = serializers.PrimaryKeyRelatedField(source='chemical_purchase',
+                                                              queryset=PurchaseRecord.objects.all().alive())
+    target_id = serializers.PrimaryKeyRelatedField(source='target', queryset=ApplicationTarget.objects.all())
+    decision_support_id = serializers.PrimaryKeyRelatedField(source='decision_support',
+                                                             queryset=DecisionSupport.objects.all())
+
+    class Meta:
+        model = ApplicationRecord
+        fields = ("user_id", "crop_id", "site_id", "chemical_purchase_id", "target_id", "decision_support_id")
+
+
+class SprayCardUpdateSerializer(serializers.ModelSerializer):
     user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=UserProfile.objects.all().alive())
     crop_id = serializers.PrimaryKeyRelatedField(source='crop', queryset=Crop.objects.all().alive())
     site_id = serializers.PrimaryKeyRelatedField(source='site', queryset=Site.objects.all().alive())

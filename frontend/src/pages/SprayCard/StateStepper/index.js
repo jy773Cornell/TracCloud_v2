@@ -82,7 +82,7 @@ QontoStepIcon.propTypes = {
 };
 
 const steps = ['Initiated', 'Assigned', 'Archived'];
-const stateSteps = {'initiated': 0, 'assigned': 1, 'archived': 3};
+const stateSteps = {'initiated': 0, 'assigned': 1, 'completed': 3, 'withdrew': 3};
 
 export default function StateStepper({state}) {
     const [activeStep, setActiveStep] = useState();

@@ -140,8 +140,9 @@ export default function AssignHistoryDiagram({sprayCardSelected}) {
 
     return (
         <>
-            <Button
-                onClick={() => setShowBasic(!showBasic)}>{showBasic ? "See Detailed Timeline" : "Back"}</Button>
+            {/*<Button*/}
+            {/*    onClick={() => setShowBasic(!showBasic)}>{showBasic ? "See Detailed Timeline" : "Back"}*/}
+            {/*</Button>*/}
             <div style={{display: showBasic ? 'block' : 'none'}}>
                 {basicTimelineRender()}
             </div>

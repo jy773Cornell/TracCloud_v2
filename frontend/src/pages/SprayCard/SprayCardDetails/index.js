@@ -10,9 +10,12 @@ const SprayCardContent = lazy(() => import('../SprayCardContent'));
 
 export default function Index({
                                   uid,
+                                  sprayData,
                                   sprayCardSelected,
                                   sprayOptions,
                                   setAssignSprayCard,
+                                  refreshRecord,
+                                  setRefreshRecord
                               }) {
 
     const [overviewExpanded, setOverviewExpanded] = React.useState(true);
@@ -119,9 +122,12 @@ export default function Index({
 
     const contentProps = {
         uid,
+        sprayData,
         sprayCardSelected,
         sprayOptions,
         setAssignSprayCard,
+        refreshRecord,
+        setRefreshRecord
     }
 
     const SprayCardContentRender = () => {

@@ -9,14 +9,14 @@ import {getCookie} from "../../../utils";
 const UserTreeView = lazy(() => import('../UserTreeView'))
 
 export default function Index({
-                                            uid,
-                                            sprayData,
-                                            assignSprayCard,
-                                            setAssignSprayCard,
-                                            sprayCardSelected,
-                                            refreshRecord,
-                                            setRefreshRecord
-                                        }) {
+                                  uid,
+                                  sprayData,
+                                  assignSprayCard,
+                                  setAssignSprayCard,
+                                  sprayCardSelected,
+                                  refreshRecord,
+                                  setRefreshRecord
+                              }) {
     const [selectedAssignee, setSelectedAssignee] = useState("");
     const [successSnackbar, setSuccessSnackbar] = useState(false);
 
@@ -93,9 +93,11 @@ export default function Index({
                             <Box display="flex" justifyContent="flex-end">
                                 <Button
                                     onClick={() => setAssignSprayCard(false)}
+                                    color="inherit"
                                     sx={{mr: 1}}>
                                     Later
                                 </Button>
+                                <Box sx={{flex: '1 1 auto'}}/>
                                 <Button
                                     disabled={selectedAssignee === ""}
                                     onClick={() => SprayCardAssign(sprayCardSelected.scpid, uid, selectedAssignee)}

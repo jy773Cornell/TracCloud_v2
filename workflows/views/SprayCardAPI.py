@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from workflows.serializers.SprayCardSerializer import *
 from django.db import transaction
+from django.utils import timezone
 
 
 class SprayCardListGetView(APIView):
@@ -99,6 +100,34 @@ class SprayCardCreateView(APIView):
             return Response({'Succeeded': 'Spray Card Process Created.', "data": opid}, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SprayCardUpdateView(APIView):
+    serializer_class = SprayCardUpdateSerializer
+
+    def post(self, request, format=None):
+        scpid = request.data["scpid"]
+        records = request.data["records"]
+
+        if scpid and records:
+            with transaction.atomic():
+                operation = SprayCard.objects.get(scpid=scpid).spray_record
+                ApplicationRecord.objects.filter(opid=operation).hard_delete()
+
+                for data in records:
+                    serializer = self.serializer_class(data=data)
+                    if serializer.is_valid():
+                        data["arid"] = gen_uuid("ARID")
+                        data["opid"] = operation
+                        ApplicationRecord(**data).save()
+                    else:
+                        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+                SprayCard.objects.filter(scpid=scpid).update(update_time=timezone.now())
+
+            return Response({'Succeeded': 'Spray Card Process Created.'}, status=status.HTTP_201_CREATED)
+
+        return Response({'Bad Request': 'Invalid Post Parameters.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SprayCardInitiateView(APIView):
