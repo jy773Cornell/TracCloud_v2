@@ -157,7 +157,8 @@ class ApplicationGetSerializer(serializers.ModelSerializer):
 
     def get_equipment(self, obj):
         equipment = Equipment.objects.get(eid=obj.equipment_id)
-        return "{} ({}, {})".format(equipment.name, equipment.owner, equipment.code)
+        # return "{} ({}, {})".format(equipment.name, equipment.owner, equipment.code)
+        return equipment.name
 
     def get_water_unit(self, obj):
         return next((item['name'] for item in cache.get("Unit") if item['unitid'] == obj.water_unit_id), None)

@@ -41,7 +41,7 @@ export default function Index({
             <Card sx={{width: '90%', border: '1px solid', borderColor: 'divider', m: 'auto', marginTop: '24px'}}>
                 <Grid container alignItems="center">
                     <Grid item xs={12} sx={{textAlign: 'center'}}>
-                        <h1>Spray Card Process
+                        <h1>Process Overview
                             <IconButton
                                 onClick={() => setOverviewExpanded(!overviewExpanded)}
                                 aria-expanded={overviewExpanded}
@@ -129,7 +129,6 @@ export default function Index({
         refreshRecord,
         setRefreshRecord
     }
-
     const SprayCardContentRender = () => {
         return (
             <Card sx={{
@@ -165,7 +164,6 @@ export default function Index({
             </Card>
         );
     }
-
     const SprayCardDetailRender = () => {
         return (
             <Card style={{height: 898, overflow: 'auto'}} sx={{border: '1px solid', borderColor: 'divider'}}>

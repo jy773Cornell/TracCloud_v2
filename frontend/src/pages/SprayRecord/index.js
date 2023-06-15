@@ -792,7 +792,6 @@ export default function SprayRecord(props) {
             "crop": `${crop.crop} (${crop.variety}, ${crop.growth_stage})`,
             "site": siteStr,
             "applied_area": `${record.applied_area} ${record.area_unit}`,
-            "app_date": record.app_date,
             "start_time": record.start_time,
             "finish_time": record.finish_time,
             "operator": record.operator,
@@ -811,9 +810,9 @@ export default function SprayRecord(props) {
             "total_amount": `${record.total_amount} ${chemical.unit}`,
             "total_cost": `\$${record.total_cost}`,
             "customer": record.customer,
-            "wind_speed": record.wind_speed,
+            "wind_speed": record.wind_speed ? record.wind_speed + " mph" : "",
             "wind_direction": record.wind_direction,
-            "average_temp": record.average_temp,
+            "average_temp": record.average_temp ? record.average_temp + " °F" : "",
             "update_time": record.update_time
         };
     }

@@ -409,7 +409,15 @@ export default function Site(props) {
     }
 
     const onSaveClicked = () => {
+        const siteTypeOptionNames = siteTypeOptions.map(item => item.label);
+
         if ([fieldValues[field_names[0]], fieldValues[field_names[1]]].every(value => value !== "")) {
+            if (siteTypeOptionNames.some(item => crop_level_type.includes(item))
+                && ([fieldValues[field_names[3]], fieldValues[field_names[5]], fieldValues[field_names[6]]].some(value => value === ""))) {
+                updateInputError();
+                return;
+            }
+
             if (!("sid" in formData)) {
                 SiteRecordSave();
                 setRows((prevRows) => prevRows.filter((item) => item.id !== add_row_id))
@@ -436,7 +444,10 @@ export default function Site(props) {
             setIsSaveWarning(true);
         } else {
             setFormData({"sid": params.id});
-            setFieldValues(params.row);
+            setFieldValues(Object.entries(params.row).reduce((newRow, [key, value]) => {
+                newRow[key] = value === null ? "" : value;
+                return newRow;
+            }, {}));
             setEditRowId(params.id);
             SiteTypeOptionsFresh(siteType.find(item => item.name === params.row.type).level)
             clearInputError();
@@ -757,7 +768,7 @@ export default function Site(props) {
                                                              InputProps={{disableUnderline: true}}
                                                              sx={{width: 300}}/> :
                         <TextField {...params}
-                                   variant="standard"
+                                   variant="standard" error={inputError[field_names[3]]}
                                    sx={{width: 280}}
                         />)
                 }}
@@ -802,6 +813,7 @@ export default function Site(props) {
                     sx={{width: columnWidth}}/> : <TextField
                     variant="standard"
                     value={fieldValues[field_names[5]]}
+                    error={inputError[field_names[5]]}
                     sx={{width: editWidth}}
                     onChange={(event) => {
                         handleInputChange(event, event.target.value, field_names[5]);
@@ -826,7 +838,7 @@ export default function Site(props) {
                     return (editRowId !== rowID ? <TextField {...params} variant="standard"
                                                              InputProps={{disableUnderline: true}}
                                                              sx={{width: columnWidth}}/> :
-                        <TextField {...params} variant="standard"
+                        <TextField {...params} variant="standard" error={inputError[field_names[6]]}
                                    sx={{width: editWidth}}
                         />)
                 }}

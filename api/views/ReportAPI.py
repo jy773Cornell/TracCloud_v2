@@ -35,7 +35,8 @@ class CentralPostingView(APIView):
                                   [site_list[0], site_list[1], site_list[2],
                                    each_record["trade_name"], each_record["active_ingredient"],
                                    each_record["chemical_purchase"],
-                                   each_record["app_date"], each_record["start_time"], each_record["finish_time"],
+                                   each_record["start_time"].split(" ")[0],
+                                   each_record["start_time"], each_record["finish_time"],
                                    each_record["rei"], datetime.date.today().strftime('%Y-%m-%d'),
                                    datetime.datetime.now().strftime('%H:%M:%S')]):
                 cell = sheet[f'{col}{record_row}']
