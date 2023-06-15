@@ -124,19 +124,26 @@ export default function sprayCardContent({
     };
 
     const updateSprayCardContent = () => {
-        const uniqueChemicalPurchases = [...new Map(sprayCardContents.map(item => [JSON.stringify(item.chemical_purchase), item.chemical_purchase])).values()]
+        const uniqueChemicalPurchases = [...new Map(sprayCardContents.map(item => [JSON.stringify(item.chemical_purchase), item.chemical_purchase])).values()];
         setChemicalContents(uniqueChemicalPurchases);
 
-        const uniqueDecisions = [...new Map(sprayCardContents.map(item => [JSON.stringify(item.decision_support), item.decision_support])).values()]
+
+        let uniqueDecisions = [];
+        for (let i = 0; i < uniqueChemicalPurchases.length; i++) {
+            uniqueDecisions.push(sprayCardContents.find(item => JSON.stringify(item.chemical_purchase) === JSON.stringify(uniqueChemicalPurchases[i])).decision_support);
+        }
         setDecisionContents(uniqueDecisions);
 
-        const uniqueCrops = [...new Map(sprayCardContents.map(item => [JSON.stringify(item.crop), item.crop])).values()]
+        const uniqueCrops = [...new Map(sprayCardContents.map(item => [JSON.stringify(item.crop), item.crop])).values()];
         setCropContents(uniqueCrops);
 
-        const uniqueTargets = [...new Map(sprayCardContents.map(item => [JSON.stringify(item.target), item.target])).values()]
+        let uniqueTargets = [];
+        for (let i = 0; i < uniqueCrops.length; i++) {
+            uniqueTargets.push(sprayCardContents.find(item => JSON.stringify(item.crop) === JSON.stringify(uniqueCrops[i])).target);
+        }
         setTargetContents(uniqueTargets);
 
-        const uniqueSites = [...new Map(sprayCardContents.map(item => [JSON.stringify(item.site), item.site])).values()]
+        const uniqueSites = [...new Map(sprayCardContents.map(item => [JSON.stringify(item.site), item.site])).values()];
         setSiteContents(uniqueSites);
     };
 
