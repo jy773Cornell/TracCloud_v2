@@ -61,7 +61,7 @@ class SprayCardContentGetSerializer(serializers.ModelSerializer):
         chemical = ChemicalGetSerializer(obj.chemical_purchase.chemical).data
         chemical_purchase = PurchaseGetSerializer(obj.chemical_purchase).data
         return {
-            "label": f"{chemical['epa_reg_no']} | {chemical['trade_name']} | {chemical['active_ingredient']} | {chemical_purchase['cost_per_unit']} per ${chemical['unit']} | {chemical_purchase['pur_datetime']}",
+            "label": f"{chemical['epa_reg_no']} | {chemical['trade_name']} | {chemical['active_ingredient']} | ${chemical_purchase['cost_per_unit']} per {chemical['unit']} | {chemical_purchase['pur_datetime']}",
             "unit": chemical['unit'],
             "cost": chemical_purchase['cost_per_unit'],
             "cost_per_unit": f"${chemical_purchase['cost_per_unit']} per {chemical['unit']}",
