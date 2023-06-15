@@ -319,7 +319,7 @@ class ApplicationListGetView(APIView):
                 op_application_list = Operation.objects.filter(
                     user_id=uid,
                     type_id=next((op_type["optid"] for op_type in cache.get("OperationType") if
-                                  op_type["name"] == "Application"), None)
+                                  op_type["name"] == "Spray"), None)
                 ).alive().order_by('-update_time')
                 application_list = ApplicationRecord.objects.filter(user_id=uid).alive().order_by('-update_time')
 

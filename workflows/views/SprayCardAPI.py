@@ -204,16 +204,21 @@ class SprayCardCompleteView(APIView):
     serializer_class = SprayCardCompleteSerializer
 
     def post(self, request, format=None):
-        serializer = self.serializer_class(data=request.data)
+        records = request.data.pop("data")
+        spraycard_serializer = self.serializer_class(data=request.data)
 
-        if serializer.is_valid():
-            data = serializer.validated_data
+        if spraycard_serializer.is_valid():
+            spray_card_process = spraycard_serializer.validated_data["spray_card_process"]
             with transaction.atomic():
-                data["spray_card_process"].complete()
-                data["spray_card_process"].save()
+                for arid in records.keys():
+                    records[arid]["is_active"] = True
+                    ApplicationRecord.objects.filter(arid=arid).update(**records[arid])
+
+                spray_card_process.complete()
+                spray_card_process.save()
             return Response({'Succeeded': 'Process Has Been Completed.'}, status=status.HTTP_200_OK)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(spraycard_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # class SprayCardApproveView(APIView):
 #     serializer_class = SprayApproveSerializer

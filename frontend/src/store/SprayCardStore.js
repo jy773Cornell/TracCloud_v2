@@ -117,6 +117,9 @@ class SprayCardStore {
                 })),
                 chemicalUnitOptions: jsonData[9].data.filter(item => item.usage === "chemical").map(item => ({
                     label: item.name, id: item.unitid
+                })),
+                siteUnitOptions: jsonData[9].data.filter(item => item.usage === "site").map(item => ({
+                    label: item.name, id: item.unitid
                 }))
             }
         };
