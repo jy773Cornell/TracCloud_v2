@@ -778,7 +778,7 @@ export default function SprayRecord(props) {
         const crop = cropList.find(item => item.cid === record.crop);
         const purchase = purchaseList.find(item => item.prid === record.chemical_purchase);
         const chemical = chemicalList.find(item => item.chemid === purchase.chemical);
-        const equipment = equipmentList.find(item => item.eid === record.equipment);
+        // const equipment = equipmentList.find(item => item.eid === record.equipment);
 
         let site = siteList.find(item => item.sid === record.site);
         let siteStr = site.name;
@@ -805,7 +805,7 @@ export default function SprayRecord(props) {
             "rei": chemical.rei,
             "phi": chemical.phi,
             "cost_per_unit": `\$${purchase.cost_per_unit} per ${chemical.unit}`,
-            "equipment": equipment.name,
+            "equipment": record.equipment,
             "water_use": `${record.water_use} ${record.water_unit} per ${record.area_unit}`,
             "application_rate": `${record.application_rate} ${chemical.unit} per ${record.area_unit}`,
             "total_amount": `${record.total_amount} ${chemical.unit}`,

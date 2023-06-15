@@ -141,17 +141,23 @@ class ApplicationCreateSerializer(serializers.ModelSerializer):
 
 
 class ApplicationGetSerializer(serializers.ModelSerializer):
+    operator = serializers.StringRelatedField()
     water_unit = serializers.SerializerMethodField()
     rate_unit = serializers.SerializerMethodField()
     amount_unit = serializers.SerializerMethodField()
     area_unit = serializers.SerializerMethodField()
     target = serializers.SerializerMethodField()
     decision_support = serializers.SerializerMethodField()
+    equipment = serializers.SerializerMethodField()
     update_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
 
     class Meta:
         model = ApplicationRecord
         fields = "__all__"
+
+    def get_equipment(self, obj):
+        equipment = Equipment.objects.get(eid=obj.equipment_id)
+        return "{} ({}, {})".format(equipment.name, equipment.owner, equipment.code)
 
     def get_water_unit(self, obj):
         return next((item['name'] for item in cache.get("Unit") if item['unitid'] == obj.water_unit_id), None)
