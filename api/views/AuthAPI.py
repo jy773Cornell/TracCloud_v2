@@ -34,8 +34,9 @@ class UserLoginView(APIView):
                 token = make_token(username, expiry)
                 request.session["token"] = token
                 request.session.set_expiry(expiry)
+                uid = UserProfile.objects.get(user=request.user).uid
 
-                return Response({"Succeeded": "User Info Verified.", "token": token},
+                return Response({"Succeeded": "User Info Verified.", "token": token, "uid": uid},
                                 status=status.HTTP_200_OK)
 
             else:
