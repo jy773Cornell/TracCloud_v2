@@ -1,12 +1,21 @@
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.middleware.csrf import get_token
 from api.serializers.UserSerializer import UserLoginSerializer
 from api.utils.Token import make_token
 from api.models import UserProfile
 from django.contrib.auth import authenticate, login, logout
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
+
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.http import JsonResponse
+
+
+class CSRFTokenView(APIView):
+    def get(self, request, format=None):
+        return JsonResponse({'csrfToken': get_token(request)})
 
 
 class UserLoginView(APIView):

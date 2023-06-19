@@ -14,6 +14,7 @@ urlpatterns = [
 
     # LoginAPI
 
+    path('csrf/get/', CSRFTokenView.as_view()),
     path('login/', UserLoginView.as_view()),
     path('logout/', UserLogoutView.as_view()),
     path('auth/', UserAuthCheckView.as_view()),
