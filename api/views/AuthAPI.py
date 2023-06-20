@@ -1,4 +1,3 @@
-from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -13,7 +12,8 @@ from django.contrib.auth.models import User
 
 class CSRFTokenView(APIView):
     def get(self, request, format=None):
-        return JsonResponse({'csrfToken': get_token(request)})
+        csrf_token = get_token(request)
+        return Response({'csrfToken': csrf_token})
 
 
 class UserLoginView(APIView):

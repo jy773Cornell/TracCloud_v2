@@ -41,7 +41,7 @@ export default function Index({
             <Card sx={{width: '90%', border: '1px solid', borderColor: 'divider', m: 'auto', marginTop: '24px'}}>
                 <Grid container alignItems="center">
                     <Grid item xs={12} sx={{textAlign: 'center'}}>
-                        <h1>Process Overview
+                        <h1>Overview
                             <IconButton
                                 onClick={() => setOverviewExpanded(!overviewExpanded)}
                                 aria-expanded={overviewExpanded}

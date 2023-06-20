@@ -5,7 +5,6 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import LogoutIcon from '@mui/icons-material/Logout';
 import {StyledInputBase, StyledSearch, StyledSearchIconWrapper} from "./styles";
 import {Typography} from "@mui/material";
@@ -29,15 +28,15 @@ export default function LayoutAppBar(props) {
                     >
                         <MenuIcon/>
                     </IconButton>
-                    <StyledSearch>
-                        <StyledSearchIconWrapper>
-                            <SearchIcon/>
-                        </StyledSearchIconWrapper>
-                        <StyledInputBase
-                            placeholder="Search…"
-                            inputProps={{'aria-label': 'search'}}
-                        />
-                    </StyledSearch>
+                    {/*<StyledSearch>*/}
+                    {/*    <StyledSearchIconWrapper>*/}
+                    {/*        <SearchIcon/>*/}
+                    {/*    </StyledSearchIconWrapper>*/}
+                    {/*    <StyledInputBase*/}
+                    {/*        placeholder="Search…"*/}
+                    {/*        inputProps={{'aria-label': 'search'}}*/}
+                    {/*    />*/}
+                    {/*</StyledSearch>*/}
                     <Box sx={{flexGrow: 1}}/>
                     <Box sx={{display: {xs: 'none', md: 'flex'}}}>
                         <Typography sx={{display: 'flex', alignItems: "center", padding: 1.5}}>

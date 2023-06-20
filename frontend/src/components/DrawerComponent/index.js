@@ -39,7 +39,7 @@ export default function LayoutDrawer(props) {
         }
     }
 
-    const GrowerList = () => (
+    const DrawerList = () => (
         <List>
             <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/home')}
@@ -182,12 +182,30 @@ export default function LayoutDrawer(props) {
     )
 
     const MenuList = () => (
-        <Box sx={{width: 'auto'}} role="presentation">
-            <DrawerHeader>
-                Trac Cloud
-            </DrawerHeader>
-            <Divider/>
-            {GrowerList()}
+        <Box
+            sx={{
+                width: 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                height: '100%'
+            }}
+            role="presentation"
+        >
+            <div>
+                <DrawerHeader>
+                    Trac Cloud
+                </DrawerHeader>
+                <Divider/>
+                {DrawerList()}
+            </div>
+            <div style={{display: 'flex', justifyContent: 'center'}}>
+                <img
+                    src="../../static/frontend/img/expo.png"
+                    alt="QR Code"
+                    style={{width: '120px', height: '120px', marginTop: '20px', marginBottom: '20px'}}
+                />
+            </div>
         </Box>
     );
 

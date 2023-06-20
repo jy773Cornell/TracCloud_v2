@@ -9,7 +9,7 @@ export const StyledGrid = styled(Grid)({
 });
 
 export const StyledCard = styled(Card)({
-    padding: 20, width: 380, margin: 20,
+    padding: 20, paddingBottom: 0, width: 450, margin: 20,
 });
 
 export const StyledTypography = styled(Typography)({

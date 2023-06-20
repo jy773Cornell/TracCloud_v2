@@ -79,12 +79,17 @@ export default function Login() {
         }
     }
 
-    return (<StyledGrid container>
+    return (
+        <StyledGrid container>
             <StyledCard elevation={10}>
                 <form onSubmit={(event) => SignInBtnPressed(event)}>
                     <Grid align='center'>
-                        <Avatar sx={{backgroundColor: '#1bbd7e'}}> <LockOutlinedIcon/> </Avatar>
-                        <Typography variant="h4" component="h4">Sign In</Typography>
+                        <img
+                            src="../../static/frontend/img/logo.png"
+                            style={{width: '80px', height: '80px'}}
+                            alt="Log"
+                        />
+                        <h1 style={{margin: "0"}}>Trac Cloud</h1>
                     </Grid>
                     <TextField label='Username' placeholder='Enter username'
                                variant="standard" fullWidth required
@@ -107,12 +112,27 @@ export default function Login() {
                         fullWidth>
                         Sign in
                     </Button>
-                    <StyledTypography>
-                        <Link href="/workflow/password_reset">Forgot password?</Link>
-                    </StyledTypography>
-                    <Typography> Do you have an account?
-                        <Link href="/workflow/registration"> Sign Up </Link>
-                    </Typography>
+                    <Grid
+                        container
+                        direction="row"
+                        justifyContent="center"
+                        alignItems="center"
+                    >
+                        <Grid item xs={4}>
+                            <img
+                                src="../../static/frontend/img/expo.png"
+                                style={{width: '100px', height: '100px', margin: '10px'}}
+                                alt="QR Code"/>
+                        </Grid>
+                        <Grid item xs={8}>
+                            <Typography>
+                                <Link href="/workflow/registration">Don't have an account? Sign Up</Link>
+                            </Typography>
+                            <StyledTypography>
+                                <Link href="/workflow/password_reset">Forgot password?</Link>
+                            </StyledTypography>
+                        </Grid>
+                    </Grid>
                 </form>
             </StyledCard>
         </StyledGrid>
