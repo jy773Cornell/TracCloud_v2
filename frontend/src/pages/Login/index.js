@@ -1,6 +1,5 @@
 import React, {useState} from 'react'
-import {Grid, Avatar, Button, Typography, Link, TextField, Checkbox, FormControlLabel} from '@mui/material'
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import {Grid, Button, Typography, Link, TextField, Checkbox, FormControlLabel} from '@mui/material'
 import {StyledCard, StyledGrid, StyledTypography} from "./styles";
 import {setToken, getCookie} from "../../utils";
 import {useNavigate} from "react-router-dom";
@@ -117,11 +116,12 @@ export default function Login() {
                         direction="row"
                         justifyContent="center"
                         alignItems="center"
+                        textAlign="center"
                     >
                         <Grid item xs={4}>
                             <img
                                 src="../../static/frontend/img/expo.png"
-                                style={{width: '100px', height: '100px', margin: '10px'}}
+                                style={{width: '100px', height: '100px', margin: '10px', marginBottom: '0px'}}
                                 alt="QR Code"/>
                         </Grid>
                         <Grid item xs={8}>
