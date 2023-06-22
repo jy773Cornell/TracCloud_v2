@@ -265,13 +265,6 @@ export default function sprayCardContent({
             <React.Fragment>
                 <Grid item xs={2.4}>
                     <Button
-                        disabled={!completeCondition()}
-                        onClick={() => handleCompleteButtonClicked()}>
-                        Complete
-                    </Button>
-                </Grid>
-                <Grid item xs={2.4}>
-                    <Button
                         onClick={() => handleAssignButtonClicked()}>
                         Assign
                     </Button>
@@ -291,6 +284,13 @@ export default function sprayCardContent({
                         action={performReturnAction}
                         buttonText={"Return to the last assigner?"}
                     />
+                </Grid>
+                <Grid item xs={2.4}>
+                    <Button
+                        disabled={!completeCondition()}
+                        onClick={() => handleCompleteButtonClicked()}>
+                        Complete
+                    </Button>
                 </Grid>
                 <Grid item xs={2.4}>
                     <Button

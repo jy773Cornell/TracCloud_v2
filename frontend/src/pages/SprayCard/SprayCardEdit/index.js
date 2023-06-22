@@ -231,7 +231,7 @@ export default function SprayCardEdit({
     };
 
     const ApplicationTargeOptionsFresh = (cid, index) => {
-        const crop = sprayData["cropList"].find(item => item.cid === cid)
+        const crop = sprayData?.["cropList"]?.find(item => item.cid === cid)
 
         if (crop) {
             const optionObj = {...applicationTargetOptions};
@@ -267,8 +267,8 @@ export default function SprayCardEdit({
 
     const updateCompleted = (stepValue) => {
         setCompleted(prevCompleted => ({
-                ...prevCompleted, [stepValue]: false
-            }));
+            ...prevCompleted, [stepValue]: false
+        }));
     }
 
     const updateSiteFields = () => {
@@ -428,17 +428,17 @@ export default function SprayCardEdit({
 
     const chemicalStepRender = () => {
         return (<Grid container justifyContent="center" spacing={2}>
-                <Grid item xs={12} sx={{textAlign: 'center'}}>
-                    <h1>Edit Spray Card Process</h1>
-                </Grid>
-                {chemicalSelectionRender()}
-                <Grid item xs={12} sx={{textAlign: 'center'}}>
-                    <Button variant="contained" color="primary" sx={{mb: 2}}
-                            onClick={() => handleAddField(field_names[0])}>
-                        Add Chemical
-                    </Button>
-                </Grid>
-            </Grid>);
+            <Grid item xs={12} sx={{textAlign: 'center'}}>
+                <h1>Edit Spray Card Process</h1>
+            </Grid>
+            {chemicalSelectionRender()}
+            <Grid item xs={12} sx={{textAlign: 'center'}}>
+                <Button variant="contained" color="primary" sx={{mb: 2}}
+                        onClick={() => handleAddField(field_names[0])}>
+                    Add Chemical
+                </Button>
+            </Grid>
+        </Grid>);
     }
 
     const cropSelectionRender = () => {
@@ -755,34 +755,37 @@ export default function SprayCardEdit({
     useEffect(() => {
         setSiteOptions(sprayOptions?.siteOptions || []);
         siteTreeRefresh();
+        siteTreeExpandRefresh();
+        setFieldValues(updateInitialEditFields());
+        setMounted(false);
     }, [sprayData, sprayOptions]);
 
     return (<>
-            <Modal
-                open={editSprayCard}
-                sx={{
-                    display: 'flex', justifyContent: 'center', alignItems: 'center',
-                }}>
-                <Card sx={{width: 1250}}>
-                    <CardContent>
-                        <Box sx={{width: '100%', flexGrow: 1}}>
-                            <Box sx={{width: '100%', minHeight: 400, maxHeight: 800, overflow: 'auto'}}>
-                                <div style={{display: activeStep === 0 ? 'block' : 'none'}}>
-                                    {chemicalStepRender()}
-                                </div>
-                                <div style={{display: activeStep === 1 ? 'block' : 'none'}}>
-                                    {cropStepRender()}
-                                </div>
-                                <div style={{display: activeStep === 2 ? 'block' : 'none'}}>
-                                    {siteStepRender()}
-                                </div>
-                            </Box>
-                            <ModalStepper {...stepperProps}/>
+        <Modal
+            open={editSprayCard}
+            sx={{
+                display: 'flex', justifyContent: 'center', alignItems: 'center',
+            }}>
+            <Card sx={{width: 1250}}>
+                <CardContent>
+                    <Box sx={{width: '100%', flexGrow: 1}}>
+                        <Box sx={{width: '100%', minHeight: 400, maxHeight: 800, overflow: 'auto'}}>
+                            <div style={{display: activeStep === 0 ? 'block' : 'none'}}>
+                                {chemicalStepRender()}
+                            </div>
+                            <div style={{display: activeStep === 1 ? 'block' : 'none'}}>
+                                {cropStepRender()}
+                            </div>
+                            <div style={{display: activeStep === 2 ? 'block' : 'none'}}>
+                                {siteStepRender()}
+                            </div>
                         </Box>
-                    </CardContent>
-                </Card>
-            </Modal>
-            <OperationSnackbars  {...updateSuccessProps}/>
-            <OperationSnackbars  {...saveErrorProps}/>
-        </>);
+                        <ModalStepper {...stepperProps}/>
+                    </Box>
+                </CardContent>
+            </Card>
+        </Modal>
+        <OperationSnackbars  {...updateSuccessProps}/>
+        <OperationSnackbars  {...saveErrorProps}/>
+    </>);
 }
