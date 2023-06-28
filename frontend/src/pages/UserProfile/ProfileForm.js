@@ -299,70 +299,37 @@ export default function ProfileForm({
                                     sx={{width: '100%'}}
                                 />}
                             </Grid>
-                            <Grid item xs={4}>
-                                {isEdit ? <TextField
-                                    label="Phone Number"
-                                    variant="outlined"
-                                    value={fieldValues[field_names[13]]}
-                                    autoComplete="tel"
-                                    onChange={(event) => {
-                                        handleInputChange(event, event.target.value, field_names[13]);
-                                    }}
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    sx={{width: '100%'}}
-                                /> : <TextField
-                                    label="Phone Number"
-                                    variant="outlined"
-                                    value={profile[field_names[13]]}
-                                    InputProps={{readOnly: true}}
-                                    sx={{width: '100%'}}
-                                />}
-                            </Grid>
-                            <Grid item xs={4}>
-                                {isEdit ? <TextField
-                                    label="Cell Number"
-                                    variant="outlined"
-                                    value={fieldValues[field_names[14]]}
-                                    autoComplete="tel"
-                                    onChange={(event) => {
-                                        handleInputChange(event, event.target.value, field_names[14]);
-                                    }}
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    sx={{width: '100%'}}
-                                /> : <TextField
-                                    label="Cell Number"
-                                    variant="outlined"
-                                    value={profile[field_names[14]]}
-                                    InputProps={{readOnly: true}}
-                                    sx={{width: '100%'}}
-                                />}
-                            </Grid>
-                            <Grid item xs={4}>
-                                {isEdit ? <TextField
-                                    label="Email"
-                                    variant="outlined"
-                                    value={fieldValues[field_names[15]]}
-                                    autoComplete="email"
-                                    onChange={(event) => {
-                                        handleInputChange(event, event.target.value, field_names[15]);
-                                    }}
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    sx={{width: '100%'}}
-                                /> : <TextField
-                                    label="Email"
-                                    variant="outlined"
-                                    value={profile[field_names[15]]}
-                                    InputProps={{readOnly: true}}
-                                    sx={{width: '100%'}}
-                                />}
-                            </Grid>
                         </>}
+                    <Grid item xs={6}>
+                        {isEdit ? <TextField
+                            label="Cell Phone"
+                            variant="outlined"
+                            value={fieldValues[field_names[13]]}
+                            autoComplete="tel"
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[13]);
+                            }}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            sx={{width: '100%'}}
+                        /> : <TextField
+                            label="Cell Phones"
+                            variant="outlined"
+                            value={profile[field_names[13]]}
+                            InputProps={{readOnly: true}}
+                            sx={{width: '100%'}}
+                        />}
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            label="Email"
+                            variant="outlined"
+                            value={profile[field_names[14]]}
+                            InputProps={{readOnly: true}}
+                            sx={{width: '100%'}}
+                        />
+                    </Grid>
                     {isEdit ? <>
                         <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
                             <Button variant="contained" color="secondary" onClick={() => setIsEdit(false)}>

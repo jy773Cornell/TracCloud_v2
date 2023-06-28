@@ -19,6 +19,7 @@ import reportGenerator from "./reportGenerators/index";
 const columnSmallWidth = 100;
 const columnWidth = 200;
 const columnMidWidth = 250;
+const columnLongWidth = 300;
 
 function ReportToolbar({reportID, rowsSelected, dataList}) {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -95,6 +96,7 @@ export default function SprayDataModal({
                     "start_datetime": record.start_datetime,
                     "finish_datetime": record.finish_datetime,
                     "site": siteStr,
+                    "partial_treatment": record.partial_treatment ? "Y" : "N",
                     "variety": crop.variety,
                     "growth_stage": crop.growth_stage,
                     "target": record.target,
@@ -107,6 +109,7 @@ export default function SprayDataModal({
                     "phi": chemical.phi,
                     "harvestable_date": record.harvestable_date,
                     "equipment": record.equipment,
+                    "amount_pesticide_per_tank": record.amount_pesticide_per_tank ? `${record.amount_pesticide_per_tank} ${chemical.unit}` : "",
                     "gallons_water_rate": `${record.gallons_water_rate} per ${record.area_unit}`,
                     "application_rate": `${record.application_rate} ${chemical.unit} per ${record.area_unit}`,
                     "applied_area": `${record.applied_area} ${record.area_unit}`,
@@ -114,9 +117,11 @@ export default function SprayDataModal({
                     "cost_per_unit": `\$${purchase.cost_per_unit} per ${chemical.unit}`,
                     "total_cost": `\$${record.total_cost}`,
                     "applicator": record.applicator,
+                    "responsible_person": record.responsible_person,
                     "wind_speed": record.wind_speed,
                     "wind_direction": record.wind_direction,
                     "average_temp": record.average_temp,
+                    "note": record.note,
                     "update_time": record.update_time
                 };
             })
@@ -143,6 +148,11 @@ export default function SprayDataModal({
             field: 'site',
             headerName: 'Site',
             width: columnMidWidth,
+        },
+        {
+            field: 'partial_treatment',
+            headerName: 'Partial Treatment',
+            width: columnWidth,
         },
         {
             field: 'variety',
@@ -205,6 +215,11 @@ export default function SprayDataModal({
             width: columnWidth,
         },
         {
+            field: 'amount_pesticide_per_tank',
+            headerName: 'Amount Pesticide per Tank',
+            width: columnWidth,
+        },
+        {
             field: 'gallons_water_rate',
             headerName: 'Gallons Water Rate',
             width: columnWidth,
@@ -240,6 +255,11 @@ export default function SprayDataModal({
             width: columnWidth,
         },
         {
+            field: 'responsible_person',
+            headerName: 'Responsible Person',
+            width: columnWidth,
+        },
+        {
             field: 'wind_speed',
             headerName: 'Wind Speed (mph)',
             width: columnWidth,
@@ -253,6 +273,11 @@ export default function SprayDataModal({
             field: 'average_temp',
             headerName: 'Avg Temp (F°)',
             width: columnWidth,
+        },
+        {
+            field: 'note',
+            headerName: 'Note',
+            width: columnLongWidth,
         },
         {
             field: 'update_time',
