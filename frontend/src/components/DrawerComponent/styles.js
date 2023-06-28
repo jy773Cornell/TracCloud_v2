@@ -1,7 +1,7 @@
 import {styled} from "@mui/system";
 import {Drawer} from "@mui/material";
 
-export const drawerWidth = 180;
+export const drawerWidth = 200;
 
 export const StyledDrawer = styled(Drawer)({
     width: drawerWidth,

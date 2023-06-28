@@ -78,12 +78,12 @@ export default function SprayCardComplete({
             const chemical_idx = chemicalList.map(JSON.stringify).indexOf(JSON.stringify(record.chemical_purchase));
             const total_amount = (Number(fieldValues[field_names[5]][chemical_idx]) * Number(record.site.size)).toFixed(2).toString();
             const total_cost = (Number(fieldValues[field_names[5]][chemical_idx]) * Number(record.site.size) * Number(record.chemical_purchase.cost)).toFixed(2).toString();
-            const water_use = ((Number(fieldValues[field_names[8]]) / totalSiteSize) * Number(record.site.size)).toFixed(2).toString();
+            const gallons_water_rate = (Number(fieldValues[field_names[8]]) / totalSiteSize).toFixed(2).toString();
 
             const recordData = {
-                "operator_id": uid,
-                "start_time": fieldValues[field_names[0]],
-                "finish_time": fieldValues[field_names[1]],
+                "applicator_id": uid,
+                "start_datetime": fieldValues[field_names[0]],
+                "finish_datetime": fieldValues[field_names[1]],
                 "total_amount": total_amount,
                 "amount_unit_id": sprayOptions["chemicalUnitOptions"].find(item => item.label === chemicalList[chemical_idx].unit).id,
                 "total_cost": total_cost,
@@ -91,9 +91,9 @@ export default function SprayCardComplete({
                 "rate_unit_id": sprayOptions["chemicalUnitOptions"].find(item => item.label === chemicalList[chemical_idx].unit).id,
                 "applied_area": record.site.size,
                 "area_unit_id": sprayOptions["siteUnitOptions"].find(item => item.label === record.site.size_unit).id,
+                "harvestable_date": addDaysToDate(fieldValues[field_names[1]], chemicalList[chemical_idx].phi),
                 "equipment": fieldValues[field_names[7]],
-                "water_use": water_use,
-                "water_unit_id": fieldValues[field_names[9]],
+                "gallons_water_rate": gallons_water_rate,
                 "average_temp": fieldValues[field_names[10]],
                 "wind_speed": fieldValues[field_names[11]],
                 "wind_direction": fieldValues[field_names[12]],
@@ -103,6 +103,21 @@ export default function SprayCardComplete({
         }
 
         return submitData
+    }
+
+    const addDaysToDate = (dateString, daysString) => {
+        const initialDate = new Date(dateString);
+        const days = parseFloat(daysString);
+        let newDate;
+
+        if (days === 0) {
+            newDate = new Date(initialDate.getTime());
+        } else {
+            const millisecondsToAdd = (days + 1) * 24 * 60 * 60 * 1000;
+            newDate = new Date(initialDate.getTime() + millisecondsToAdd);
+        }
+
+        return newDate.toISOString().slice(0, 10);
     }
 
     const handleInputChange = (event, value, field, index = null) => {

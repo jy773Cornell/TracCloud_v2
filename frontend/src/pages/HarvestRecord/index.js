@@ -1044,7 +1044,7 @@ export default function HarvestRecord(props) {
             onClick={() => onAddClicked()}>
             Add Harvest Record
         </AddButton>
-        <Paper style={{height: 900, margin: '0px 15px'}}>
+        <Paper style={{height: 900, margin: '0px 15px', width: 'calc(100% - 30px)', overflow: 'auto'}}>
             <DataGrid
                 columns={columns}
                 rows={rows}

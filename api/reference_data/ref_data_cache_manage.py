@@ -16,6 +16,9 @@ def create_workbook_bytes(path):
 
 
 def preload_ref_data():
+    cache.set('UserType', list(UserType.objects.all().values()), None)
+    cache.set('UserRelationType', list(UserRelationType.objects.all().values()), None)
+
     cache.set('CropCategory', list(CropCategory.objects.all().values()), None)
     cache.set('CropVariety', list(CropVariety.objects.all().values()), None)
     cache.set('CropGrowthStage', list(CropGrowthStage.objects.all().values()), None)

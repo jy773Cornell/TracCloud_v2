@@ -12,10 +12,10 @@ const entry_list = [
         path: "/profile"
     },
     {
-        id: "network_page",
-        name: "Network",
-        description: "Connect with other professionals!",
-        path: "/network"
+        id: "people_page",
+        name: "People",
+        description: "Organize your business!",
+        path: "/people"
     },
     {
         id: "crop_page",
@@ -31,33 +31,33 @@ const entry_list = [
     },
     {
         id: "chemical_page",
-        name: "Chemicals",
+        name: "ChemTable",
         description: "Manage chemical usage and inventory!",
         path: "/chemical"
     },
     {
+        id: "purchase_page",
+        name: "Purchase",
+        description: "Track your chemical purchases!",
+        path: "/purchase"
+    },
+    {
         id: "equipment_page",
         name: "Equipment",
-        description: "Track your farming equipment!",
+        description: "Manage your farming equipment!",
         path: "/equipment"
     },
     {
-        id: "spray_record_page",
-        name: "Spray Records",
-        description: "Document pesticide and herbicide applications!",
-        path: "/record/spray"
+        id: "spraycard_page",
+        name: "Spray",
+        description: "Track your pesticide applications!",
+        path: "/spray"
     },
     {
-        id: "harvest_record_page",
-        name: "Harvest Records",
-        description: "Record your harvest information!",
-        path: "/record/harvest"
-    },
-    {
-        id: "purchase_record_page",
-        name: "Purchase Records",
-        description: "Track your chemical purchases!",
-        path: "/record/purchase"
+        id: "spray_page",
+        name: "Spray Card",
+        description: "Work with spray card process!",
+        path: "/spraycard"
     },
     {
         id: "generate_report_page",
@@ -66,7 +66,6 @@ const entry_list = [
         path: "/report"
     },
 ];
-
 
 function EntryCard({entry}) {
     const {name, description, path} = entry;

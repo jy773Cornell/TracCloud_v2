@@ -28,7 +28,7 @@ import {getCookie} from "../../utils";
 const columnWidth = 200;
 const editWidth = 180;
 
-const field_names = ["type", "name", "owner_name", "crop", "crop_year", "size", "size_unit", "gps", "gps_system"]
+const field_names = ["type", "name", "crop", "size", "size_unit", "gps", "gps_system"]
 
 const end_site_types = ["Row", "Hole Code#", "Section", ""]
 
@@ -46,9 +46,7 @@ function createRowData(record) {
         "id": record.sid,
         "type": record.type,
         "name": record.name,
-        "owner_name": record.owner_name,
         "crop": record.crop ? record.crop.crop + " (" + record.crop.variety + ", " + record.crop.growth_stage + ")" : "",
-        "crop_year": record.crop_year,
         "size": record.size,
         "size_unit": record.size_unit,
         "gps": record.gps,
@@ -110,108 +108,97 @@ function AddSiteRecord({
         }
     };
 
-    return (<Modal
-        open={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        sx={{
-            display: 'flex', justifyContent: 'center', alignItems: 'center',
-        }}
-    >
-        <Card sx={{width: 400}}>
-            <CardContent>
-                <Grid container justifyContent="center" spacing={2}>
-                    <Grid item xs={12} sx={{textAlign: 'center'}}>
-                        <h1>Add Site Record</h1>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Autocomplete
-                            value={fieldValues[field_names[0]]}
-                            options={siteTypeOptions || []}
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[0]);
-                            }}
-                            renderInput={(params) => (
-                                <TextField {...params} required variant="outlined" label={columns[1].headerName}
-                                           error={inputError[field_names[0]]}/>)}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            error={inputError[field_names[1]]}
-                            required
-                            fullWidth
-                            variant="outlined"
-                            label={columns[2].headerName}
-                            onChange={(event) => {
-                                handleInputChange(event, event.target.value, field_names[1]);
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            fullWidth
-                            variant="outlined"
-                            label={columns[3].headerName}
-                            onChange={(event) => {
-                                handleInputChange(event, event.target.value, field_names[2]);
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            variant="outlined"
-                            label={columns[6].headerName}
-                            onChange={(event) => {
-                                handleInputChange(event, event.target.value, field_names[5]);
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <Autocomplete
-                            value={fieldValues[field_names[6]]}
-                            options={unitOptions || []}
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[6]);
-                            }}
-                            renderInput={(params) => (<TextField
-                                {...params}
+    return (
+        <Modal
+            open={showAddModal}
+            sx={{
+                display: 'flex', justifyContent: 'center', alignItems: 'center',
+            }}
+        >
+            <Card sx={{width: 400}}>
+                <CardContent>
+                    <Grid container justifyContent="center" spacing={2}>
+                        <Grid item xs={12} sx={{textAlign: 'center'}}>
+                            <h1>Add Site Record</h1>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Autocomplete
+                                options={siteTypeOptions || []}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[0]);
+                                }}
+                                renderInput={(params) => (
+                                    <TextField {...params} required variant="outlined" label={columns[1].headerName}
+                                               error={inputError[field_names[0]]}/>)}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                error={inputError[field_names[1]]}
+                                required
+                                fullWidth
+                                variant="outlined"
+                                label={columns[2].headerName}
+                                onChange={(event) => {
+                                    handleInputChange(event, event.target.value, field_names[1]);
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                variant="outlined"
+                                label={columns[4].headerName}
+                                onChange={(event) => {
+                                    handleInputChange(event, event.target.value, field_names[3]);
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Autocomplete
+                                options={unitOptions || []}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[4]);
+                                }}
+                                renderInput={(params) => (<TextField
+                                    {...params}
+                                    variant="outlined"
+                                    label={columns[5].headerName}
+                                />)}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                variant="outlined"
+                                label={columns[6].headerName}
+                                onChange={(event) => {
+                                    handleInputChange(event, event.target.value, field_names[5]);
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
                                 variant="outlined"
                                 label={columns[7].headerName}
-                            />)}
-                        />
+                                onChange={(event) => {
+                                    handleInputChange(event, event.target.value, field_names[6]);
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
+                            <Button variant="contained" color="secondary" onClick={() => setShowAddModal(false)}>
+                                Cancel
+                            </Button>
+                        </Grid>
+                        <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
+                            <Button variant="contained" color="success" onClick={() => handleSaveButtonPressed()}>
+                                Save
+                            </Button>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            variant="outlined"
-                            label={columns[8].headerName}
-                            onChange={(event) => {
-                                handleInputChange(event, event.target.value, field_names[7]);
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            variant="outlined"
-                            label={columns[9].headerName}
-                            onChange={(event) => {
-                                handleInputChange(event, event.target.value, field_names[8]);
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
-                        <Button variant="contained" color="success" onClick={() => handleSaveButtonPressed()}>
-                            Save
-                        </Button>
-                    </Grid>
-                    <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
-                        <Button variant="contained" color="secondary" onClick={() => setShowAddModal(false)}>
-                            Cancel
-                        </Button>
-                    </Grid>
-                </Grid>
-            </CardContent>
-        </Card>
-    </Modal>);
+                </CardContent>
+            </Card>
+        </Modal>
+    );
 }
 
 export default function Site(props) {
@@ -413,7 +400,7 @@ export default function Site(props) {
 
         if ([fieldValues[field_names[0]], fieldValues[field_names[1]]].every(value => value !== "")) {
             if (siteTypeOptionNames.some(item => crop_level_type.includes(item))
-                && ([fieldValues[field_names[3]], fieldValues[field_names[5]], fieldValues[field_names[6]]].some(value => value === ""))) {
+                && ([fieldValues[field_names[2]], fieldValues[field_names[3]], fieldValues[field_names[4]]].some(value => value === ""))) {
                 updateInputError();
                 return;
             }
@@ -597,7 +584,7 @@ export default function Site(props) {
     };
 
     const handleInputChange = (event, value, field) => {
-        if ([field_names[0], field_names[3], field_names[6]].includes(field)) {
+        if ([field_names[0], field_names[2], field_names[4]].includes(field)) {
             setFieldValues({
                 ...fieldValues, [field]: value.label,
             });
@@ -728,75 +715,29 @@ export default function Site(props) {
             },
         },
         {
-            field: 'owner_name',
-            headerName: 'Owner Name',
-            sortable: false,
-            width: columnWidth,
-            renderCell: (params, rowID = params.id) => {
-                return (editRowId !== rowID ? <TextField
-                    variant="standard"
-                    value={params.value}
-                    InputProps={{
-                        disableUnderline: true, readOnly: true,
-                    }}
-                    sx={{width: columnWidth}}/> : <TextField
-                    variant="standard"
-                    value={fieldValues[field_names[2]]}
-                    sx={{width: editWidth}}
-                    onChange={(event) => {
-                        handleInputChange(event, event.target.value, field_names[2]);
-                    }}
-                />)
-            },
-        },
-        {
             field: 'crop',
             headerName: 'Crop',
             sortable: false,
-            width: 300,
+            width: columnWidth,
             renderCell: (params, rowID = params.id) => (<Autocomplete
                 options={cropOptions || []}
                 disableClearable
                 readOnly={editRowId !== rowID}
                 disabled={(editRowId === rowID) && !(siteTypeOptions.some(value => crop_level_type.includes(value.label)))}
-                value={editRowId === rowID ? fieldValues[field_names[3]] : params.value}
+                value={editRowId === rowID ? fieldValues[field_names[2]] : params.value}
                 onChange={(event, value) => {
-                    handleInputChange(event, value, field_names[3]);
+                    handleInputChange(event, value, field_names[2]);
                 }}
                 renderInput={(params) => {
                     return (editRowId !== rowID ? <TextField {...params} variant="standard"
                                                              InputProps={{disableUnderline: true}}
                                                              sx={{width: 300}}/> :
                         <TextField {...params}
-                                   variant="standard" error={inputError[field_names[3]]}
+                                   variant="standard" error={inputError[field_names[2]]}
                                    sx={{width: 280}}
                         />)
                 }}
             />),
-        },
-        {
-            field: 'crop_year',
-            headerName: 'Crop Year',
-            sortable: false,
-            width: columnWidth,
-            renderCell: (params, rowID = params.id) => {
-                return (editRowId !== rowID ? <TextField
-                    variant="standard"
-                    value={params.value}
-                    InputProps={{
-                        disableUnderline: true,
-                        readOnly: true,
-                    }}
-                    sx={{width: columnWidth}}/> : <TextField
-                    variant="standard"
-                    disabled={(editRowId === rowID) && !(siteTypeOptions.some(value => crop_level_type.includes(value.label)))}
-                    value={fieldValues[field_names[4]]}
-                    sx={{width: editWidth}}
-                    onChange={(event) => {
-                        handleInputChange(event, event.target.value, field_names[4]);
-                    }}
-                />)
-            },
         },
         {
             field: 'size',
@@ -812,11 +753,11 @@ export default function Site(props) {
                     }}
                     sx={{width: columnWidth}}/> : <TextField
                     variant="standard"
-                    value={fieldValues[field_names[5]]}
-                    error={inputError[field_names[5]]}
+                    value={fieldValues[field_names[3]]}
+                    error={inputError[field_names[3]]}
                     sx={{width: editWidth}}
                     onChange={(event) => {
-                        handleInputChange(event, event.target.value, field_names[5]);
+                        handleInputChange(event, event.target.value, field_names[3]);
                     }}
                 />)
             },
@@ -830,15 +771,15 @@ export default function Site(props) {
                 options={unitOptions || []}
                 disableClearable
                 readOnly={editRowId !== rowID}
-                value={editRowId === rowID ? fieldValues[field_names[6]] : params.value}
+                value={editRowId === rowID ? fieldValues[field_names[4]] : params.value}
                 onChange={(event, value) => {
-                    handleInputChange(event, value, field_names[6]);
+                    handleInputChange(event, value, field_names[4]);
                 }}
                 renderInput={(params) => {
                     return (editRowId !== rowID ? <TextField {...params} variant="standard"
                                                              InputProps={{disableUnderline: true}}
                                                              sx={{width: columnWidth}}/> :
-                        <TextField {...params} variant="standard" error={inputError[field_names[6]]}
+                        <TextField {...params} variant="standard" error={inputError[field_names[4]]}
                                    sx={{width: editWidth}}
                         />)
                 }}
@@ -858,10 +799,10 @@ export default function Site(props) {
                     }}
                     sx={{width: columnWidth}}/> : <TextField
                     variant="standard"
-                    value={fieldValues[field_names[7]]}
+                    value={fieldValues[field_names[5]]}
                     sx={{width: editWidth}}
                     onChange={(event) => {
-                        handleInputChange(event, event.target.value, field_names[7]);
+                        handleInputChange(event, event.target.value, field_names[5]);
                     }}
                 />)
             },
@@ -880,10 +821,10 @@ export default function Site(props) {
                     }}
                     sx={{width: columnWidth}}/> : <TextField
                     variant="standard"
-                    value={fieldValues[field_names[8]]}
+                    value={fieldValues[field_names[6]]}
                     sx={{width: editWidth}}
                     onChange={(event) => {
-                        handleInputChange(event, event.target.value, field_names[8]);
+                        handleInputChange(event, event.target.value, field_names[6]);
                     }}
                 />)
             },
@@ -964,7 +905,7 @@ export default function Site(props) {
                 {
                     showTree && (<SiteTreeView siteList={siteList}/>)
                 }
-                <Paper style={{height: 900, margin: '0px 15px'}}>
+                <Paper style={{height: 900, margin: '0px 15px', width: 'calc(100% - 30px)', overflow: 'auto'}}>
                     <StyledDataGrid
                         columns={columns}
                         rows={rows}

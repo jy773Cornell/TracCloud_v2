@@ -42,7 +42,7 @@ class UserProfileGetView(APIView):
         if uid:
             user_profile = UserProfile.objects.filter(uid=uid).alive().first()
             if user_profile:
-                data = UserGetSerializer(user_profile).data
+                data = self.serializer_class(user_profile).data
                 data["username"] = request.user.username
                 return Response({'Succeeded': 'User Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
 

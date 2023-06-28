@@ -37,7 +37,7 @@ function App() {
     return (
         <div>
             {/*<button onClick={sendMessage}>Send Message</button>*/}
-            network
+            people
         </div>
     );
 }

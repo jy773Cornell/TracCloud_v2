@@ -102,7 +102,6 @@ function AddCropRecord({
     return (
         <Modal
             open={showAddModal}
-            onClose={() => setShowAddModal(false)}
             sx={{
                 display: 'flex', justifyContent: 'center', alignItems: 'center',
             }}
@@ -172,13 +171,13 @@ function AddCropRecord({
                             />
                         </Grid>
                         <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
-                            <Button variant="contained" color="success" onClick={() => handleSaveButtonPressed()}>
-                                Save
+                            <Button variant="contained" color="secondary" onClick={() => setShowAddModal(false)}>
+                                Cancel
                             </Button>
                         </Grid>
                         <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
-                            <Button variant="contained" color="secondary" onClick={() => setShowAddModal(false)}>
-                                Cancel
+                            <Button variant="contained" color="success" onClick={() => handleSaveButtonPressed()}>
+                                Save
                             </Button>
                         </Grid>
                     </Grid>
@@ -632,7 +631,7 @@ function Crop(props) {
             onClick={() => onAddClicked()}>
             Add Crop
         </AddButton>
-        <Paper style={{height: 900, margin: '0px 15px'}}>
+        <Paper style={{height: 900, margin: '0px 15px', width: 'calc(100% - 30px)', overflow: 'auto'}}>
             <DataGrid
                 columns={columns}
                 rows={rows}

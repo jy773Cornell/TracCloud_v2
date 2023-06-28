@@ -17,4 +17,6 @@ export const StyledContainer = styled("div")({
     display: 'flex',
     flexDirection: 'column',
     flexGrow: 1,
+    width: '100%',
+    overflowX: 'hidden'
 })

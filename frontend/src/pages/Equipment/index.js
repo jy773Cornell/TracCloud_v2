@@ -22,9 +22,10 @@ import ConfirmPopover from "../../components/ConfirmPopover";
 import {getCookie} from "../../utils";
 
 const columnWidth = 200;
+const columnLongWidth = 300;
 const editWidth = 180;
 
-const field_names = ["name", "owner", "code"]
+const field_names = ["name", "code", "note"]
 
 function createAPIData(data) {
     return data;
@@ -34,8 +35,8 @@ function createRowData(record) {
     return {
         "id": record.eid,
         "name": record.name,
-        "owner": record.owner,
         "code": record.code,
+        "note": record.note,
         "update_time": record.update_time
     };
 }
@@ -83,7 +84,7 @@ function AddEquipmentRecord({
     }
 
     const handleSaveButtonPressed = () => {
-        if ([fieldValues[field_names[0]], fieldValues[field_names[1]]].every(value => value !== "")) {
+        if ([fieldValues[field_names[0]]].every(value => value !== "")) {
             EquipmentRecordSave();
         } else {
             updateInputError();
@@ -93,7 +94,6 @@ function AddEquipmentRecord({
     return (
         <Modal
             open={showAddModal}
-            onClose={() => setShowAddModal(false)}
             sx={{
                 display: 'flex', justifyContent: 'center', alignItems: 'center',
             }}
@@ -119,8 +119,6 @@ function AddEquipmentRecord({
                         <Grid item xs={12}>
                             <TextField
                                 fullWidth
-                                error={inputError[field_names[1]]}
-                                required
                                 variant="outlined"
                                 label={columns[2].headerName}
                                 onChange={(event) => {
@@ -132,6 +130,8 @@ function AddEquipmentRecord({
                             <TextField
                                 fullWidth
                                 variant="outlined"
+                                multiline
+                                rows={3}
                                 label={columns[3].headerName}
                                 onChange={(event) => {
                                     handleInputChange(event, event.target.value, field_names[2]);
@@ -139,13 +139,13 @@ function AddEquipmentRecord({
                             />
                         </Grid>
                         <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
-                            <Button variant="contained" color="success" onClick={() => handleSaveButtonPressed()}>
-                                Save
+                            <Button variant="contained" color="secondary" onClick={() => setShowAddModal(false)}>
+                                Cancel
                             </Button>
                         </Grid>
                         <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>
-                            <Button variant="contained" color="secondary" onClick={() => setShowAddModal(false)}>
-                                Cancel
+                            <Button variant="contained" color="success" onClick={() => handleSaveButtonPressed()}>
+                                Save
                             </Button>
                         </Grid>
                     </Grid>
@@ -351,8 +351,7 @@ export default function Equipment(props) {
         },
         {
             field: 'name',
-            headerName: 'Equipment Name',
-            sortable: false,
+            headerName: 'Sprayers/Spreaders',
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
                 return (
@@ -378,9 +377,8 @@ export default function Equipment(props) {
             },
         },
         {
-            field: 'owner',
-            headerName: 'Owner Name',
-            sortable: false,
+            field: 'code',
+            headerName: 'Code',
             width: columnWidth,
             renderCell: (params, rowID = params.id) => {
                 return (
@@ -406,10 +404,9 @@ export default function Equipment(props) {
             },
         },
         {
-            field: 'code',
-            headerName: 'Code',
-            sortable: false,
-            width: columnWidth,
+            field: 'note',
+            headerName: 'Note',
+            width: columnLongWidth,
             renderCell: (params, rowID = params.id) => {
                 return (
                     editRowId !== rowID ?
@@ -420,7 +417,7 @@ export default function Equipment(props) {
                                 disableUnderline: true,
                                 readOnly: true,
                             }}
-                            sx={{width: columnWidth}}/> :
+                            sx={{width: columnLongWidth}}/> :
                         <TextField
                             variant="standard"
                             value={fieldValues[field_names[2]]}
@@ -485,27 +482,29 @@ export default function Equipment(props) {
         }
     }, [refreshRecord]);
 
-    return (<div>
-        <AddButton
-            variant="contained"
-            startIcon={<AddIcon/>}
-            onClick={() => onAddClicked()}>
-            Add Equipment
-        </AddButton>
-        <Paper style={{height: 900, margin: '0px 15px'}}>
-            <DataGrid
-                columns={columns}
-                rows={rows}
-                disableRowSelectionOnClick={true}
-                disableClickEdit={true}
-                rowSelection={false}
-                slots={{
-                    toolbar: CustomToolbar,
-                }}
-            />
-        </Paper>
-        <AddEquipmentRecord {...addProps}/>
-        <OperationSnackbars  {...saveProps}/>
-        <OperationSnackbars  {...deleteProps}/>
-    </div>);
+    return (
+        <div>
+            <AddButton
+                variant="contained"
+                startIcon={<AddIcon/>}
+                onClick={() => onAddClicked()}>
+                Add Equipment
+            </AddButton>
+            <Paper style={{height: 900, margin: '0px 15px', width: 'calc(100% - 30px)', overflow: 'auto'}}>
+                <DataGrid
+                    columns={columns}
+                    rows={rows}
+                    disableRowSelectionOnClick={true}
+                    disableClickEdit={true}
+                    rowSelection={false}
+                    slots={{
+                        toolbar: CustomToolbar,
+                    }}
+                />
+            </Paper>
+            <AddEquipmentRecord {...addProps}/>
+            <OperationSnackbars  {...saveProps}/>
+            <OperationSnackbars  {...deleteProps}/>
+        </div>
+    );
 }

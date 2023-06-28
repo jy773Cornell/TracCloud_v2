@@ -7,7 +7,7 @@ const Loading = lazy(() => import('./components/Loading'))
 const Login = lazy(() => import('./pages/Login'))
 const HomePage = lazy(() => import('./pages/HomePage'))
 const UserProfile = lazy(() => import('./pages/UserProfile'))
-const Network = lazy(() => import('./pages/Network'))
+const People = lazy(() => import('./pages/People'))
 const Crop = lazy(() => import('./pages/Crop'))
 const Chemical = lazy(() => import('./pages/Chemical'))
 const Site = lazy(() => import('./pages/Site'))
@@ -41,15 +41,15 @@ function App() {
                     <Route path='/' element={<AuthComponent uid={uid} setUID={setUID}/>}>
                         <Route path="home" element={<HomePage/>}/>
                         <Route path="profile" element={<UserProfile uid={uid}/>}/>
-                        <Route path="network" element={<Network uid={uid}/>}/>
+                        <Route path="people" element={<People uid={uid}/>}/>
                         <Route path="crop" element={<Crop uid={uid}/>}/>
                         <Route path="site" element={<Site uid={uid}/>}/>
                         <Route path="chemical" element={<Chemical uid={uid}/>}/>
+                        <Route path="purchase" element={<PurchaseRecord uid={uid}/>}/>
                         <Route path="equipment" element={<Equipment uid={uid}/>}/>
+                        <Route path="spray" element={<SprayRecord uid={uid}/>}/>
+                        {/*<Route path="record/harvest" element={<HarvestRecord uid={uid}/>}/>*/}
                         <Route path="spraycard" element={<SprayCard uid={uid}/>}/>
-                        <Route path="record/spray" element={<SprayRecord uid={uid}/>}/>
-                        <Route path="record/harvest" element={<HarvestRecord uid={uid}/>}/>
-                        <Route path="record/purchase" element={<PurchaseRecord uid={uid}/>}/>
                         <Route path="report" element={<Report uid={uid}/>}/>
                         <Route path="admin" element={<RedirectToURL url={'/admin'}/>}/>
                     </Route>

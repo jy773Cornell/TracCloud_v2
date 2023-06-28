@@ -12,7 +12,7 @@ class EquipmentCreateView(APIView):
 
     def post(self, request, format=None):
         data = request_data_transform(request.data)
-        if data.get("user_id") and data.get("name") and data.get("owner"):
+        if data.get("user_id") and data.get("name"):
             eid = gen_uuid("EID")
             data["eid"] = eid
             Equipment(**data).save()

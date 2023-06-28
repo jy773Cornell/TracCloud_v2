@@ -141,8 +141,7 @@ class ApplicationCreateSerializer(serializers.ModelSerializer):
 
 
 class ApplicationGetSerializer(serializers.ModelSerializer):
-    operator = serializers.StringRelatedField()
-    water_unit = serializers.SerializerMethodField()
+    applicator = serializers.StringRelatedField()
     rate_unit = serializers.SerializerMethodField()
     amount_unit = serializers.SerializerMethodField()
     area_unit = serializers.SerializerMethodField()
@@ -157,11 +156,7 @@ class ApplicationGetSerializer(serializers.ModelSerializer):
 
     def get_equipment(self, obj):
         equipment = Equipment.objects.get(eid=obj.equipment_id)
-        # return "{} ({}, {})".format(equipment.name, equipment.owner, equipment.code)
         return equipment.name
-
-    def get_water_unit(self, obj):
-        return next((item['name'] for item in cache.get("Unit") if item['unitid'] == obj.water_unit_id), None)
 
     def get_rate_unit(self, obj):
         return next((item['name'] for item in cache.get("Unit") if item['unitid'] == obj.rate_unit_id), None)

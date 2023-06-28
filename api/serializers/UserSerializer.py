@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from rest_framework import serializers
 from api.models import UserProfile, UserType, UserRelation, UserRelationType
 from django.contrib.auth.models import User
@@ -12,12 +13,21 @@ class UserLoginSerializer(serializers.ModelSerializer):
 
 
 class UserGetSerializer(serializers.ModelSerializer):
-    type = serializers.StringRelatedField()
-    added_by = serializers.StringRelatedField()
+    type = serializers.SerializerMethodField()
+    relation_type = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
         fields = "__all__"
+
+    def get_type(self, obj):
+        return next((item['name'] for item in cache.get("UserType") if item['utid'] == obj.type_id), None)
+
+    def get_relation_type(self, obj):
+        user_type = next((item for item in cache.get("UserType") if item['utid'] == obj.type_id), None)
+        return next(
+            (item['name'] for item in cache.get("UserRelationType") if item['urtid'] == user_type["relation_type_id"]),
+            None)
 
 
 class UserProfileUpdateSerializer(serializers.ModelSerializer):

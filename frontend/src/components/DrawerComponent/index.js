@@ -60,12 +60,12 @@ export default function LayoutDrawer(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuButtonPressed('/network')}
-                                selected={location.pathname === "/network"}>
+                <ListItemButton onClick={() => handleMenuButtonPressed('/people')}
+                                selected={location.pathname === "/people"}>
                     <ListItemIcon>
                         <PeopleIcon/>
                     </ListItemIcon>
-                    <ListItemText primary="Network"/>
+                    <ListItemText primary="People"/>
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
@@ -92,7 +92,17 @@ export default function LayoutDrawer(props) {
                     <ListItemIcon>
                         <ScienceIcon/>
                     </ListItemIcon>
-                    <ListItemText primary="Chemicals"/>
+                    <ListItemText primary="ChemTable"/>
+                </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+                <ListItemButton
+                    onClick={() => handleMenuButtonPressed('/purchase')}
+                    selected={location.pathname === "/purchase"}>
+                    <ListItemIcon>
+                        <ShoppingCartIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="Purchase"/>
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
@@ -105,70 +115,80 @@ export default function LayoutDrawer(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
+                    <ListItemButton
+                        onClick={() => handleMenuButtonPressed('/spray')}
+                        selected={location.pathname === "/spray"}>
+                        <ListItemIcon>
+                            <WaterfallChartIcon/>
+                        </ListItemIcon>
+                        <ListItemText primary="SprayData"/>
+                    </ListItemButton>
+                </ListItem>
+            {/*<ListItem disablePadding>*/}
+            {/*    <ListItemButton onClick={() => setRecordOpen(!recordOpen)}>*/}
+            {/*        <ListItemIcon>*/}
+            {/*            <PostAddIcon/>*/}
+            {/*        </ListItemIcon>*/}
+            {/*        <ListItemText primary="Records"/>*/}
+            {/*        {recordOpen ? <ExpandLess/> : <ExpandMore/>}*/}
+            {/*    </ListItemButton>*/}
+            {/*</ListItem>*/}
+            {/*<Collapse in={recordOpen} timeout="auto" unmountOnExit>*/}
+            {/*    <ListItem disablePadding>*/}
+            {/*        <ListItemButton*/}
+            {/*            sx={{*/}
+            {/*                pl: 4,*/}
+            {/*                backgroundColor: grey[100],*/}
+            {/*                '&:hover': {backgroundColor: grey[100],},*/}
+            {/*            }}*/}
+            {/*            onClick={() => handleMenuButtonPressed('/record/spray')}*/}
+            {/*            selected={location.pathname === "/record/spray"}>*/}
+            {/*            <ListItemIcon>*/}
+            {/*                <WaterfallChartIcon/>*/}
+            {/*            </ListItemIcon>*/}
+            {/*            <ListItemText primary="Spray"/>*/}
+            {/*        </ListItemButton>*/}
+            {/*    </ListItem>*/}
+            {/*    <ListItem disablePadding>*/}
+            {/*        <ListItemButton*/}
+            {/*            sx={{*/}
+            {/*                pl: 4,*/}
+            {/*                backgroundColor: grey[100],*/}
+            {/*                '&:hover': {backgroundColor: grey[100],},*/}
+            {/*            }}*/}
+            {/*            onClick={() => handleMenuButtonPressed('/record/harvest')}*/}
+            {/*            selected={location.pathname === "/record/harvest"}>*/}
+            {/*            <ListItemIcon>*/}
+            {/*                <EmojiNatureIcon/>*/}
+            {/*            </ListItemIcon>*/}
+            {/*            <ListItemText primary="Harvest"/>*/}
+            {/*        </ListItemButton>*/}
+            {/*    </ListItem>*/}
+            {/*    <ListItem disablePadding>*/}
+            {/*        <ListItemButton*/}
+            {/*            sx={{*/}
+            {/*                pl: 4,*/}
+            {/*                backgroundColor: grey[100],*/}
+            {/*                '&:hover': {backgroundColor: grey[100],},*/}
+            {/*            }}*/}
+            {/*            onClick={() => handleMenuButtonPressed('/record/purchase')}*/}
+            {/*            selected={location.pathname === "/record/purchase"}>*/}
+            {/*            <ListItemIcon>*/}
+            {/*                <ShoppingCartIcon/>*/}
+            {/*            </ListItemIcon>*/}
+            {/*            <ListItemText primary="Purchase"/>*/}
+            {/*        </ListItemButton>*/}
+            {/*    </ListItem>*/}
+            {/*</Collapse>*/}
+            <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/spraycard')}
                                 selected={location.pathname === "/spraycard"}>
                     <ListItemIcon>
                         <AssignmentTurnedInIcon/>
                     </ListItemIcon>
-                    <ListItemText primary="Spray Card"/>
+                    <ListItemText primary="SprayCard"/>
                 </ListItemButton>
             </ListItem>
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => setRecordOpen(!recordOpen)}>
-                    <ListItemIcon>
-                        <PostAddIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Records"/>
-                    {recordOpen ? <ExpandLess/> : <ExpandMore/>}
-                </ListItemButton>
-            </ListItem>
-            <Collapse in={recordOpen} timeout="auto" unmountOnExit>
-                <ListItem disablePadding>
-                    <ListItemButton
-                        sx={{
-                            pl: 4,
-                            backgroundColor: grey[100],
-                            '&:hover': {backgroundColor: grey[100],},
-                        }}
-                        onClick={() => handleMenuButtonPressed('/record/spray')}
-                        selected={location.pathname === "/record/spray"}>
-                        <ListItemIcon>
-                            <WaterfallChartIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary="Spray"/>
-                    </ListItemButton>
-                </ListItem>
-                <ListItem disablePadding>
-                    <ListItemButton
-                        sx={{
-                            pl: 4,
-                            backgroundColor: grey[100],
-                            '&:hover': {backgroundColor: grey[100],},
-                        }}
-                        onClick={() => handleMenuButtonPressed('/record/harvest')}
-                        selected={location.pathname === "/record/harvest"}>
-                        <ListItemIcon>
-                            <EmojiNatureIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary="Harvest"/>
-                    </ListItemButton>
-                </ListItem>
-                <ListItem disablePadding>
-                    <ListItemButton
-                        sx={{
-                            pl: 4,
-                            backgroundColor: grey[100],
-                            '&:hover': {backgroundColor: grey[100],},
-                        }}
-                        onClick={() => handleMenuButtonPressed('/record/purchase')}
-                        selected={location.pathname === "/record/purchase"}>
-                        <ListItemIcon>
-                            <ShoppingCartIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary="Purchase"/>
-                    </ListItemButton>
-                </ListItem>
-            </Collapse>
             <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/report')}
                                 selected={location.pathname === "/report"}>
@@ -199,13 +219,13 @@ export default function LayoutDrawer(props) {
                 <Divider/>
                 {DrawerList()}
             </div>
-            <div style={{display: 'flex', justifyContent: 'center'}}>
-                <img
-                    src="../../static/frontend/img/expo.png"
-                    alt="QR Code"
-                    style={{width: '120px', height: '120px', marginTop: '20px', marginBottom: '20px'}}
-                />
-            </div>
+            {/*<div style={{display: 'flex', justifyContent: 'center'}}>*/}
+            {/*    <img*/}
+            {/*        src="../../static/frontend/img/expo.png"*/}
+            {/*        alt="QR Code"*/}
+            {/*        style={{width: '120px', height: '120px', marginTop: '20px', marginBottom: '20px'}}*/}
+            {/*    />*/}
+            {/*</div>*/}
         </Box>
     );
 

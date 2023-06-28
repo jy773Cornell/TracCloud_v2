@@ -37,7 +37,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 
 class UserTypeAdmin(admin.ModelAdmin):
-    list_display = ('utid', 'name', 'is_active', 'create_time',)
+    list_display = ('utid', 'name', 'relation_type', 'is_active', 'create_time',)
 
     list_filter = ('is_active',)
 
@@ -54,9 +54,9 @@ class UserTypeAdmin(admin.ModelAdmin):
 
 
 class UserRelationAdmin(admin.ModelAdmin):
-    list_display = ('urid', 'requester', 'provider', 'type', 'is_active', 'update_time', 'create_time',)
+    list_display = ('urid', 'requester', 'provider', 'is_active', 'update_time', 'create_time',)
 
-    list_filter = ('type', 'is_active',)
+    list_filter = ('is_active',)
 
     list_per_page = 10
 
@@ -88,7 +88,7 @@ class UserRelationTypeAdmin(admin.ModelAdmin):
 
 
 class EquipmentAdmin(admin.ModelAdmin):
-    list_display = ('eid', 'user', 'name', 'owner', 'code', 'is_active', 'update_time', 'create_time',)
+    list_display = ('eid', 'user', 'name', 'code', 'is_active', 'update_time', 'create_time',)
 
     list_filter = ('is_active',)
 
@@ -101,23 +101,6 @@ class EquipmentAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.eid = gen_uuid("EID")
-        super().save_model(request, obj, form, change)
-
-
-class EquipmentTypeAdmin(admin.ModelAdmin):
-    list_display = ('etid', 'name', 'is_active', 'create_time',)
-
-    list_filter = ('is_active',)
-
-    list_per_page = 10
-
-    list_editable = ('name', 'is_active',)
-
-    exclude = ["etid"]
-
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.etid = gen_uuid("ETID")
         super().save_model(request, obj, form, change)
 
 
@@ -422,7 +405,6 @@ admin.site.register(UserRelation, UserRelationAdmin)
 admin.site.register(UserRelationType, UserRelationTypeAdmin)
 
 admin.site.register(Equipment, EquipmentAdmin)
-admin.site.register(EquipmentType, EquipmentTypeAdmin)
 
 admin.site.register(Crop, CropAdmin)
 admin.site.register(CropCategory, CropCategoryAdmin)

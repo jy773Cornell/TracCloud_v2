@@ -41,7 +41,6 @@ class SprayCardContentGetSerializer(serializers.ModelSerializer):
     crop = serializers.SerializerMethodField()
     chemical_purchase = serializers.SerializerMethodField()
     site = serializers.SerializerMethodField()
-    water_unit = serializers.SerializerMethodField()
     rate_unit = serializers.SerializerMethodField()
     amount_unit = serializers.SerializerMethodField()
     area_unit = serializers.SerializerMethodField()
@@ -63,6 +62,8 @@ class SprayCardContentGetSerializer(serializers.ModelSerializer):
         return {
             "label": f"{chemical['epa_reg_no']} | {chemical['trade_name']} | {chemical['active_ingredient']} | ${chemical_purchase['cost_per_unit']} per {chemical['unit']} | {chemical_purchase['pur_datetime']}",
             "unit": chemical['unit'],
+            "rei": chemical['rei'],
+            "phi": chemical['phi'],
             "cost": chemical_purchase['cost_per_unit'],
             "cost_per_unit": f"${chemical_purchase['cost_per_unit']} per {chemical['unit']}",
             "id": obj.chemical_purchase_id,
@@ -91,9 +92,6 @@ class SprayCardContentGetSerializer(serializers.ModelSerializer):
             'size': float(size),
             'size_unit': size_unit,
         }
-
-    def get_water_unit(self, obj):
-        return next((item['name'] for item in cache.get("Unit") if item['unitid'] == obj.water_unit_id), None)
 
     def get_rate_unit(self, obj):
         return next((item['name'] for item in cache.get("Unit") if item['unitid'] == obj.rate_unit_id), None)
