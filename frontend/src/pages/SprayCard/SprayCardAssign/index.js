@@ -66,8 +66,8 @@ export default function Index({
 
     const userTreeProps = {
         sprayData,
-        selectedAssignee,
-        setSelectedAssignee
+        selected: selectedAssignee,
+        setSelected: setSelectedAssignee
     };
 
     const assignSuccessProps = {

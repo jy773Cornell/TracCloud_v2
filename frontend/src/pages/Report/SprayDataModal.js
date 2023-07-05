@@ -96,8 +96,9 @@ export default function SprayDataModal({
                     "start_datetime": record.start_datetime,
                     "finish_datetime": record.finish_datetime,
                     "site": siteStr,
-                    "partial_treatment": record.partial_treatment ? "Y" : "N",
+                    "partial_treatment": record.partial_treatment ? "Yes" : "No",
                     "variety": crop.variety,
+                    "alt_row_middle": record.alt_row_middle ? "X" : "",
                     "growth_stage": crop.growth_stage,
                     "target": record.target,
                     "decision_support": record.decision_support,
@@ -160,6 +161,11 @@ export default function SprayDataModal({
             width: columnWidth,
         },
         {
+            field: 'alt_row_middle',
+            headerName: 'Alt Row Middle',
+            width: columnWidth,
+        },
+        {
             field: 'growth_stage',
             headerName: 'Growth Stage',
             width: columnWidth,
@@ -186,7 +192,7 @@ export default function SprayDataModal({
         },
         {
             field: 'percent_ai',
-            headerName: 'Active Ingredient Percent',
+            headerName: '% A.I.',
             width: columnMidWidth,
         },
         {
@@ -216,7 +222,7 @@ export default function SprayDataModal({
         },
         {
             field: 'amount_pesticide_per_tank',
-            headerName: 'Amount Pesticide per Tank',
+            headerName: 'Amount Pesticide Per Tank',
             width: columnWidth,
         },
         {
@@ -285,7 +291,6 @@ export default function SprayDataModal({
             width: columnWidth,
         },
     ];
-
 
     useEffect(() => {
         setRows(createRowData());

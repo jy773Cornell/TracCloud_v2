@@ -77,13 +77,13 @@ export default function AddStepper({
                         </Button>
                         <Box sx={{flex: '1 1 auto'}}/>
                         <Button
-                            disabled={completed[activeStep]}
+                            disabled={completed[activeStep] || activeStep === 3}
                             onClick={handleComplete}
                             sx={{mr: 1}}>
                             Save
                         </Button>
                         <Button
-                            disabled={activeStep === 2}
+                            disabled={activeStep === 3}
                             onClick={handleNext}
                             sx={{mr: 1}}>
                             Next

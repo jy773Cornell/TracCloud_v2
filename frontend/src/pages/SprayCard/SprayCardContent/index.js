@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {lazy, useEffect, useState} from 'react';
-import {Autocomplete, Button, Grid, TextField} from "@mui/material";
+import {Autocomplete, Button, Grid, InputAdornment, TextField} from "@mui/material";
 import {getCookie} from "../../../utils";
 
 const OperationSnackbars = lazy(() => import('../../../components/Snackbars'))
@@ -19,6 +19,8 @@ export default function sprayCardContent({
                                          }) {
     const [sprayCardContents, setSprayCardContents] = React.useState([]);
     const [chemicalContents, setChemicalContents] = React.useState([]);
+    const [totalAmount, setTotalAmount] = React.useState([]);
+    const [totalCost, setTotalCost] = React.useState([]);
     const [decisionContents, setDecisionContents] = React.useState([]);
     const [cropContents, setCropContents] = React.useState([]);
     const [targetContents, setTargetContents] = React.useState([]);
@@ -134,6 +136,24 @@ export default function sprayCardContent({
         }
         setDecisionContents(uniqueDecisions);
 
+        let tempTotalAmount = [];
+        for (let i = 0; i < uniqueChemicalPurchases.length; i++) {
+            let sum = sprayCardContents
+                .filter(item => JSON.stringify(item.chemical_purchase) === JSON.stringify(uniqueChemicalPurchases[i]))
+                .reduce((acc, item) => acc + parseFloat(item.total_amount), 0);
+            tempTotalAmount.push(sum);
+        }
+        setTotalAmount(tempTotalAmount);
+
+        let tempTotalCost = [];
+        for (let i = 0; i < uniqueChemicalPurchases.length; i++) {
+            let sum = sprayCardContents
+                .filter(item => JSON.stringify(item.chemical_purchase) === JSON.stringify(uniqueChemicalPurchases[i]))
+                .reduce((acc, item) => acc + parseFloat(item.total_cost), 0);
+            tempTotalCost.push(sum);
+        }
+        setTotalCost(tempTotalCost);
+
         const uniqueCrops = [...new Map(sprayCardContents.map(item => [JSON.stringify(item.crop), item.crop])).values()];
         setCropContents(uniqueCrops);
 
@@ -148,36 +168,70 @@ export default function sprayCardContent({
     };
 
     const chemicalContentRender = () => {
-        return Object.keys(chemicalContents).map((rowIdx) => (
-            <React.Fragment key={rowIdx}>
-                <Grid item xs={8}>
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        value={chemicalContents[rowIdx].label}
-                        label={"Chemical " + (Number(rowIdx) + 1) + "  EPA NO.  |  Trade Name  |  Active Ingredient  |  Cost per Unit  |  Purchase Date"}
-                        color="secondary"
-                        focused
-                        InputProps={{
-                            readOnly: true,
-                        }}
-                    />
+        return (
+            <Grid item xs={12}>
+                <Grid container justifyContent="center" spacing={2}>
+                    {Object.keys(chemicalContents).map((rowIdx) => (
+                        <React.Fragment key={rowIdx}>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    variant="outlined"
+                                    value={chemicalContents[rowIdx].label}
+                                    label={"Chemical " + (Number(rowIdx) + 1) + "  EPA NO. | Trade Name | Gallons Water Rate | Application Rate | Cost Per unit"}
+                                    color="secondary"
+                                    focused
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4}>
+                                <TextField
+                                    fullWidth
+                                    variant="outlined"
+                                    value={totalAmount[rowIdx]}
+                                    label={"Total Amount " + (Number(rowIdx) + 1)}
+                                    color="secondary"
+                                    focused
+                                    InputProps={{
+                                        readOnly: true,
+                                        endAdornment: <InputAdornment
+                                            position="end">{chemicalContents[rowIdx].unit}</InputAdornment>,
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4}>
+                                <TextField
+                                    fullWidth
+                                    variant="outlined"
+                                    value={totalCost[rowIdx]}
+                                    label={"Total Cost " + (Number(rowIdx) + 1)}
+                                    color="secondary"
+                                    focused
+                                    InputProps={{
+                                        readOnly: true,
+                                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4}>
+                                <TextField
+                                    fullWidth
+                                    variant="outlined"
+                                    value={decisionContents[rowIdx].label}
+                                    label={"Decision Support " + (Number(rowIdx) + 1)}
+                                    color="secondary"
+                                    focused
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                                />
+                            </Grid>
+                        </React.Fragment>))}
                 </Grid>
-                <Grid item xs={4}>
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        value={decisionContents[rowIdx].label}
-                        label={"Decision Support " + (Number(rowIdx) + 1)}
-                        color="secondary"
-                        focused
-                        InputProps={{
-                            readOnly: true,
-                        }}
-                    />
-                </Grid>
-            </React.Fragment>
-        ))
+            </Grid>
+        )
     };
 
     const siteContentRender = () => {
@@ -193,7 +247,7 @@ export default function sprayCardContent({
                         <TextField
                             {...params}
                             variant="outlined"
-                            label="Selected Sites"
+                            label="Sites"
                             color="success"
                             focused
                         />)}
@@ -203,36 +257,42 @@ export default function sprayCardContent({
     };
 
     const cropContentRender = () => {
-        return Object.keys(cropContents).map((rowIdx) => (
-            <React.Fragment key={rowIdx}>
-                <Grid item xs={6}>
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        value={cropContents[rowIdx].label}
-                        label={"Crop " + (Number(rowIdx) + 1) + " (Variety, Growth Stage)"}
-                        color="warning"
-                        focused
-                        InputProps={{
-                            readOnly: true,
-                        }}
-                    />
+        return (
+            <Grid item xs={12}>
+                <Grid container justifyContent="center" spacing={2}>
+                    {Object.keys(cropContents).map((rowIdx) => (
+                        <React.Fragment key={rowIdx}>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    variant="outlined"
+                                    value={cropContents[rowIdx].label}
+                                    label={"Crop " + (Number(rowIdx) + 1) + " (Variety, Growth Stage)"}
+                                    color="warning"
+                                    focused
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    variant="outlined"
+                                    value={targetContents[rowIdx].label}
+                                    label={"Application Target " + (Number(rowIdx) + 1)}
+                                    color="warning"
+                                    focused
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                                />
+                            </Grid>
+                        </React.Fragment>
+                    ))}
                 </Grid>
-                <Grid item xs={6}>
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        value={targetContents[rowIdx].label}
-                        label={"Application Target " + (Number(rowIdx) + 1)}
-                        color="warning"
-                        focused
-                        InputProps={{
-                            readOnly: true,
-                        }}
-                    />
-                </Grid>
-            </React.Fragment>
-        ))
+            </Grid>
+        )
     };
 
     const completeCondition = () => {

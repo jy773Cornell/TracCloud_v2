@@ -83,8 +83,9 @@ class SprayCardStore {
                 chemicalOptions: jsonData[4].data.map(item => {
                     const chemical = jsonData[2].data.find(chem => chem.chemid === item.chemical);
                     return {
-                        label: `${chemical.epa_reg_no}  |  ${chemical.trade_name}  |  ${chemical.active_ingredient}  |  ${chemical.rei}  |  ${chemical.phi}  |  \$${item.cost_per_unit} per ${chemical.unit}  | ${item.pur_datetime}`,
+                        label: `${chemical.epa_reg_no} | ${chemical.trade_name} | \$${item.cost_per_unit} per ${chemical.unit} | ${item.pur_datetime}`,
                         unit: chemical.unit,
+                        cost: item.cost_per_unit,
                         cost_per_unit: `\$${item.cost_per_unit} per ${chemical.unit}`,
                         id: item.prid,
                     };
@@ -105,11 +106,13 @@ class SprayCardStore {
                     const sid = site.sid;
                     const cid = site.crop.cid;
                     const crop = `${site.crop.crop} (${site.crop.variety}, ${site.crop.growth_stage})`
+                    const area = site.size;
+                    const unit = site.size_unit;
                     while (site.parent) {
                         site = flatten(jsonData[1].data).find(item => item.sid === site.parent)
                         optionStr = `${site.name} - ${optionStr}`;
                     }
-                    return {id: sid, label: optionStr, cid: cid, crop: crop};
+                    return {id: sid, label: optionStr, cid: cid, crop: crop, area: area, unit: unit};
                 }),
                 equipmentOptions: jsonData[3].data.map(item => ({
                     label: `${item.name} (${item.owner}, ${item.code})`,

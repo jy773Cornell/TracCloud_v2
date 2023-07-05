@@ -47,7 +47,7 @@ export default function SiteTreeView({
     return (
         <>
             {nodes.map(node => (
-                <Grid item xs={4} key={node.value}>
+                <Grid item xs={3} key={node.value}>
                     <Box
                         key={node.value}
                         sx={{

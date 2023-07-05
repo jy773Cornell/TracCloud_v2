@@ -142,6 +142,7 @@ class ApplicationCreateSerializer(serializers.ModelSerializer):
 
 class ApplicationGetSerializer(serializers.ModelSerializer):
     applicator = serializers.StringRelatedField()
+    responsible_person = serializers.StringRelatedField()
     rate_unit = serializers.SerializerMethodField()
     amount_unit = serializers.SerializerMethodField()
     area_unit = serializers.SerializerMethodField()

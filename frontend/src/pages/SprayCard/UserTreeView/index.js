@@ -8,8 +8,8 @@ import TreeItem from '@mui/lab/TreeItem';
 
 export default function UserTreeView({
                                          sprayData,
-                                         selectedAssignee,
-                                         setSelectedAssignee
+                                         selected,
+                                         setSelected
                                      }) {
     const [expanded, setExpanded] = React.useState([]);
 
@@ -18,7 +18,7 @@ export default function UserTreeView({
     };
 
     const handleSelect = (event, nodeIds) => {
-        setSelectedAssignee(nodeIds);
+        setSelected(nodeIds);
     };
 
     const collectNodeIds = (nodes) => {
@@ -67,7 +67,7 @@ export default function UserTreeView({
                 defaultCollapseIcon={<ExpandMoreIcon/>}
                 defaultExpandIcon={<ChevronRightIcon/>}
                 expanded={expanded}
-                selected={selectedAssignee}
+                selected={selected}
                 onNodeToggle={handleToggle}
                 onNodeSelect={handleSelect}
             >

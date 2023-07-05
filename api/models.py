@@ -397,6 +397,7 @@ class ApplicationRecord(models.Model):
     site = models.ForeignKey(verbose_name="Site", to="Site", to_field="sid", related_name="ar_site",
                              null=True, blank=True, on_delete=models.SET_NULL)
     partial_treatment = models.BooleanField(verbose_name="Partial Treatment", default=False)
+    alt_row_middle = models.BooleanField(verbose_name="Alt Row Middle", default=False)
     target = models.ForeignKey(verbose_name="Application Target", to="ApplicationTarget", to_field="attid",
                                related_name="ar_pd", null=True, blank=True, on_delete=models.SET_NULL)
     decision_support = models.ForeignKey(verbose_name="Decision Support", to="DecisionSupport", to_field="dsid",
@@ -407,7 +408,7 @@ class ApplicationRecord(models.Model):
     harvestable_date = models.CharField(verbose_name="Harvestable Date", null=True, blank=True, max_length=64)
     equipment = models.ForeignKey(verbose_name="Equipment", to="Equipment", to_field="eid",
                                   related_name="ar_equipment", null=True, blank=True, on_delete=models.SET_NULL)
-    amount_pesticide_per_tank = models.CharField(verbose_name="Amount Pesticide per Tank", null=True, blank=True,
+    amount_pesticide_per_tank = models.CharField(verbose_name="Amount Pesticide Per Tank", null=True, blank=True,
                                                  max_length=64)
     gallons_water_rate = models.CharField(verbose_name="Gallons Water Rate", null=True, blank=True, max_length=32)
     application_rate = models.CharField(verbose_name="Application Rate", null=True, blank=True, max_length=32)

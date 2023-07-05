@@ -470,7 +470,6 @@ function Crop(props) {
         {
             field: 'crop',
             headerName: 'Crop',
-            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
@@ -497,7 +496,6 @@ function Crop(props) {
         {
             field: 'variety',
             headerName: 'Variety',
-            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
@@ -523,7 +521,6 @@ function Crop(props) {
         {
             field: 'crop_code',
             headerName: 'Crop Code',
-            sortable: false,
             width: columnWidth,
             valueGetter: (params) => {
                 return (editRowId === params.id ? fieldValues[field_names[2]] : params.value)
@@ -532,7 +529,6 @@ function Crop(props) {
         {
             field: 'category',
             headerName: 'Category',
-            sortable: false,
             width: columnWidth,
             valueGetter: (params) => {
                 return (editRowId === params.id ? fieldValues[field_names[3]] : params.value)
@@ -541,7 +537,6 @@ function Crop(props) {
         {
             field: 'growth_stage',
             headerName: 'Growth Stage',
-            sortable: false,
             width: columnWidth,
             renderCell: (params, rowID = params.id) => (
                 <Autocomplete
@@ -567,7 +562,6 @@ function Crop(props) {
         {
             field: 'update_time',
             headerName: 'Update Time',
-            sortable: false,
             width: columnWidth,
         },
     ];
