@@ -78,7 +78,7 @@ export default function SprayCardCreate({
     const [checked, setChecked] = useState([]);
     const [expanded, setExpanded] = useState([]);
     const [activeStep, setActiveStep] = React.useState(0);
-    const [completed, setCompleted] = React.useState({0: false, 1: false, 2: false});
+    const [completed, setCompleted] = React.useState({0: false, 1: false, 2: false, 3: false});
     const [successSnackbar, setSuccessSnackbar] = useState(false);
     const [errorSnackbar, setErrorSnackbar] = useState(false);
 
@@ -1080,7 +1080,7 @@ export default function SprayCardCreate({
         setFieldErrors({});
         setFormData({});
         setActiveStep(0);
-        setCompleted({0: false, 1: false, 2: false})
+        setCompleted({0: false, 1: false, 2: false, 3:false});
         siteTreeFresh();
     }, [addSprayCard]);
 

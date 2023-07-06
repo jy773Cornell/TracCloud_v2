@@ -76,8 +76,8 @@ class SprayCardContentGetSerializer(serializers.ModelSerializer):
         crop = CropGetSerializer(obj.crop).data
         cid = crop['cid']
         applied_area = obj.applied_area
-        partial_treatment = "partial treatment" if obj.partial_treatment else ""
-        alt_row_middle = "alt row middle" if obj.alt_row_middle else ""
+        partial_treatment = "partial-treatment" if obj.partial_treatment else ""
+        alt_row_middle = "alt-row-middle" if obj.alt_row_middle else ""
         size_unit = SiteGetSerializer(obj.site).data['size_unit']
         crop = "{} ({}, {})".format(crop['crop'], crop['variety'], crop['growth_stage'])
         option_str = site.name
