@@ -60,8 +60,8 @@ class SprayCardContentGetSerializer(serializers.ModelSerializer):
         chemical = ChemicalGetSerializer(obj.chemical_purchase.chemical).data
         chemical_purchase = PurchaseGetSerializer(obj.chemical_purchase).data
         return {
-            "label": f"{chemical['epa_reg_no']} | {chemical['trade_name']} | {obj.gallons_water_rate} |"
-                     f" {obj.application_rate} {chemical['unit']} | ${chemical_purchase['cost_per_unit']} per {chemical['unit']}",
+            "label": f"{chemical['epa_reg_no']} | {chemical['trade_name']} |"
+                     f" ${chemical_purchase['cost_per_unit']} per {chemical['unit']} | {chemical_purchase['pur_datetime']}",
             "unit": chemical['unit'],
             "rei": chemical['rei'],
             "phi": chemical['phi'],
@@ -78,14 +78,14 @@ class SprayCardContentGetSerializer(serializers.ModelSerializer):
         applied_area = obj.applied_area
         partial_treatment = "partial-treatment" if obj.partial_treatment else ""
         alt_row_middle = "alt-row-middle" if obj.alt_row_middle else ""
-        size_unit = SiteGetSerializer(obj.site).data['size_unit']
+        unit = SiteGetSerializer(obj.site).data['size_unit']
         crop = "{} ({}, {})".format(crop['crop'], crop['variety'], crop['growth_stage'])
         option_str = site.name
 
         while site.parent:
             site = site.parent
             option_str = f"{site.name} - {option_str}"
-        option_str = f"{option_str}: {applied_area} {size_unit} {partial_treatment} {alt_row_middle}"
+        option_str = f"{option_str}: {applied_area} {unit} {partial_treatment} {alt_row_middle}"
 
         return {
             'id': sid,
@@ -93,7 +93,7 @@ class SprayCardContentGetSerializer(serializers.ModelSerializer):
             'cid': cid,
             'crop': crop,
             'size': float(applied_area),
-            'size_unit': size_unit,
+            'unit': unit,
         }
 
     def get_rate_unit(self, obj):

@@ -21,12 +21,14 @@ function CustomToolbar() {
     </GridToolbarContainer>);
 }
 
-export default function Index({
-                                  uid,
-                                  refreshRecord,
-                                  sprayCardSelected,
-                                  setSprayCardSelected
-                              }) {
+export default function SprayCardDataGrid({
+                                              uid,
+                                              refreshRecord,
+                                              sprayCardSelected,
+                                              setSprayCardSelected,
+                                              sprayData,
+                                              sprayOptions,
+                                          }) {
     const [sprayCardRecords, setSprayCardRecords] = useState([]);
     const [rows, setRows] = useState([]);
     const [mounted, setMounted] = useState(false);
@@ -73,11 +75,17 @@ export default function Index({
     const columnWidth = 150;
     const columns = [
         {
-            field: 'state', headerName: 'State', width: columnWidth, renderCell: (params) => (<Button
-                variant="text"
-                onClick={() => handleStateClick(sprayCardRecords.find(record => record.scpid === params.row.id))}>
-                {params.row.state}
-            </Button>)
+            field: 'state', headerName: 'State', width: columnWidth,
+            renderCell: (params) => {
+                return (
+                    <Button
+                        variant="text"
+                        disabled={Object.keys(sprayData).length === 0 || Object.keys(sprayOptions).length === 0}
+                        onClick={() => handleStateClick(sprayCardRecords.find(record => record.scpid === params.row.id))}>
+                        {params.row.state}
+                    </Button>
+                );
+            }
         },
         {
             field: 'owner', headerName: 'Owner', width: columnWidth,

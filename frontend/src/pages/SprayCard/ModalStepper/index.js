@@ -5,19 +5,20 @@ import Step from '@mui/material/Step';
 import StepButton from '@mui/material/StepButton';
 import Button from '@mui/material/Button';
 
-export default function AddStepper({
-                                       steps,
-                                       activeStep,
-                                       setActiveStep,
-                                       completed,
-                                       setCompleted,
-                                       saveChemicals,
-                                       saveCrops,
-                                       saveSites,
-                                       submitSprayCardData,
-                                       closeModal,
-                                       buttonText
-                                   }) {
+export default function ModalStepper({
+                                         steps,
+                                         activeStep,
+                                         setActiveStep,
+                                         completed,
+                                         setCompleted,
+                                         saveChemicals,
+                                         saveCrops,
+                                         saveSites,
+                                         saveResponsible,
+                                         submitSprayCardData,
+                                         closeModal,
+                                         buttonText
+                                     }) {
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
     };
@@ -42,6 +43,8 @@ export default function AddStepper({
         } else if (activeStep === 1 && saveCrops()) {
             completeStep();
         } else if (activeStep === 2 && saveSites()) {
+            completeStep();
+        } else if (activeStep === 3 && saveResponsible()) {
             completeStep();
         }
     };
@@ -77,7 +80,7 @@ export default function AddStepper({
                         </Button>
                         <Box sx={{flex: '1 1 auto'}}/>
                         <Button
-                            disabled={completed[activeStep] || activeStep === 3}
+                            disabled={completed[activeStep]}
                             onClick={handleComplete}
                             sx={{mr: 1}}>
                             Save

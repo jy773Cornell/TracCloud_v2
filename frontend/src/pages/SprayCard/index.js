@@ -49,7 +49,9 @@ function SprayCard(props) {
         uid,
         refreshRecord,
         sprayCardSelected,
-        setSprayCardSelected
+        setSprayCardSelected,
+        sprayData,
+        sprayOptions,
     };
 
     const detailsProps = {
