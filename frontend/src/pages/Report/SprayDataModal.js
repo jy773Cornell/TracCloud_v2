@@ -99,7 +99,7 @@ export default function SprayDataModal({
                     "partial_treatment": record.partial_treatment ? "Yes" : "No",
                     "variety": crop.variety,
                     "alt_row_middle": record.alt_row_middle ? "X" : "",
-                    "growth_stage": crop.growth_stage,
+                    "growth_stage": record.growth_stage,
                     "target": record.target,
                     "decision_support": record.decision_support,
                     "trade_name": chemical.trade_name,

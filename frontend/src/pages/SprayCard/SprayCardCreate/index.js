@@ -14,7 +14,8 @@ const field_names = [
     "application_rate",
     "partial_treatment",
     "alt_row_middle",
-    "responsible_person"
+    "responsible_person",
+    "growth_stage"
 ]
 
 export default function SprayCardCreate({
@@ -30,7 +31,7 @@ export default function SprayCardCreate({
                                         }) {
 
     const initialFieldValues = field_names.reduce((acc, cur) => {
-        if ([field_names[5], field_names[11]].includes(cur)) {
+        if ([field_names[5], field_names[7], field_names[11]].includes(cur)) {
             acc[cur] = "";
         } else {
             acc[cur] = {};

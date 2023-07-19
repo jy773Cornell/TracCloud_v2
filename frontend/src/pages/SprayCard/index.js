@@ -17,6 +17,7 @@ function SprayCard(props) {
 
     const [sprayData, setSprayData] = React.useState({});
     const [sprayOptions, setSprayOption] = React.useState({});
+    const [mounted, setMounted] = React.useState(false)
 
     const [addSprayCard, setAddSprayCard] = React.useState(false);
     const [assignSprayCard, setAssignSprayCard] = React.useState(false);
@@ -69,6 +70,7 @@ function SprayCard(props) {
             const data = await sprayCardStore.getSprayData(uid);
             setSprayData(data["record_data"]);
             setSprayOption(data["option_data"]);
+            setMounted(true);
         };
 
         fetchData();
@@ -79,6 +81,7 @@ function SprayCard(props) {
             <AddButton
                 variant="contained"
                 startIcon={<AddIcon/>}
+                disabled={!mounted}
                 onClick={() => setAddSprayCard(true)}
             >
                 Add Spray Card Process

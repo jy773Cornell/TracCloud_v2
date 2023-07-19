@@ -14,7 +14,8 @@ const field_names = [
     "application_rate",
     "partial_treatment",
     "alt_row_middle",
-    "responsible_person"
+    "responsible_person",
+    "growth_stage"
 ]
 
 export default function SprayCardEdit({
@@ -44,7 +45,7 @@ export default function SprayCardEdit({
 
     const updateInitialEditFields = () => {
         let initialFieldValues = field_names.reduce((acc, cur) => {
-            if ([field_names[5], field_names[11]].includes(cur)) {
+            if ([field_names[5], field_names[7], field_names[11]].includes(cur)) {
                 acc[cur] = "";
             } else {
                 acc[cur] = {};
@@ -65,9 +66,9 @@ export default function SprayCardEdit({
         for (let i = 0; i < previousChemicalContents.length; i++) {
             initialFieldValues[field_names[0]][i] = sprayOptions.chemicalOptions.find(option => option.id === previousChemicalContents[i].id);
             initialFieldValues[field_names[1]][i] = sprayOptions.decisionSupportOptions.find(option => option.id === previousDecision[i].id);
-            initialFieldValues[field_names[7]][i] = preGallonsWater[i];
             initialFieldValues[field_names[8]][i] = preApplicationRate[i];
         }
+        initialFieldValues[field_names[7]] = preGallonsWater[0];
 
         const previousCrops = [...new Map(sprayCardContents.map(item => [JSON.stringify(item.crop), item.crop])).values()];
         const previousTargets = previousCrops.map(item => sprayCardContents.find(spray =>
@@ -88,11 +89,16 @@ export default function SprayCardEdit({
         const preAltRowMiddle = preSites.map(item => sprayCardContents.find(spray =>
             JSON.stringify(spray.site) === JSON.stringify(item)
         ).alt_row_middle);
+        const preGrowthStage = preSites.map(item => sprayCardContents.find(spray =>
+            JSON.stringify(spray.site) === JSON.stringify(item)
+        ).growth_stage);
+
         for (let i = 0; i < preSites.length; i++) {
             initialFieldValues[field_names[4]][i] = sprayOptions.siteOptions.find(option => option.id === preSites[i].id);
             initialFieldValues[field_names[6]][i] = preAppliedArea[i];
             initialFieldValues[field_names[9]][i] = prePartialTreatment[i];
             initialFieldValues[field_names[10]][i] = preAltRowMiddle[i];
+            initialFieldValues[field_names[12]][i] = sprayOptions.growthStageOptions.find(option => option.id === preGrowthStage[i]);
         }
 
         setSelectedResponsible(sprayCardContents[0].responsible_person);

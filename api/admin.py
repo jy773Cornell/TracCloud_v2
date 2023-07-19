@@ -105,8 +105,7 @@ class EquipmentAdmin(admin.ModelAdmin):
 
 
 class CropAdmin(admin.ModelAdmin):
-    list_display = ('cid', 'user', 'crop', 'variety', 'growth_stage',
-                    'is_active', 'update_time', 'create_time',)
+    list_display = ('cid', 'user', 'crop', 'variety', 'is_active', 'update_time', 'create_time',)
 
     list_filter = ('crop', 'is_active',)
 

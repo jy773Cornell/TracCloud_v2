@@ -1,9 +1,9 @@
-import { makeAutoObservable } from 'mobx';
+import {makeAutoObservable} from 'mobx';
 
 class CropStore {
     columnWidth = 200;
     editWidth = 180;
-    field_names = ["crop", "variety", "crop_code", "category", "growth_stage"]
+    field_names = ["crop", "variety", "crop_code", "category"]
 
     constructor() {
         makeAutoObservable(this);

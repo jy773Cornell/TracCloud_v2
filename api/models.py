@@ -106,17 +106,6 @@ class Equipment(models.Model):
     objects = MyModelManager()
 
 
-# class EquipmentType(models.Model):
-#     etid = models.CharField(verbose_name="ETID", primary_key=True, max_length=48)
-#     name = models.CharField(verbose_name="Type Name", max_length=32)
-#     note = models.TextField(verbose_name="Note", null=True, blank=True)
-#     is_active = models.BooleanField(verbose_name="Is Active", default=True)
-#     create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
-#
-#     def __str__(self):
-#         return self.name
-
-
 '''
 Crop Entity
 '''
@@ -130,8 +119,6 @@ class Crop(models.Model):
                              related_name="crop_category", null=True, blank=True, on_delete=models.SET_NULL)
     variety = models.ForeignKey(verbose_name="Variety", to="CropVariety", to_field="cvid",
                                 related_name="crop_variety", null=True, blank=True, on_delete=models.SET_NULL)
-    growth_stage = models.ForeignKey(verbose_name="Grow Stage", to="CropGrowthStage", to_field="cgsid",
-                                     related_name="crop_growth_stage", null=True, blank=True, on_delete=models.SET_NULL)
 
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
@@ -396,6 +383,8 @@ class ApplicationRecord(models.Model):
     finish_datetime = models.CharField(verbose_name="Finish Datetime", null=True, blank=True, max_length=64)
     site = models.ForeignKey(verbose_name="Site", to="Site", to_field="sid", related_name="ar_site",
                              null=True, blank=True, on_delete=models.SET_NULL)
+    growth_stage = models.ForeignKey(verbose_name="Grow Stage", to="CropGrowthStage", to_field="cgsid",
+                                     related_name="crop_growth_stage", null=True, blank=True, on_delete=models.SET_NULL)
     partial_treatment = models.BooleanField(verbose_name="Partial Treatment", default=False)
     alt_row_middle = models.BooleanField(verbose_name="Alt Row Middle", default=False)
     target = models.ForeignKey(verbose_name="Application Target", to="ApplicationTarget", to_field="attid",

@@ -2,15 +2,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import {
-    Autocomplete,
-    Card,
-    CardContent,
-    Checkbox,
-    FormControlLabel,
-    Grid,
-    InputAdornment,
-    Modal,
-    TextField
+    Autocomplete, Card, CardContent, Checkbox, FormControlLabel, Grid, InputAdornment, Modal, TextField
 } from "@mui/material";
 import {lazy, useEffect, useState} from "react";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
@@ -53,6 +45,7 @@ export default function SprayCardForm({
     const [fieldErrors, setFieldErrors] = useState({});
 
     const [applicationTargetOptions, setApplicationTargetOptions] = useState([]);
+    const [cropGrowthStageOptions, setCropGrowthStageOptions] = useState({});
     const [siteOptions, setSiteOptions] = useState([]);
     const [nodes, setNodes] = useState([]);
 
@@ -68,12 +61,9 @@ export default function SprayCardForm({
         console.log(apiData);
         const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                'X-CSRFToken': csrftoken,
-            },
-            body: JSON.stringify(apiData),
+            method: "POST", headers: {
+                "Content-Type": "application/json", 'X-CSRFToken': csrftoken,
+            }, body: JSON.stringify(apiData),
         };
         const response = await fetch("/workflow/spraycard/create/", requestOptions)
         if (response.ok) {
@@ -89,12 +79,9 @@ export default function SprayCardForm({
         console.log(apiData);
         const csrftoken = getCookie('csrftoken');
         const requestOptions = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                'X-CSRFToken': csrftoken,
-            },
-            body: JSON.stringify(apiData),
+            method: "POST", headers: {
+                "Content-Type": "application/json", 'X-CSRFToken': csrftoken,
+            }, body: JSON.stringify(apiData),
         };
         const response = await fetch("/workflow/spraycard/initiate/", requestOptions)
         if (response.ok) {
@@ -156,13 +143,14 @@ export default function SprayCardForm({
                 applicationRecord["chemical_purchase_id"] = (formData[field_names[0]][chemical_key]).id;
                 applicationRecord["decision_support_id"] = (formData[field_names[1]][chemical_key]).id;
                 applicationRecord["target_id"] = (formData[field_names[3]][getKey(formData[field_names[2]], (formData[field_names[4]][site_key]).cid)]).id;
-                applicationRecord["gallons_water_rate"] = formData[field_names[7]][chemical_key];
+                applicationRecord["gallons_water_rate"] = formData[field_names[7]];
                 applicationRecord["application_rate"] = formData[field_names[8]][chemical_key];
                 applicationRecord["total_amount"] = parseFloat(formData[field_names[6]][site_key]) * parseFloat(formData[field_names[8]][chemical_key]);
                 applicationRecord["amount_unit_id"] = sprayOptions["chemicalUnitOptions"].find(item => item.label === (formData[field_names[0]][chemical_key]).unit).id;
                 applicationRecord["total_cost"] = parseFloat(formData[field_names[6]][site_key]) * parseFloat(formData[field_names[8]][chemical_key]) * parseFloat((formData[field_names[0]][chemical_key]).cost);
                 applicationRecord["rate_unit_id"] = sprayOptions["chemicalUnitOptions"].find(item => item.label === (formData[field_names[0]][chemical_key]).unit).id;
-                applicationRecord["responsible_person_id"] = formData[field_names[11]]
+                applicationRecord["responsible_person_id"] = formData[field_names[11]];
+                applicationRecord["growth_stage_id"] = formData[field_names[12]][site_key].id;
                 submitData.push(applicationRecord);
             }
         }
@@ -197,7 +185,7 @@ export default function SprayCardForm({
         if (field === field_names[2]) {
             ApplicationTargeOptionsFresh(value.id, index)
             const newSiteObj = cropsToSites(fieldObj);
-            const [newAppliedAreaObj, newPartialTreatment, newAltRowMiddle] = newSiteInfo(newSiteObj);
+            const [newAppliedAreaObj, newPartialTreatment, newAltRowMiddle, newGrowthStage] = newSiteInfo(newSiteObj);
             setFieldValues({
                 ...fieldValues,
                 [field]: fieldObj,
@@ -205,11 +193,12 @@ export default function SprayCardForm({
                 [field_names[6]]: newAppliedAreaObj,
                 [field_names[9]]: newPartialTreatment,
                 [field_names[10]]: newAltRowMiddle,
+                [field_names[12]]: newGrowthStage,
             });
             refreshSiteErrors();
         } else if (field === field_names[4]) {
             const [newCropObj, newApplicationTargetObj] = sitesToCrops(fieldObj);
-            const [newAppliedAreaObj, newPartialTreatment, newAltRowMiddle] = newSiteInfo(fieldObj);
+            const [newAppliedAreaObj, newPartialTreatment, newAltRowMiddle, newGrowthStage] = newSiteInfo(fieldObj);
             setFieldValues({
                 ...fieldValues,
                 [field]: fieldObj,
@@ -218,16 +207,15 @@ export default function SprayCardForm({
                 [field_names[6]]: newAppliedAreaObj,
                 [field_names[9]]: newPartialTreatment,
                 [field_names[10]]: newAltRowMiddle,
+                [field_names[12]]: newGrowthStage,
             });
             refreshSiteErrors();
         } else if (field === field_names[5]) {
             setFieldValues({
-                ...fieldValues,
-                [field]: fieldObj,
+                ...fieldValues, [field]: fieldObj,
             });
             setFormData({
-                ...formData,
-                [field]: fieldObj,
+                ...formData, [field]: fieldObj,
             });
         } else if (field === field_names[9]) {
             let newAppliedArea = {...fieldValues[field_names[6]]}
@@ -236,9 +224,7 @@ export default function SprayCardForm({
             }
 
             setFieldValues({
-                ...fieldValues,
-                [field]: fieldObj,
-                [field_names[6]]: newAppliedArea,
+                ...fieldValues, [field]: fieldObj, [field_names[6]]: newAppliedArea,
             });
         } else if (field === field_names[10]) {
             let newAppliedArea = {...fieldValues[field_names[6]]}
@@ -247,9 +233,7 @@ export default function SprayCardForm({
             }
 
             setFieldValues({
-                ...fieldValues,
-                [field]: fieldObj,
-                [field_names[6]]: newAppliedArea,
+                ...fieldValues, [field]: fieldObj, [field_names[6]]: newAppliedArea,
             });
         } else {
             setFieldValues({
@@ -283,8 +267,6 @@ export default function SprayCardForm({
         if (field === field_names[0]) {
             const decisionSupportObj = fieldValues[field_names[1]] || {};
             decisionSupportObj[nextKey] = '';
-            const gallonsWaterObj = fieldValues[field_names[7]] || {};
-            gallonsWaterObj[nextKey] = '';
             const applicationRate = fieldValues[field_names[8]] || {};
             applicationRate[nextKey] = '';
 
@@ -292,7 +274,6 @@ export default function SprayCardForm({
                 ...fieldValues,
                 [field]: fieldObj,
                 [field_names[1]]: decisionSupportObj,
-                [field_names[7]]: gallonsWaterObj,
                 [field_names[8]]: applicationRate,
             });
         } else if (field === field_names[2]) {
@@ -306,12 +287,9 @@ export default function SprayCardForm({
     };
 
     const refreshSiteErrors = () => {
-        setFieldErrors(
-            {
-                ...fieldErrors,
-                [field_names[6]]: {},
-            }
-        );
+        setFieldErrors({
+            ...fieldErrors, [field_names[6]]: {},
+        });
     };
 
     const deleteConnectedFields = (dataField, fields, index) => {
@@ -340,17 +318,18 @@ export default function SprayCardForm({
         let updatedFieldErrors;
 
         if (field === field_names[0]) {
-            updatedFieldValues = deleteConnectedFields(fieldValues, [field_names[0], field_names[1], field_names[7], field_names[8]], index);
-            updatedFieldErrors = deleteConnectedFields(fieldErrors, [field_names[0], field_names[1], field_names[7], field_names[8]], index);
+            updatedFieldValues = deleteConnectedFields(fieldValues, [field_names[0], field_names[1], field_names[8]], index);
+            updatedFieldErrors = deleteConnectedFields(fieldErrors, [field_names[0], field_names[1], field_names[8]], index);
         } else if (field === field_names[2]) {
             updatedFieldValues = deleteConnectedFields(fieldValues, [field_names[2], field_names[3]], index);
             updatedFieldErrors = deleteConnectedFields(fieldErrors, [field_names[2], field_names[3]], index);
             const newSiteObj = cropsToSites(updatedFieldValues[field_names[2]]);
-            const [newAppliedAreaObj, newPartialTreatment, newAltRowMiddle] = newSiteInfo(newSiteObj);
+            const [newAppliedAreaObj, newPartialTreatment, newAltRowMiddle, newGrowthStage] = newSiteInfo(newSiteObj);
             updatedFieldValues[field_names[4]] = newSiteObj;
             updatedFieldValues[field_names[6]] = newAppliedAreaObj;
             updatedFieldValues[field_names[9]] = newPartialTreatment;
             updatedFieldValues[field_names[10]] = newAltRowMiddle;
+            updatedFieldValues[field_names[12]] = newGrowthStage;
         } else {
             updatedFieldValues = {};
         }
@@ -393,12 +372,9 @@ export default function SprayCardForm({
     };
 
     const updateCompleted = (stepValue) => {
-        setCompleted(prevCompleted => (
-            {
-                ...prevCompleted,
-                [stepValue]: false
-            }
-        ));
+        setCompleted(prevCompleted => ({
+            ...prevCompleted, [stepValue]: false
+        }));
     }
 
     const updateSiteFields = () => {
@@ -413,7 +389,7 @@ export default function SprayCardForm({
 
         if (JSON.stringify(fieldValues[field_names[4]]) !== JSON.stringify(newSiteObj)) {
             const [newCropObj, newApplicationTargetObj] = sitesToCrops(newSiteObj);
-            const [newAppliedAreaObj, newPartialTreatment, newAltRowMiddle] = newSiteInfo(newSiteObj);
+            const [newAppliedAreaObj, newPartialTreatment, newAltRowMiddle, newGrowthStage] = newSiteInfo(newSiteObj);
             setFieldValues(prev => ({
                 ...prev,
                 [field_names[2]]: newCropObj,
@@ -422,6 +398,7 @@ export default function SprayCardForm({
                 [field_names[6]]: newAppliedAreaObj,
                 [field_names[9]]: newPartialTreatment,
                 [field_names[10]]: newAltRowMiddle,
+                [field_names[12]]: newGrowthStage,
             }));
         }
 
@@ -453,8 +430,7 @@ export default function SprayCardForm({
 
         if (JSON.stringify(checked) !== JSON.stringify(newChecked)) {
             setChecked(prevChecked => ({
-                ...prevChecked,
-                ...newChecked
+                ...prevChecked, ...newChecked
             }));
         }
     };
@@ -486,10 +462,12 @@ export default function SprayCardForm({
         const preAppliedArea = fieldValues[field_names[6]];
         const prePartialTreatment = fieldValues[field_names[9]];
         const preAltRowMiddle = fieldValues[field_names[10]];
+        const preGrowthStage = fieldValues[field_names[12]];
 
         let newAppliedAreaObj = {};
         let newPartialTreatment = {};
         let newAltRowMiddle = {};
+        let newGrowthStage = {};
 
         Object.keys(siteSelected).map(index => {
             const site_index = Object.keys(preSiteSelected).find(pre_index => JSON.stringify(siteSelected[index]) === JSON.stringify(preSiteSelected[pre_index]));
@@ -497,14 +475,16 @@ export default function SprayCardForm({
                 newAppliedAreaObj[index] = preAppliedArea[site_index];
                 newPartialTreatment[index] = prePartialTreatment[site_index];
                 newAltRowMiddle[index] = preAltRowMiddle[site_index];
+                newGrowthStage[index] = preGrowthStage[site_index];
             } else {
                 newAppliedAreaObj[index] = siteSelected[index].area;
                 newPartialTreatment[index] = false;
                 newAltRowMiddle[index] = false;
+                newGrowthStage[index] = ""
             }
         })
 
-        return [newAppliedAreaObj, newPartialTreatment, newAltRowMiddle]
+        return [newAppliedAreaObj, newPartialTreatment, newAltRowMiddle, newGrowthStage]
     }
 
     const sitesToCrops = (siteSelected) => {
@@ -551,118 +531,114 @@ export default function SprayCardForm({
     }
 
     const chemicalSelectionRender = () => {
-        return Object.keys(fieldValues[field_names[0]]).map((rowIdx) => (
-            <Grid item xs={12} key={rowIdx}>
-                <Grid container justifyContent="center" spacing={2}>
-                    <Grid item xs={11}>
-                        <Autocomplete
-                            value={fieldValues[field_names[0]][rowIdx]}
-                            options={sprayOptions["chemicalOptions"] || []}
-                            disableClearable={true}
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[0], rowIdx);
-                            }}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    fullWidth
-                                    required
-                                    variant="outlined"
-                                    placeholder={"EPA NO. | Trade Name | Cost per Unit | Purchase Date"}
-                                    label={"Chemical " + (Number(rowIdx) + 1)}
-                                    error={fieldErrors?.[field_names[0]]?.[rowIdx] || false}/>)}
-                        />
-                    </Grid>
-                    <Grid item xs={1} sx={{display: 'flex', alignItems: 'center'}}>
-                        <Button variant="contained" color="secondary"
-                                onClick={() => handleDeleteField(field_names[0], rowIdx)}>
-                            Delete
-                        </Button>
-                    </Grid>
-                    <Grid item xs={4}>
-                        <Autocomplete
-                            value={fieldValues[field_names[1]][rowIdx]}
-                            options={sprayOptions["decisionSupportOptions"] || []}
-                            disableClearable={true}
-                            onChange={(event, value) => {
-                                handleInputChange(event, value, field_names[1], rowIdx);
-                            }}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    fullWidth
-                                    required
-                                    variant="outlined"
-                                    label={"Decision Support " + (Number(rowIdx) + 1)}
-                                    error={fieldErrors?.[field_names[1]]?.[rowIdx] || false}/>
-                            )}
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <TextField
-                            value={fieldValues[field_names[7]][rowIdx]}
-                            variant="outlined"
+        return Object.keys(fieldValues[field_names[0]]).map((rowIdx) => (<Grid item xs={12} key={rowIdx}>
+            <Grid container justifyContent="center" spacing={2}>
+                <Grid item xs={2}/>
+                <Grid item xs={7}>
+                    <Autocomplete
+                        value={fieldValues[field_names[0]][rowIdx]}
+                        options={sprayOptions["chemicalOptions"] || []}
+                        disableClearable={true}
+                        onChange={(event, value) => {
+                            handleInputChange(event, value, field_names[0], rowIdx);
+                        }}
+                        renderInput={(params) => (<TextField
+                            {...params}
                             fullWidth
                             required
-                            label={"Gallons Water Rate " + (Number(rowIdx) + 1)}
-                            type="number"
-                            inputProps={{
-                                step: 0.01,
-                            }}
-                            InputProps={{
-                                endAdornment:
-                                    <InputAdornment
-                                        position="end">{`per site unit`}
-                                    </InputAdornment>,
-                            }}
-                            error={fieldErrors?.[field_names[7]]?.[rowIdx] || false}
-                            onChange={(event) => {
-                                handleInputChange(event, event.target.value, field_names[7], rowIdx);
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <TextField
-                            value={fieldValues[field_names[8]][rowIdx]}
                             variant="outlined"
-                            fullWidth
-                            required
-                            label={"Application Rate " + (Number(rowIdx) + 1)}
-                            type="number"
-                            inputProps={{
-                                step: 0.01,
-                            }}
-                            InputProps={{
-                                endAdornment:
-                                    <InputAdornment
-                                        position="end">{`${fieldValues?.[field_names[0]]?.[rowIdx]?.unit ? fieldValues?.[field_names[0]]?.[rowIdx]?.unit : ""} per site unit`}
-                                    </InputAdornment>,
-                            }}
-                            error={fieldErrors?.[field_names[8]]?.[rowIdx] || false}
-                            onChange={(event) => {
-                                handleInputChange(event, event.target.value, field_names[8], rowIdx);
-                            }}
-                        />
-                    </Grid>
+                            placeholder={"EPA NO. | Trade Name | Cost per Unit | Purchase Date"}
+                            label={"Chemical " + (Number(rowIdx) + 1)}
+                            error={fieldErrors?.[field_names[0]]?.[rowIdx] || false}/>)}
+                    />
                 </Grid>
-            </Grid>))
+                <Grid item xs={1} sx={{display: 'flex', alignItems: 'center'}}>
+                    <Button variant="contained" color="secondary"
+                            onClick={() => handleDeleteField(field_names[0], rowIdx)}>
+                        Delete
+                    </Button>
+                </Grid>
+                <Grid item xs={2}/>
+                <Grid item xs={2}/>
+                <Grid item xs={4}>
+                    <Autocomplete
+                        value={fieldValues[field_names[1]][rowIdx]}
+                        options={sprayOptions["decisionSupportOptions"] || []}
+                        disableClearable={true}
+                        onChange={(event, value) => {
+                            handleInputChange(event, value, field_names[1], rowIdx);
+                        }}
+                        renderInput={(params) => (<TextField
+                            {...params}
+                            fullWidth
+                            required
+                            variant="outlined"
+                            label={"Decision Support " + (Number(rowIdx) + 1)}
+                            error={fieldErrors?.[field_names[1]]?.[rowIdx] || false}/>)}
+                    />
+                </Grid>
+                <Grid item xs={4}>
+                    <TextField
+                        value={fieldValues[field_names[8]][rowIdx]}
+                        variant="outlined"
+                        fullWidth
+                        required
+                        label={"Application Rate " + (Number(rowIdx) + 1)}
+                        type="number"
+                        inputProps={{
+                            step: 0.01,
+                        }}
+                        InputProps={{
+                            endAdornment: <InputAdornment
+                                position="end">{`${fieldValues?.[field_names[0]]?.[rowIdx]?.unit ? fieldValues?.[field_names[0]]?.[rowIdx]?.unit : ""} per site unit`}
+                            </InputAdornment>,
+                        }}
+                        error={fieldErrors?.[field_names[8]]?.[rowIdx] || false}
+                        onChange={(event) => {
+                            handleInputChange(event, event.target.value, field_names[8], rowIdx);
+                        }}
+                    />
+                </Grid>
+                <Grid item xs={2}/>
+            </Grid>
+        </Grid>))
     }
 
     const chemicalStepRender = () => {
-        return (
-            <Grid container justifyContent="center" spacing={3}>
-                <Grid item xs={12} sx={{textAlign: 'center'}}>
-                    <h1>Create Spray Card Process</h1>
-                </Grid>
-                {chemicalSelectionRender()}
-                <Grid item xs={12} sx={{textAlign: 'center'}}>
-                    <Button variant="contained" color="primary" sx={{mb: 2}}
-                            onClick={() => handleAddField(field_names[0])}>
-                        Add Chemical
-                    </Button>
-                </Grid>
+        return (<Grid container justifyContent="center" spacing={3}>
+            <Grid item xs={12} sx={{textAlign: 'center'}}>
+                <h1>Create Spray Card Process</h1>
             </Grid>
-        );
+            <Grid item xs={4}>
+                <TextField
+                    value={fieldValues[field_names[7]]}
+                    variant="outlined"
+                    fullWidth
+                    required
+                    label={"Gallons Water Rate"}
+                    type="number"
+                    inputProps={{
+                        step: 0.01,
+                    }}
+                    InputProps={{
+                        endAdornment: <InputAdornment
+                            position="end">{`per site unit`}
+                        </InputAdornment>,
+                    }}
+                    error={fieldErrors?.[field_names[7]] || false}
+                    onChange={(event) => {
+                        handleInputChange(event, event.target.value, field_names[7]);
+                    }}
+                />
+            </Grid>
+            {chemicalSelectionRender()}
+            <Grid item xs={12} sx={{textAlign: 'center'}}>
+                <Button variant="contained" color="primary" sx={{mb: 2}}
+                        onClick={() => handleAddField(field_names[0])}>
+                    Add Chemical
+                </Button>
+            </Grid>
+        </Grid>);
     }
 
     const cropSelectionRender = () => {
@@ -682,7 +658,7 @@ export default function SprayCardForm({
                         fullWidth
                         required
                         variant="outlined"
-                        placeholder={"Crop (Variety, Growth Stage)"}
+                        placeholder={"Crop (Variety)"}
                         label={"Crop " + (Number(rowIdx) + 1)}
                         error={fieldErrors?.[field_names[2]]?.[rowIdx] || false}/>)}
                 />
@@ -746,175 +722,181 @@ export default function SprayCardForm({
         });
     }
 
+    const CropGrowthStageOptionsFresh = (siteSelected) => {
+        let newGrowthStageOptions = {}
+        Object.keys(siteSelected).map(index => {
+            newGrowthStageOptions[index] = sprayOptions.growthStageOptions.filter(item => item.crop_id === siteSelected[index].ccid)
+        })
+        console.log(newGrowthStageOptions)
+        setCropGrowthStageOptions(newGrowthStageOptions);
+    };
+
     const siteInfoRender = () => {
         return (
             <Grid item xs={12} style={{marginBottom: 24}}>
                 <Grid container justifyContent="center" spacing={2}>
-                    {Object.keys(fieldValues[field_names[4]]).map((rowIdx) =>
-                        (
-                            <React.Fragment key={rowIdx}>
-                                <Grid item xs={3}>
-                                    <TextField
-                                        variant="outlined"
-                                        fullWidth
-                                        size="small"
-                                        value={fieldValues[field_names[4]][rowIdx].label}
-                                        label={"Site " + (Number(rowIdx) + 1)}
-                                        InputLabelProps={{
-                                            shrink: true,
-                                        }}
-                                        InputProps={{readOnly: true}}
-                                    />
-                                </Grid>
-                                <Grid item xs={3}>
-                                    {fieldValues[field_names[9]][rowIdx] || fieldValues[field_names[10]][rowIdx] ?
-                                        (<TextField
-                                            variant="outlined"
-                                            fullWidth
-                                            size="small"
-                                            value={isNaN(parseFloat(fieldValues[field_names[6]][rowIdx])) ? '' : parseFloat(fieldValues[field_names[6]][rowIdx])}
-                                            label={"Applied Area " + (Number(rowIdx) + 1)}
-                                            type="number"
-                                            inputProps={{
-                                                step: 0.01,
-                                            }}
-                                            InputLabelProps={{
-                                                shrink: true,
-                                            }}
-                                            InputProps={{
-                                                endAdornment: <InputAdornment
-                                                    position="end">{fieldValues[field_names[4]][rowIdx].unit}</InputAdornment>,
-                                            }}
-                                            onChange={(event) => {
-                                                handleInputChange(event, event.target.value, field_names[6], rowIdx);
-                                            }}
-                                            error={fieldErrors?.[field_names[6]]?.[rowIdx] || false}/>) :
-                                        (<TextField
-                                            variant="outlined"
-                                            fullWidth
-                                            size="small"
-                                            value={fieldValues[field_names[6]][rowIdx]}
-                                            label={"Applied Area " + (Number(rowIdx) + 1)}
-                                            InputLabelProps={{
-                                                shrink: true,
-                                            }}
-                                            InputProps={{
-                                                readOnly: true,
-                                                endAdornment:
-                                                    <InputAdornment
-                                                        position="end">{fieldValues[field_names[4]][rowIdx].unit}</InputAdornment>,
-                                            }}
-                                        />)}
-                                </Grid>
-                                <Grid item xs={3} container justifyContent="center" alignItems="center">
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox
-                                                checked={fieldValues[field_names[9]][rowIdx]}
-                                                disabled={!!fieldValues[field_names[10]][rowIdx]}
-                                                onChange={(event, value) => {
-                                                    handleInputChange(event, value, field_names[9], rowIdx);
-                                                }}/>}
-                                        label="Partial Treatment"/>
-                                </Grid>
-                                <Grid item xs={3} container justifyContent="center" alignItems="center">
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox
-                                                checked={fieldValues[field_names[10]][rowIdx]}
-                                                disabled={!!fieldValues[field_names[9]][rowIdx]}
-                                                onChange={(event, value) => {
-                                                    handleInputChange(event, value, field_names[10], rowIdx);
-                                                }}/>}
-                                        label="Alt Row Middle"/>
-                                </Grid>
-                            </React.Fragment>
-                        ))
-                    }
+                    {Object.keys(fieldValues[field_names[4]]).map((rowIdx) => (<React.Fragment key={rowIdx}>
+                        <Grid item xs={3}>
+                            <TextField
+                                variant="outlined"
+                                fullWidth
+                                size="small"
+                                value={fieldValues[field_names[4]][rowIdx].label}
+                                label={"Site " + (Number(rowIdx) + 1)}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                InputProps={{readOnly: true}}
+                            />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <Autocomplete
+                                value={fieldValues[field_names[12]][rowIdx] ? fieldValues[field_names[12]][rowIdx].label : null}
+                                options={cropGrowthStageOptions[rowIdx] || []}
+                                onChange={(event, value) => {
+                                    handleInputChange(event, value, field_names[12], rowIdx);
+                                }}
+                                renderInput={(params) => (<TextField {...params} required variant="outlined"
+                                                                     size="small"
+                                                                     label={"Growth Stage " + (Number(rowIdx) + 1)}
+                                                                     error={fieldErrors?.[field_names[12]]?.[rowIdx] || false}/>)}
+                            />
+                        </Grid>
+                        <Grid item xs={2}>
+                            {fieldValues[field_names[9]][rowIdx] || fieldValues[field_names[10]][rowIdx] ? (
+                                <TextField
+                                    variant="outlined"
+                                    fullWidth
+                                    size="small"
+                                    value={isNaN(parseFloat(fieldValues[field_names[6]][rowIdx])) ? '' : parseFloat(fieldValues[field_names[6]][rowIdx])}
+                                    label={"Applied Area " + (Number(rowIdx) + 1)}
+                                    type="number"
+                                    inputProps={{
+                                        step: 0.01,
+                                    }}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                    InputProps={{
+                                        endAdornment: <InputAdornment
+                                            position="end">{fieldValues[field_names[4]][rowIdx].unit}</InputAdornment>,
+                                    }}
+                                    onChange={(event) => {
+                                        handleInputChange(event, event.target.value, field_names[6], rowIdx);
+                                    }}
+                                    error={fieldErrors?.[field_names[6]]?.[rowIdx] || false}/>) : (<TextField
+                                variant="outlined"
+                                fullWidth
+                                size="small"
+                                value={fieldValues[field_names[6]][rowIdx]}
+                                label={"Applied Area " + (Number(rowIdx) + 1)}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                InputProps={{
+                                    readOnly: true, endAdornment: <InputAdornment
+                                        position="end">{fieldValues[field_names[4]][rowIdx].unit}</InputAdornment>,
+                                }}
+                            />)}
+                        </Grid>
+                        <Grid item xs={2} container justifyContent="center" alignItems="center">
+                            <FormControlLabel
+                                control={<Checkbox
+                                    checked={fieldValues[field_names[9]][rowIdx]}
+                                    disabled={!!fieldValues[field_names[10]][rowIdx]}
+                                    onChange={(event, value) => {
+                                        handleInputChange(event, value, field_names[9], rowIdx);
+                                    }}/>}
+                                label="Partial Treatment"/>
+                        </Grid>
+                        <Grid item xs={2} container justifyContent="center" alignItems="center">
+                            <FormControlLabel
+                                control={<Checkbox
+                                    checked={fieldValues[field_names[10]][rowIdx]}
+                                    disabled={!!fieldValues[field_names[9]][rowIdx]}
+                                    onChange={(event, value) => {
+                                        handleInputChange(event, value, field_names[10], rowIdx);
+                                    }}/>}
+                                label="Alt Row Middle"/>
+                        </Grid>
+                    </React.Fragment>))}
                 </Grid>
             </Grid>
         );
     }
 
     const siteSelectionRender = () => {
-        return (
-            <>
-                <Grid item xs={12}>
-                    <Autocomplete
-                        multiple
-                        size="small"
-                        value={Object.values(fieldValues[field_names[4]])}
-                        options={sortSiteOptions(siteOptions, fieldValues[field_names[2]])}
-                        getOptionLabel={(option) => option.label}
-                        groupBy={(option) => option.crop}
-                        disableCloseOnSelect
-                        onChange={(event, value) => {
-                            handleInputChange(event, value, field_names[4]);
-                        }}
-                        renderOption={(props, option, {selected}) => (<li {...props} style={{padding: '2px'}}>
-                            <Checkbox
-                                icon={icon}
-                                checkedIcon={checkedIcon}
-                                style={{marginRight: 8}}
-                                checked={selected}
-                            />
-                            {option.label}
-                        </li>)}
-                        renderInput={(params) => (<TextField
-                            {...params}
-                            variant="outlined"
-                            label="Selected Sites"
-                            error={fieldErrors?.[field_names[4]] || false}
-                        />)}
-                        renderGroup={(params) => {
-                            return (<li key={params.key}>
-                                <GroupHeader>{params.group}</GroupHeader>
-                                <GroupItems>{params.children}</GroupItems>
-                            </li>);
-                        }}
-                    />
+        return (<>
+            <Grid item xs={12}>
+                <Autocomplete
+                    multiple
+                    size="small"
+                    value={Object.values(fieldValues[field_names[4]])}
+                    options={sortSiteOptions(siteOptions, fieldValues[field_names[2]])}
+                    getOptionLabel={(option) => option.label}
+                    groupBy={(option) => option.crop}
+                    disableCloseOnSelect
+                    onChange={(event, value) => {
+                        handleInputChange(event, value, field_names[4]);
+                    }}
+                    renderOption={(props, option, {selected}) => (<li {...props} style={{padding: '2px'}}>
+                        <Checkbox
+                            icon={icon}
+                            checkedIcon={checkedIcon}
+                            style={{marginRight: 8}}
+                            checked={selected}
+                        />
+                        {option.label}
+                    </li>)}
+                    renderInput={(params) => (<TextField
+                        {...params}
+                        variant="outlined"
+                        label="Selected Sites"
+                        error={fieldErrors?.[field_names[4]] || false}
+                    />)}
+                    renderGroup={(params) => {
+                        return (<li key={params.key}>
+                            <GroupHeader>{params.group}</GroupHeader>
+                            <GroupItems>{params.children}</GroupItems>
+                        </li>);
+                    }}
+                />
+            </Grid>
+            <Grid item xs={12}>
+                <Grid container spacing={2}>
+                    <SiteTreeView {...siteTreeProps}/>
                 </Grid>
-                <Grid item xs={12}>
-                    <Grid container spacing={2}>
-                        <SiteTreeView {...siteTreeProps}/>
-                    </Grid>
-                </Grid>
-            </>
-        );
+            </Grid>
+        </>);
     }
 
     const siteStepRender = () => {
-        return (
-            <Grid container justifyContent="center" spacing={3}>
-                <Grid item xs={12} sx={{textAlign: 'center'}}>
-                    <h1>Create Spray Card Process</h1>
-                </Grid>
-                {siteSelectionRender()}
-                {siteInfoRender()}
+        return (<Grid container justifyContent="center" spacing={3}>
+            <Grid item xs={12} sx={{textAlign: 'center'}}>
+                <h1>Create Spray Card Process</h1>
             </Grid>
-        );
+            {siteSelectionRender()}
+            {siteInfoRender()}
+        </Grid>);
     }
 
     const responsibleRender = () => {
-        return (
-            <>
-                <Grid item xs={4}/>
-                <Grid item xs={4}>
-                    <UserTreeView {...userTreeProps}/>
-                </Grid>
-                <Grid item xs={4}/>
-            </>
-        );
+        return (<>
+            <Grid item xs={4}/>
+            <Grid item xs={4}>
+                <UserTreeView {...userTreeProps}/>
+            </Grid>
+            <Grid item xs={4}/>
+        </>);
     }
 
     const responsibleStepRender = () => {
-        return (
-            <Grid container justifyContent="center" spacing={2}>
-                <Grid item xs={12} sx={{textAlign: 'center'}}>
-                    <h1>Create Spray Card Process</h1>
-                </Grid>
-                {responsibleRender()}
-            </Grid>);
+        return (<Grid container justifyContent="center" spacing={2}>
+            <Grid item xs={12} sx={{textAlign: 'center'}}>
+                <h1>Create Spray Card Process</h1>
+            </Grid>
+            {responsibleRender()}
+        </Grid>);
     }
 
     const updateError = (fieldValue, fieldName) => {
@@ -955,8 +937,13 @@ export default function SprayCardForm({
     const saveChemicals = () => {
         const isValidField1 = checkFields(fieldValues[field_names[0]], field_names[0]);
         const isValidField2 = checkFields(fieldValues[field_names[1]], field_names[1]);
-        const isValidField3 = checkFields(fieldValues[field_names[7]], field_names[7]);
+        const isValidField3 = fieldValues[field_names[7]] !== "";
         const isValidField4 = checkFields(fieldValues[field_names[8]], field_names[8]);
+
+        setFieldErrors(prevErrors => ({
+            ...prevErrors,
+            [field_names[7]]: fieldValues[field_names[7]] === "",
+        }))
 
         if (isValidField1 && isValidField2 && isValidField3 && isValidField4) {
             setFormData(prevFormData => ({
@@ -993,14 +980,16 @@ export default function SprayCardForm({
     const saveSites = () => {
         const isValidField1 = checkFields(fieldValues[field_names[4]], field_names[4]);
         const isValidField2 = checkFields(fieldValues[field_names[6]], field_names[6]);
+        const isValidField3 = checkFields(fieldValues[field_names[12]], field_names[12]);
 
-        if (isValidField1 && isValidField2) {
+        if (isValidField1 && isValidField2 && isValidField3) {
             setFormData({
                 ...formData,
                 [field_names[4]]: fieldValues[field_names[4]],
                 [field_names[6]]: fieldValues[field_names[6]],
                 [field_names[9]]: fieldValues[field_names[9]],
                 [field_names[10]]: fieldValues[field_names[10]],
+                [field_names[12]]: fieldValues[field_names[12]],
             });
             return true
         } else {
@@ -1012,8 +1001,7 @@ export default function SprayCardForm({
     const saveResponsible = () => {
         if (fieldValues[field_names[11]]) {
             setFormData({
-                ...formData,
-                [field_names[11]]: fieldValues[field_names[11]],
+                ...formData, [field_names[11]]: fieldValues[field_names[11]],
             });
             return true
         } else {
@@ -1023,9 +1011,7 @@ export default function SprayCardForm({
     }
 
     const userTreeProps = {
-        sprayData,
-        selected: selectedResponsible,
-        setSelected: setSelectedResponsible
+        sprayData, selected: selectedResponsible, setSelected: setSelectedResponsible
     };
 
     const stepperProps = {
@@ -1065,10 +1051,7 @@ export default function SprayCardForm({
     };
 
     const saveErrorProps = {
-        open: errorSnackbar,
-        setOpen: setErrorSnackbar,
-        msg: "None data or uncompleted data found.",
-        tag: "error"
+        open: errorSnackbar, setOpen: setErrorSnackbar, msg: "None data or uncompleted data found.", tag: "error"
     };
 
     useEffect(() => {
@@ -1079,6 +1062,7 @@ export default function SprayCardForm({
 
     useEffect(() => {
         updateSiteChecked();
+        CropGrowthStageOptionsFresh(fieldValues[field_names[4]]);
         Object.keys(fieldValues?.[field_names[2]])?.map(idx => ApplicationTargeOptionsFresh(fieldValues[field_names[2]][idx].id, idx));
     }, [fieldValues]);
 
@@ -1100,37 +1084,35 @@ export default function SprayCardForm({
         siteTreeFresh();
     }, [sprayData, sprayOptions]);
 
-    return (
-        <>
-            <Modal
-                open={openSprayCard}
-                sx={{
-                    display: 'flex', justifyContent: 'center', alignItems: 'center',
-                }}>
-                <Card sx={{width: 1200}}>
-                    <CardContent>
-                        <Box sx={{width: '100%', flexGrow: 1}}>
-                            <Box sx={{width: '100%', minHeight: 400, maxHeight: 800, overflow: 'auto'}}>
-                                <div style={{display: activeStep === 0 ? 'block' : 'none'}}>
-                                    {chemicalStepRender()}
-                                </div>
-                                <div style={{display: activeStep === 1 ? 'block' : 'none'}}>
-                                    {cropStepRender()}
-                                </div>
-                                <div style={{display: activeStep === 2 ? 'block' : 'none'}}>
-                                    {siteStepRender()}
-                                </div>
-                                <div style={{display: activeStep === 3 ? 'block' : 'none'}}>
-                                    {responsibleStepRender()}
-                                </div>
-                            </Box>
-                            <ModalStepper {...stepperProps}/>
+    return (<>
+        <Modal
+            open={openSprayCard}
+            sx={{
+                display: 'flex', justifyContent: 'center', alignItems: 'center',
+            }}>
+            <Card sx={{width: 1200}}>
+                <CardContent>
+                    <Box sx={{width: '100%', flexGrow: 1}}>
+                        <Box sx={{width: '100%', minHeight: 400, maxHeight: 800, overflow: 'auto'}}>
+                            <div style={{display: activeStep === 0 ? 'block' : 'none'}}>
+                                {chemicalStepRender()}
+                            </div>
+                            <div style={{display: activeStep === 1 ? 'block' : 'none'}}>
+                                {cropStepRender()}
+                            </div>
+                            <div style={{display: activeStep === 2 ? 'block' : 'none'}}>
+                                {siteStepRender()}
+                            </div>
+                            <div style={{display: activeStep === 3 ? 'block' : 'none'}}>
+                                {responsibleStepRender()}
+                            </div>
                         </Box>
-                    </CardContent>
-                </Card>
-            </Modal>
-            <OperationSnackbars  {...createSuccessProps}/>
-            <OperationSnackbars  {...saveErrorProps}/>
-        </>
-    );
+                        <ModalStepper {...stepperProps}/>
+                    </Box>
+                </CardContent>
+            </Card>
+        </Modal>
+        <OperationSnackbars  {...createSuccessProps}/>
+        <OperationSnackbars  {...saveErrorProps}/>
+    </>);
 }

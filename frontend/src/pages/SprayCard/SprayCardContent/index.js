@@ -127,10 +127,7 @@ export default function sprayCardContent({
 
     const updateSprayCardContent = () => {
         const uniqueChemicalPurchases = [...new Map(sprayCardContents.map(item => [JSON.stringify(item.chemical_purchase), item.chemical_purchase])).values()];
-        let gallonsWater = []
-        for (let i = 0; i < uniqueChemicalPurchases.length; i++) {
-            gallonsWater.push(sprayCardContents.find(item => JSON.stringify(item.chemical_purchase) === JSON.stringify(uniqueChemicalPurchases[i])).gallons_water_rate);
-        }
+
         let applicationRate = []
         for (let i = 0; i < uniqueChemicalPurchases.length; i++) {
             applicationRate.push(sprayCardContents.find(item => JSON.stringify(item.chemical_purchase) === JSON.stringify(uniqueChemicalPurchases[i])).application_rate);
@@ -138,7 +135,7 @@ export default function sprayCardContent({
 
         let tempUniqueChemicalPurchases = JSON.parse(JSON.stringify(uniqueChemicalPurchases));
         for (let i = 0; i < tempUniqueChemicalPurchases.length; i++) {
-            tempUniqueChemicalPurchases[i].label = tempUniqueChemicalPurchases[i].label + " | " + gallonsWater[i] + " | " + applicationRate[i] + " " + tempUniqueChemicalPurchases[i].unit;
+            tempUniqueChemicalPurchases[i].label = tempUniqueChemicalPurchases[i].label + " | " + applicationRate[i] + " " + tempUniqueChemicalPurchases[i].unit;
         }
         setChemicalContents(tempUniqueChemicalPurchases);
 
@@ -190,7 +187,7 @@ export default function sprayCardContent({
                                     fullWidth
                                     variant="outlined"
                                     value={chemicalContents[rowIdx].label}
-                                    label={"Chemical " + (Number(rowIdx) + 1) + "  EPA NO. | Trade Name | Cost Per unit | Purchase Date | Gallons Water | Application Rate"}
+                                    label={"Chemical " + (Number(rowIdx) + 1) + "  EPA NO. | Trade Name | Cost Per unit | Purchase Date | Application Rate"}
                                     color="secondary"
                                     focused
                                     InputProps={{

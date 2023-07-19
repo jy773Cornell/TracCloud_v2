@@ -46,7 +46,7 @@ function createRowData(record) {
         "id": record.sid,
         "type": record.type,
         "name": record.name,
-        "crop": record.crop ? record.crop.crop + " (" + record.crop.variety + ", " + record.crop.growth_stage + ")" : "",
+        "crop": record.crop ? record.crop.crop + " (" + record.crop.variety + ")" : "",
         "size": record.size,
         "size_unit": record.size_unit,
         "gps": record.gps,
@@ -573,7 +573,7 @@ export default function Site(props) {
 
     const CropOptionsFresh = () => {
         setCropOptions(cropList.map(item => ({
-            label: item.crop + " (" + item.variety + ", " + item.growth_stage + ")", id: item.cid,
+            label: item.crop + " (" + item.variety + ")", id: item.cid,
         })));
     };
 

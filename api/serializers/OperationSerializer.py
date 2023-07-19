@@ -149,11 +149,16 @@ class ApplicationGetSerializer(serializers.ModelSerializer):
     target = serializers.SerializerMethodField()
     decision_support = serializers.SerializerMethodField()
     equipment = serializers.SerializerMethodField()
+    growth_stage = serializers.SerializerMethodField()
     update_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
 
     class Meta:
         model = ApplicationRecord
         fields = "__all__"
+
+    def get_growth_stage(self, obj):
+        return next((item['name'] for item in cache.get("CropGrowthStage") if item['cgsid'] == obj.growth_stage_id),
+                    None)
 
     def get_equipment(self, obj):
         equipment = Equipment.objects.get(eid=obj.equipment_id)

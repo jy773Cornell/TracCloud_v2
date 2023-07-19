@@ -26,20 +26,9 @@ class SprayCardStore {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
 
-        const responses = await Promise.all([
-            fetch("/api/crop/list/get/" + "?uid=" + uid, requestOptions),
-            fetch("/api/site/list/get/" + "?uid=" + uid, requestOptions),
-            fetch("/api/chemical/list/get/" + "?uid=" + uid, requestOptions),
-            fetch("/api/equipment/list/get/" + "?uid=" + uid, requestOptions),
-            fetch("/api/operation/purchase/list/get/" + "?uid=" + uid, requestOptions),
-            fetch("/api/operation/application/list/get/?" + "uid=" + uid, requestOptions),
-            fetch("/api/crop/category/", requestOptions),
-            fetch("/api/operation/application/target/", requestOptions),
-            fetch("/api/operation/application/desicisionsupport/", requestOptions),
-            fetch("/api/unit/", requestOptions),
+        const responses = await Promise.all([fetch("/api/crop/list/get/" + "?uid=" + uid, requestOptions), fetch("/api/site/list/get/" + "?uid=" + uid, requestOptions), fetch("/api/chemical/list/get/" + "?uid=" + uid, requestOptions), fetch("/api/equipment/list/get/" + "?uid=" + uid, requestOptions), fetch("/api/operation/purchase/list/get/" + "?uid=" + uid, requestOptions), fetch("/api/operation/application/list/get/?" + "uid=" + uid, requestOptions), fetch("/api/crop/category/", requestOptions), fetch("/api/operation/application/target/", requestOptions), fetch("/api/operation/application/desicisionsupport/", requestOptions), fetch("/api/unit/", requestOptions), fetch("/api/crop/growthstage/", requestOptions),
 
-            fetch("/workflow/usertree/subtree/get/?" + "uid=" + uid, requestOptions),
-        ]);
+            fetch("/workflow/usertree/subtree/get/?" + "uid=" + uid, requestOptions),]);
 
         const jsonDataPromises = responses.map((response) => {
             if (response.ok) {
@@ -77,9 +66,9 @@ class SprayCardStore {
                 applicationTarget: jsonData[7].data,
                 decisionSupport: jsonData[8].data,
                 unit: jsonData[9].data,
-                userSubTree: jsonData[10].data,
-            },
-            "option_data": {
+                growthStage: jsonData[10].data,
+                userSubTree: jsonData[11].data,
+            }, "option_data": {
                 chemicalOptions: jsonData[4].data.map(item => {
                     const chemical = jsonData[2].data.find(chem => chem.chemid === item.chemical);
                     return {
@@ -94,8 +83,10 @@ class SprayCardStore {
                     label: item.name, id: item.dsid
                 })),
                 cropOptions: jsonData[0].data.map(item => ({
-                    label: `${item.crop} (${item.variety}, ${item.growth_stage})`,
-                    id: item.cid
+                    label: `${item.crop} (${item.variety})`, id: item.cid
+                })),
+                growthStageOptions: jsonData[10].data.map(item => ({
+                    label: `${item.name}`, crop_id: item.crop_id, id: item.cgsid
                 })),
                 targetOptions: jsonData[7].data.map(item => ({
                     label: item.name, id: item.attid,
@@ -105,25 +96,25 @@ class SprayCardStore {
                     let optionStr = site.name;
                     const sid = site.sid;
                     const cid = site.crop.cid;
-                    const crop = `${site.crop.crop} (${site.crop.variety}, ${site.crop.growth_stage})`
+                    const ccid = site.crop.ccid;
+                    const crop = `${site.crop.crop} (${site.crop.variety})`;
                     const area = site.size;
                     const unit = site.size_unit;
                     while (site.parent) {
                         site = flatten(jsonData[1].data).find(item => item.sid === site.parent)
                         optionStr = `${site.name} - ${optionStr}`;
                     }
-                    return {id: sid, label: optionStr, cid: cid, crop: crop, area: area, unit: unit};
+                    return {id: sid, label: optionStr, cid: cid, ccid: ccid, crop: crop, area: area, unit: unit};
                 }),
                 equipmentOptions: jsonData[3].data.map(item => ({
-                    label: `${item.name} (${item.owner}, ${item.code})`,
-                    id: item.eid
+                    label: `${item.name} (${item.owner}, ${item.code})`, id: item.eid
                 })),
                 chemicalUnitOptions: jsonData[9].data.filter(item => item.usage === "chemical").map(item => ({
                     label: item.name, id: item.unitid
                 })),
                 siteUnitOptions: jsonData[9].data.filter(item => item.usage === "site").map(item => ({
                     label: item.name, id: item.unitid
-                }))
+                })),
             }
         };
     }
