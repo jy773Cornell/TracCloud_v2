@@ -77,8 +77,8 @@ class SprayCardContentGetSerializer(serializers.ModelSerializer):
         cid = crop['cid']
         applied_area = obj.applied_area
         growth_stage = obj.growth_stage
-        partial_treatment = " partial-treatment" if obj.partial_treatment else ""
-        alt_row_middle = " alt-row-middle" if obj.alt_row_middle else ""
+        partial_treatment = " (partial-treatment)" if obj.partial_treatment else ""
+        alt_row_middle = " (alt-row-middle)" if obj.alt_row_middle else ""
         unit = SiteGetSerializer(obj.site).data['size_unit']
         crop = "{} ({})".format(crop['crop'], crop['variety'])
         option_str = site.name
@@ -86,7 +86,7 @@ class SprayCardContentGetSerializer(serializers.ModelSerializer):
         while site.parent:
             site = site.parent
             option_str = f"{site.name} - {option_str}"
-        option_str = f"{option_str}: {applied_area} {unit} ({growth_stage}{partial_treatment}{alt_row_middle})"
+        option_str = f"{option_str}: {applied_area} {unit} ({growth_stage}){partial_treatment}{alt_row_middle}"
 
         return {
             'id': sid,
