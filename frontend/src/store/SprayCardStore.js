@@ -107,7 +107,7 @@ class SprayCardStore {
                     return {id: sid, label: optionStr, cid: cid, ccid: ccid, crop: crop, area: area, unit: unit};
                 }),
                 equipmentOptions: jsonData[3].data.map(item => ({
-                    label: `${item.name} (${item.owner}, ${item.code})`, id: item.eid
+                    label: `${item.name}`, id: item.eid
                 })),
                 chemicalUnitOptions: jsonData[9].data.filter(item => item.usage === "chemical").map(item => ({
                     label: item.name, id: item.unitid

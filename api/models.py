@@ -182,7 +182,7 @@ class Site(models.Model):
                              null=True, blank=True, on_delete=models.SET_NULL)
     name = models.CharField(verbose_name="Site Name", max_length=256)
     crop = models.ForeignKey(verbose_name="Crop", to="Crop", to_field="cid", related_name="site_crop",
-                             null=True, blank=True, on_delete=models.SET_NULL)
+                             null=True, blank=True, on_delete=models.CASCADE)
     size = models.CharField(verbose_name="Size", null=True, blank=True, max_length=32)
     size_unit = models.ForeignKey(verbose_name="Size Unit", to="Unit", to_field="unitid", related_name="site_unit",
                                   null=True, blank=True, on_delete=models.SET_NULL)
