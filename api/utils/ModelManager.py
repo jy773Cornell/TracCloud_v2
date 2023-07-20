@@ -23,6 +23,27 @@ class MyModelQuerySet(models.QuerySet):
         super().update(**kwargs)
 
     def delete(self):
+
+        related_fields = [
+            'requester_user', 'provider_user',
+            'equip_user', 'crop_user', 'site_user', 'chem_user',
+            'site_crop', 'site_site',
+            'op_user',
+            'pr_user', 'pr_op',
+            'hr_user', 'hr_op',
+            'ar_user', 'ar_op',
+            'pr_chem',
+            'hr_crop', 'hr_site',
+            'ar_crop', 'ar_site', 'ar_purchase', 'ar_equipment', 'ar_applicator_user',
+            'ar_responsible_user'
+        ]
+
+        # Update each related model
+        for obj in self:
+            for field in related_fields:
+                if hasattr(obj, field):
+                    getattr(obj, field).all().update(is_active=False)
+
         self.update(is_active=False)
 
     def hard_delete(self):
