@@ -328,7 +328,7 @@ class PurchaseRecord(models.Model):
     total_cost = models.CharField(verbose_name="Total Cost", max_length=32)
     cost_per_unit = models.CharField(verbose_name="Cost Per Applied Unit", max_length=32)
     chemical = models.ForeignKey(verbose_name="Chemical", to="Chemical", to_field="chemid",
-                                 related_name="pr_chem", null=True, blank=True, on_delete=models.SET_NULL)
+                                 related_name="pr_chem", null=True, blank=True, on_delete=models.CASCADE)
     note = models.TextField(verbose_name="Note", null=True, blank=True)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
@@ -347,9 +347,9 @@ class HarvestRecord(models.Model):
     opid = models.ForeignKey(verbose_name="OPID", to="Operation", to_field="opid", related_name="hr_op",
                              null=True, blank=True, on_delete=models.CASCADE)
     crop = models.ForeignKey(verbose_name="Crop", to="Crop", to_field="cid", related_name="hr_crop",
-                             null=True, blank=True, on_delete=models.SET_NULL)
+                             null=True, blank=True, on_delete=models.CASCADE)
     site = models.ForeignKey(verbose_name="Site", to="Site", to_field="sid", related_name="hr_site",
-                             null=True, blank=True, on_delete=models.SET_NULL)
+                             null=True, blank=True, on_delete=models.CASCADE)
     hr_area = models.CharField(verbose_name="Harvest Area", max_length=32)
     area_unit = models.ForeignKey(verbose_name="Area Unit", to="Unit", to_field="unitid",
                                   related_name="hr_unit", null=True, blank=True, on_delete=models.SET_NULL)
@@ -378,11 +378,11 @@ class ApplicationRecord(models.Model):
     opid = models.ForeignKey(verbose_name="OPID", to="Operation", to_field="opid", related_name="ar_op",
                              null=True, blank=True, on_delete=models.CASCADE)
     crop = models.ForeignKey(verbose_name="Crop", to="Crop", to_field="cid", related_name="ar_crop",
-                             null=True, blank=True, on_delete=models.SET_NULL)
+                             null=True, blank=True, on_delete=models.CASCADE)
     start_datetime = models.CharField(verbose_name="Start Datetime", null=True, blank=True, max_length=64)
     finish_datetime = models.CharField(verbose_name="Finish Datetime", null=True, blank=True, max_length=64)
     site = models.ForeignKey(verbose_name="Site", to="Site", to_field="sid", related_name="ar_site",
-                             null=True, blank=True, on_delete=models.SET_NULL)
+                             null=True, blank=True, on_delete=models.CASCADE)
     growth_stage = models.ForeignKey(verbose_name="Grow Stage", to="CropGrowthStage", to_field="cgsid",
                                      related_name="crop_growth_stage", null=True, blank=True, on_delete=models.SET_NULL)
     partial_treatment = models.BooleanField(verbose_name="Partial Treatment", default=False)
@@ -393,10 +393,10 @@ class ApplicationRecord(models.Model):
                                          related_name="ar_decision_support", null=True, blank=True,
                                          on_delete=models.SET_NULL)
     chemical_purchase = models.ForeignKey(verbose_name="Chemical Purchase", to="PurchaseRecord", to_field="prid",
-                                          related_name="ar_purchase", null=True, blank=True, on_delete=models.SET_NULL)
+                                          related_name="ar_purchase", null=True, blank=True, on_delete=models.CASCADE)
     harvestable_date = models.CharField(verbose_name="Harvestable Date", null=True, blank=True, max_length=64)
     equipment = models.ForeignKey(verbose_name="Equipment", to="Equipment", to_field="eid",
-                                  related_name="ar_equipment", null=True, blank=True, on_delete=models.SET_NULL)
+                                  related_name="ar_equipment", null=True, blank=True, on_delete=models.CASCADE)
     amount_pesticide_per_tank = models.CharField(verbose_name="Amount Pesticide Per Tank", null=True, blank=True,
                                                  max_length=64)
     gallons_water_rate = models.CharField(verbose_name="Gallons Water Rate", null=True, blank=True, max_length=32)
@@ -407,10 +407,10 @@ class ApplicationRecord(models.Model):
     total_amount = models.CharField(verbose_name="Total Amount", null=True, blank=True, max_length=32)
     total_cost = models.CharField(verbose_name="Total Cost", null=True, blank=True, max_length=32)
     applicator = models.ForeignKey(verbose_name="Applicator", to="UserProfile", to_field="uid",
-                                   related_name="ar_applicator_user", null=True, blank=True, on_delete=models.SET_NULL)
+                                   related_name="ar_applicator_user", null=True, blank=True, on_delete=models.CASCADE)
     responsible_person = models.ForeignKey(verbose_name="Responsible Person", to="UserProfile", to_field="uid",
                                            related_name="ar_responsible_user", null=True, blank=True,
-                                           on_delete=models.SET_NULL)
+                                           on_delete=models.CASCADE)
     rate_unit = models.ForeignKey(verbose_name="Rate Unit", to="Unit", to_field="unitid",
                                   related_name="ar_rate_unit", null=True, blank=True, on_delete=models.SET_NULL)
     amount_unit = models.ForeignKey(verbose_name="Amount Unit", to="Unit", to_field="unitid",
