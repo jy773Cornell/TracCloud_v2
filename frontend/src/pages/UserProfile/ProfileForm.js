@@ -322,13 +322,25 @@ export default function ProfileForm({
                         />}
                     </Grid>
                     <Grid item xs={6}>
-                        <TextField
+                        {isEdit ? <TextField
+                            label="Email"
+                            variant="outlined"
+                            value={fieldValues[field_names[14]]}
+                            autoComplete="email"
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[14]);
+                            }}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            sx={{width: '100%'}}
+                        /> : <TextField
                             label="Email"
                             variant="outlined"
                             value={profile[field_names[14]]}
                             InputProps={{readOnly: true}}
                             sx={{width: '100%'}}
-                        />
+                        />}
                     </Grid>
                     {isEdit ? <>
                         <Grid item xs={6} sx={{justifyContent: 'center', textAlign: 'center'}}>

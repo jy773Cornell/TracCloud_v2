@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'frontend.apps.FrontendConfig',
     'workflows.apps.WorkflowsConfig',
     'notifications.apps.NotificationsConfig',
+    'user_management.apps.UserManagementConfig',
 ]
 
 MIDDLEWARE = [
