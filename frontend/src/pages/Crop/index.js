@@ -182,6 +182,8 @@ function Crop(props) {
     const editWidth = cropStore.editWidth;
 
     const uid = props.uid;
+    const privilege = props.privilege;
+
     const [cropCategory, setCropCategory] = useState([]);
     const [cropVariety, setCropVariety] = useState([]);
 
@@ -205,16 +207,18 @@ function Crop(props) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/crop/list/get/" + "?uid=" + uid, requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        const record_list = data.data;
-                        const record_row = record_list.map((record) => createRowData(record))
-                        setRows(record_row);
-                    })
-                }
-            })
+        if (privilege.crop_r) {
+            await fetch("/api/crop/list/get/" + "?uid=" + uid, requestOptions)
+                .then((response) => {
+                    if (response.ok) {
+                        response.json().then((data) => {
+                            const record_list = data.data;
+                            const record_row = record_list.map((record) => createRowData(record))
+                            setRows(record_row);
+                        })
+                    }
+                })
+        }
     }
 
     async function CropCategoryGet() {
@@ -387,13 +391,19 @@ function Crop(props) {
             renderCell: (params) => {
                 if (editRowId !== params.id) {
                     return (<>
-                        <IconButton onClick={() => onEditClicked(params)}>
+                        <IconButton
+                            onClick={() => onEditClicked(params)}
+                            disabled={!privilege.crop_u}
+                        >
                             <EditIcon/>
                         </IconButton>
-                        <IconButton onClick={(event) => {
-                            setAnchorEl(event.currentTarget);
-                            setPopoverRowId(params.id);
-                        }}>
+                        <IconButton
+                            onClick={(event) => {
+                                setAnchorEl(event.currentTarget);
+                                setPopoverRowId(params.id);
+                            }}
+                            disabled={!privilege.crop_d}
+                        >
                             <DeleteIcon/>
                         </IconButton>
                         {popoverRowId === params.id &&
@@ -585,9 +595,12 @@ function Crop(props) {
             <AddButton
                 variant="contained"
                 startIcon={<AddIcon/>}
-                onClick={() => onAddClicked()}>
+                onClick={() => onAddClicked()}
+                disabled={!privilege.crop_c}
+            >
                 Add Crop
-            </AddButton>
+            </AddButton
+            >
             <Paper style={{height: 900, margin: '0px 15px', width: 'calc(100% - 30px)', overflow: 'auto'}}>
                 <DataGrid
                     columns={columns}
@@ -598,6 +611,7 @@ function Crop(props) {
                     slots={{
                         toolbar: CustomToolbar,
                     }}
+                    localeText={{noRowsLabel: privilege.crop_c ? "No rows" : "You don't have the privilege to access this data"}}
                 />
             </Paper>
             <AddCropRecord {...addProps}/>

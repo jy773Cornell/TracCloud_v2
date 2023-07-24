@@ -22,6 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
     path('workflow/', include('workflows.urls')),
-    path('privilege/', include('user_management.urls')),
+    path('user_manage/', include('user_management.urls')),
     path('', include('frontend.urls')),
 ]

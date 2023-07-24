@@ -125,7 +125,7 @@ class SprayCardUpdateView(APIView):
 
                 SprayCard.objects.filter(scpid=scpid).update(update_time=timezone.now())
 
-            return Response({'Succeeded': 'Spray Card Process Created.'}, status=status.HTTP_201_CREATED)
+            return Response({'Succeeded': 'Spray Card Process Updated.'}, status=status.HTTP_201_CREATED)
 
         return Response({'Bad Request': 'Invalid Post Parameters.'}, status=status.HTTP_400_BAD_REQUEST)
 
