@@ -8,6 +8,31 @@ from user_management.utils.NewAccount import *
 from django.db import transaction
 
 
+class EmployeeListGetView(APIView):
+    serializer_class = EmployeeGetSerializer
+    lookup_url_kwarg = "employer_id"
+
+    def get(self, request, format=None):
+        employer_id = request.GET.get(self.lookup_url_kwarg)
+
+        if employer_id:
+            requester_ids = UserRelation.objects.filter(
+                requester_id=employer_id,
+                provider__type__relation_type__name='Employee').values_list('provider', flat=True)
+            provider_ids = UserRelation.objects.filter(
+                provider_id=employer_id,
+                requester__type__relation_type__name='Employee').values_list('requester', flat=True)
+
+            unique_ids = list(set(requester_ids).union(set(provider_ids)))
+            user_profiles = UserProfile.objects.filter(uid__in=unique_ids)
+            employees = [self.serializer_class(profile).data for profile in user_profiles]
+
+            return Response({'Succeeded': 'Employee List Fetched.', 'data': employees},
+                            status=status.HTTP_200_OK)
+
+        return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class EmployeeCreateView(APIView):
     serializer_class = EmployeeCreateSerializer
 
@@ -16,6 +41,7 @@ class EmployeeCreateView(APIView):
         if serializer.is_valid():
             data = request_data_transform(request.data)
             employer_id = data.pop("employer_id")
+            added_by_id = data.pop("added_by_id")
 
             with transaction.atomic():
                 # Create new user
@@ -31,7 +57,7 @@ class EmployeeCreateView(APIView):
                 # Create new user profile
 
                 uid = gen_uuid("UID")
-                UserProfile.objects.create(uid=uid, user=user, added_by_id=employer_id, **data)
+                UserProfile.objects.create(uid=uid, user=user, added_by_id=added_by_id, **data)
 
                 # Create relation
 

@@ -2,6 +2,7 @@ import React, {lazy, useEffect, useState} from 'react';
 import {Grid} from "@mui/material";
 
 const EmployeeList = lazy(() => import('./EmployeeList'))
+const ClientList = lazy(() => import('./ClientList'))
 
 export default function People(props) {
     return (
@@ -11,7 +12,7 @@ export default function People(props) {
                     <EmployeeList {...props}/>
                 </Grid>
                 <Grid item xs={4}>
-                    <EmployeeList {...props}/>
+                    <ClientList {...props}/>
                 </Grid>
             </Grid>
         </div>

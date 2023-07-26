@@ -23,7 +23,7 @@ urlpatterns = [
 
     path('user/get/', UserProfileGetView.as_view()),
     path('user/profile/update/', UserProfileUpdateView.as_view()),
-    path('user/password/change/', UserPasswordChangeView.as_view()),
+    path('user/type/get/', UserTypeGetView.as_view()),
 
     path('user/relation/create/request/', UserRelationCreateRequestView.as_view()),
     path('user/relation/create/response/', UserRelationCreateResponseView.as_view()),

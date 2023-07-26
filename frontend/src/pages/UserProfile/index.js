@@ -92,7 +92,7 @@ export default function UserProfile(props) {
     };
 
     const handleSaveButtonPressed = () => {
-        if ([fieldValues[field_names[1]], fieldValues[field_names[2]], fieldValues[field_names[6]]].every(value => value)) {
+        if ([fieldValues[field_names[1]], fieldValues[field_names[2]], fieldValues[field_names[14]]].every(value => value)) {
             ProfileUpdate();
             setIsEdit(false);
         } else {

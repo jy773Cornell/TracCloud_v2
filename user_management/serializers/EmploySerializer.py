@@ -3,13 +3,33 @@ from user_management.models import *
 from api.models import *
 
 
+class EmployeeGetSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
+    added_by = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserProfile
+        fields = "__all__"
+
+    def get_type(self, obj):
+        return obj.type.name
+
+    def get_user(self, obj):
+        return obj.user.username
+
+    def get_added_by(self, obj):
+        return obj.added_by.user.username
+
+
 class EmployeeCreateSerializer(serializers.ModelSerializer):
     employer_id = serializers.PrimaryKeyRelatedField(source='user', queryset=UserProfile.objects.all())
+    added_by_id = serializers.PrimaryKeyRelatedField(source='user', queryset=UserProfile.objects.all())
     type_id = serializers.PrimaryKeyRelatedField(source='type', queryset=UserType.objects.all())
 
     class Meta:
         model = UserProfile
-        fields = ["employer_id", "type_id", "first_name", "last_name", "email", ]
+        fields = ["employer_id", "added_by_id", "type_id", "first_name", "last_name", "email", ]
 
         def validate(self, attrs):
             for field in self.fields:

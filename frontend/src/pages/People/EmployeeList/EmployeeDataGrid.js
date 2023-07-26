@@ -20,51 +20,63 @@ function CustomToolbar() {
     </GridToolbarContainer>);
 }
 
-export default function EmployeeDataGrid({uid}) {
+export default function EmployeeDataGrid({
+                                             employer_id,
+                                             privilege,
+                                             refreshRecord,
+                                             setRefreshRecord
+                                         }) {
     const [employeeList, setEmployeeList] = useState([]);
     const [rows, setRows] = useState([]);
-    const [refreshRecord, setRefreshRecord] = useState(false);
+
     const [mounted, setMounted] = useState(false);
 
     async function EmployeeListGet(uid) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        // await fetch("/workflow/spraycard/list/get/" + "?uid=" + uid, requestOptions)
-        //     .then((response) => {
-        //         if (response.ok) {
-        //             response.json().then((data) => {
-        //                 const record_list = data.data;
-        //                 setSprayCardRecords(record_list);
-        //                 const record_row = record_list.map((record) => createRowData(record))
-        //                 setRows(record_row);
-        //             })
-        //         }
-        //     })
+        if (privilege.employee_r) {
+            await fetch("/user_manage/employee/list/get/" + "?employer_id=" + uid, requestOptions)
+                .then((response) => {
+                    if (response.ok) {
+                        response.json().then((data) => {
+                            const record_list = data.data;
+                            setEmployeeList(record_list);
+                            const record_row = record_list.map((record) => createRowData(record))
+                            setRows(record_row);
+                        })
+                    }
+                })
+        }
     }
 
     const createRowData = (record) => {
         return {
-            "id": record.scpid,
-            "state": record.state,
-            "owner": record.owner,
-            "holder": record.holder,
-            "update_time": record.update_time,
-            "create_time": record.create_time,
+            "id": record.uid,
+            "user": record.user,
+            "name": `${record.first_name} ${record.last_name}`,
+            "type": record.type,
+            "email": record.email,
+            "cell_phone": record.cell_phone,
+            "pesticide_applicator_no": record.pesticide_applicator_no,
+            "pesticide_expire_date": record.pesticide_expire_date,
+            "added_by": record.added_by,
         };
     }
 
     const columnWidth = 150;
+    const columnMiddleWidth = 250;
+    const columnLongWidth = 300;
     const columns = [
         {
             field: 'user',
-            headerName: 'User',
+            headerName: 'Employee User',
             width: columnWidth,
         },
         {
             field: 'name',
             headerName: 'Name',
-            width: columnWidth,
+            width: 200,
         },
         {
             field: 'type',
@@ -74,33 +86,33 @@ export default function EmployeeDataGrid({uid}) {
         {
             field: 'email',
             headerName: 'Email',
-            width: columnWidth,
+            width: columnMiddleWidth,
         },
         {
-            field: 'cell',
+            field: 'cell_phone',
             headerName: 'Cell Phone',
             width: columnWidth,
         },
         {
-            field: 'pesticide_certification_id',
+            field: 'pesticide_applicator_no',
             headerName: 'Pesticide Certification I.D.',
-            width: 200,
+            width: columnLongWidth,
         },
         {
-            field: 'pesticide_certification_expire_date',
+            field: 'pesticide_expire_date',
             headerName: 'Pesticide Certification Expire Date',
-            width: 250,
+            width: columnLongWidth,
         },
         {
-            field: 'privilege',
-            headerName: 'Privilege',
+            field: 'added_by',
+            headerName: 'Added By',
             width: columnWidth,
         },
     ]
 
     useEffect(() => {
         const fetchData = async () => {
-            await Promise.all([EmployeeListGet(uid)]);
+            await Promise.all([EmployeeListGet(employer_id)]);
         };
 
         fetchData();
@@ -109,7 +121,7 @@ export default function EmployeeDataGrid({uid}) {
 
     useEffect(() => {
         if (mounted) {
-            EmployeeListGet(uid);
+            EmployeeListGet(employer_id);
         }
     }, [refreshRecord]);
 
@@ -125,6 +137,8 @@ export default function EmployeeDataGrid({uid}) {
                     slots={{
                         toolbar: CustomToolbar,
                     }}
+                    density="compact"
+                    localeText={{noRowsLabel: privilege.employee_r ? "No rows" : "You don't have the privilege to access this data"}}
                 />
             </Paper>
         </div>

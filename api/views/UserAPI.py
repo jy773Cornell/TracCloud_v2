@@ -68,24 +68,19 @@ class UserProfileUpdateView(APIView):
         return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserPasswordChangeView(APIView):
+class UserTypeGetView(APIView):
+    def get(self, request, format=None):
+        user_type = cache.get("UserType")
+        user_relation_type = cache.get("UserRelationType")
 
-    def put(self, request, format=None):
-        uid = request.data.get("uid")
-        password = request.data.get("password")
-        original_password = request.data.get("original_password")
-        if uid and password and original_password:
-            user = User.objects.filter(uid=uid, is_active=True)
-            if user:
-                if not check_password(original_password, user.first().password):
-                    return Response({'Failed': 'Wrong original password.'}, status=status.HTTP_403_FORBIDDEN)
+        urtid_to_name = {item["urtid"]: item["name"] for item in user_relation_type}
+        for item in user_type:
+            if item["relation_type_id"] in urtid_to_name:
+                item["relation_type"] = urtid_to_name[item["relation_type_id"]]
+            else:
+                item["relation_type"] = None
 
-                user.update(password=make_password(password))
-                return Response({'Succeeded': 'User password has been updated.'}, status=status.HTTP_200_OK)
-
-            return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
-
-        return Response({'Bad Request': 'Invalid post data'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'Succeeded': 'User Type Info Fetched.', 'data': user_type}, status=status.HTTP_200_OK)
 
 
 '''

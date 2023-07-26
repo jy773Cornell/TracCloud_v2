@@ -43,7 +43,8 @@ function App() {
                     <Route path='/' element={<AuthComponent {...authProps} />}>
                         <Route path="home" element={<HomePage/>}/>
                         <Route path="profile" element={<UserProfile uid={uid}/>}/>
-                        <Route path="people" element={<People uid={employerID} privilege={privilege}/>}/>
+                        <Route path="people"
+                               element={<People uid={uid} employerID={employerID} privilege={privilege}/>}/>
                         <Route path="crop" element={<Crop uid={employerID} privilege={privilege}/>}/>
                         <Route path="site" element={<Site uid={employerID} privilege={privilege}/>}/>
                         <Route path="chemical" element={<Chemical uid={employerID} privilege={privilege}/>}/>

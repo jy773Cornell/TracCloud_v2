@@ -27,7 +27,7 @@ def new_account_notify(first_name, last_name, username, password, email):
         'Your Trac Cloud Account Has Been Created！',
         f'Dear {first_name} {last_name},'
         f'\n    Welcome to Trac Cloud!'
-        f'\n    Your initiated username and password: {username} ({password})'
+        f'\n    Your initial username and password: {username} ({password})'
         f'\n    Link to Trac Cloud: {os.getenv("TRACLOUD_URL")}',
         os.getenv("EMAIL_HOST_USER"),
         [email],
