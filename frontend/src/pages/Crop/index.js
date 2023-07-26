@@ -23,6 +23,10 @@ import {observer} from 'mobx-react-lite'
 import {useStore} from '../../store'
 import {getCookie} from "../../utils";
 
+const columnWidth = 200;
+const editWidth = 180;
+const field_names = ["crop", "variety", "crop_code", "category"]
+
 function createAPIData(data) {
     const {crop: crop_id, variety: variety_id, ...rest} = data;
     return {crop_id, variety_id, ...rest};
@@ -175,12 +179,7 @@ function AddCropRecord({
     );
 }
 
-function Crop(props) {
-    const {cropStore} = useStore()
-    const field_names = cropStore.field_names;
-    const columnWidth = cropStore.columnWidth;
-    const editWidth = cropStore.editWidth;
-
+export default function Crop(props) {
     const uid = props.uid;
     const privilege = props.privilege;
 
@@ -611,7 +610,7 @@ function Crop(props) {
                     slots={{
                         toolbar: CustomToolbar,
                     }}
-                    localeText={{noRowsLabel: privilege.crop_c ? "No rows" : "You don't have the privilege to access this data"}}
+                    localeText={{noRowsLabel: privilege.crop_r ? "No rows" : "You don't have the privilege to access this data"}}
                 />
             </Paper>
             <AddCropRecord {...addProps}/>
@@ -620,5 +619,3 @@ function Crop(props) {
         </div>
     );
 }
-
-export default observer(Crop);

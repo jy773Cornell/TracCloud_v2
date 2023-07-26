@@ -1,5 +1,6 @@
 from django.urls import path
-from user_management.views import *
+from user_management.views.PrivilegeAPI import *
+from user_management.views.EmployAPI import *
 
 urlpatterns = [
     path('privilege/get/', PrivilegeGetView.as_view()),

@@ -15,7 +15,8 @@ export default function sprayCardContent({
                                              sprayOptions,
                                              setAssignSprayCard,
                                              refreshRecord,
-                                             setRefreshRecord
+                                             setRefreshRecord,
+                                             privilege
                                          }) {
     const [sprayCardContents, setSprayCardContents] = React.useState([]);
     const [chemicalContents, setChemicalContents] = React.useState([]);
@@ -334,7 +335,9 @@ export default function sprayCardContent({
             <React.Fragment>
                 <Grid item xs={2.4}>
                     <Button
-                        onClick={() => handleAssignButtonClicked()}>
+                        onClick={() => handleAssignButtonClicked()}
+                        disabled={!privilege.spraycard_a}
+                    >
                         Assign
                     </Button>
                 </Grid>
@@ -412,7 +415,8 @@ export default function sprayCardContent({
         setEditSprayCard,
         setRefreshRecord,
         setAssignSprayCard,
-        sprayCardSelected
+        sprayCardSelected,
+        privilege
     };
 
     const SprayCardCompleteProps = {

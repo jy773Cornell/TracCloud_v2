@@ -1,10 +1,8 @@
 import React from 'react'
-import cropStore from './CropStore'
 import sprayCardStore from "./SprayCardStore";
 
 class RootStore {
     constructor() {
-        this.cropStore = cropStore
         this.sprayCardStore = sprayCardStore
     }
 }

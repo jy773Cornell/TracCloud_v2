@@ -4,15 +4,12 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
 import LogoutIcon from '@mui/icons-material/Logout';
-import {StyledInputBase, StyledSearch, StyledSearchIconWrapper} from "./styles";
-import {Typography} from "@mui/material";
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import {useNavigate} from "react-router-dom";
+import {Menu, MenuItem, Typography} from "@mui/material";
+import SettingsIcon from '@mui/icons-material/Settings';
 
 export default function LayoutAppBar(props) {
-    const navigate = useNavigate();
+    const [anchorEl, setAnchorEl] = React.useState(null);
 
     return (
         <Box>
@@ -28,27 +25,37 @@ export default function LayoutAppBar(props) {
                     >
                         <MenuIcon/>
                     </IconButton>
-                    {/*<StyledSearch>*/}
-                    {/*    <StyledSearchIconWrapper>*/}
-                    {/*        <SearchIcon/>*/}
-                    {/*    </StyledSearchIconWrapper>*/}
-                    {/*    <StyledInputBase*/}
-                    {/*        placeholder="Search…"*/}
-                    {/*        inputProps={{'aria-label': 'search'}}*/}
-                    {/*    />*/}
-                    {/*</StyledSearch>*/}
                     <Box sx={{flexGrow: 1}}/>
                     <Box sx={{display: {xs: 'none', md: 'flex'}}}>
                         <Typography sx={{display: 'flex', alignItems: "center", padding: 1.5}}>
                             Hello, {props.username}
                         </Typography>
-                        {props.userType === "Admin" ? (
-                            <IconButton size="large" aria-label="admin panel" color="inherit"
-                                        onClick={() => navigate("/admin")}>
-                                <AdminPanelSettingsIcon/>
-                            </IconButton>
-                        ) : null}
-                        <IconButton size="large" aria-label="new notifications" color="inherit"
+                        <IconButton
+                            size="large"
+                            color="inherit"
+                            aria-controls="setting-menu"
+                            aria-haspopup="true"
+                            onClick={(event) => setAnchorEl(event.currentTarget)}
+                        >
+                            <SettingsIcon/>
+                        </IconButton>
+                        <Menu
+                            id="setting-menu"
+                            anchorEl={anchorEl}
+                            keepMounted
+                            open={Boolean(anchorEl)}
+                            onClose={() => setAnchorEl(null)}
+                        >
+                            <MenuItem>
+                                <a href="/workflow/username_change/" target="_blank"
+                                   rel="noopener noreferrer">Username</a>
+                            </MenuItem>
+                            <MenuItem>
+                                <a href="/workflow/password_change/" target="_blank"
+                                   rel="noopener noreferrer">Password</a>
+                            </MenuItem>
+                        </Menu>
+                        <IconButton size="large" aria-label="logout" color="inherit"
                                     onClick={props.handleLogout}>
                             <LogoutIcon/>
                         </IconButton>

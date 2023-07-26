@@ -335,6 +335,8 @@ function AddChemicalRecord({
 
 export default function Chemical(props) {
     const uid = props.uid;
+    const privilege = props.privilege;
+
     const [unit, setUnit] = useState([]);
     const [chemicalProductBase, setChemicalProductBase] = useState([]);
 
@@ -358,16 +360,18 @@ export default function Chemical(props) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/chemical/list/get/" + "?uid=" + uid, requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        const record_list = data.data;
-                        const record_row = record_list.map((record) => createRowData(record))
-                        setRows(record_row);
-                    })
-                }
-            })
+        if (privilege.chem_r) {
+            await fetch("/api/chemical/list/get/" + "?uid=" + uid, requestOptions)
+                .then((response) => {
+                    if (response.ok) {
+                        response.json().then((data) => {
+                            const record_list = data.data;
+                            const record_row = record_list.map((record) => createRowData(record))
+                            setRows(record_row);
+                        })
+                    }
+                })
+        }
     }
 
     async function UnitGet() {
@@ -561,13 +565,19 @@ export default function Chemical(props) {
             renderCell: (params) => {
                 if (editRowId !== params.id) {
                     return (<>
-                        <IconButton onClick={() => onEditClicked(params)}>
+                        <IconButton
+                            onClick={() => onEditClicked(params)}
+                            disabled={!privilege.chem_u}
+                        >
                             <EditIcon/>
                         </IconButton>
-                        <IconButton onClick={(event) => {
-                            setAnchorEl(event.currentTarget);
-                            setPopoverRowId(params.id);
-                        }}>
+                        <IconButton
+                            onClick={(event) => {
+                                setAnchorEl(event.currentTarget);
+                                setPopoverRowId(params.id);
+                            }}
+                            disabled={!privilege.chem_d}
+                        >
                             <DeleteIcon/>
                         </IconButton>
                         {popoverRowId === params.id &&
@@ -884,7 +894,9 @@ export default function Chemical(props) {
             <AddButton
                 variant="contained"
                 startIcon={<AddIcon/>}
-                onClick={() => onAddClicked()}>
+                onClick={() => onAddClicked()}
+                disabled={!privilege.chem_c}
+            >
                 Add Chemical
             </AddButton>
             <Paper style={{height: 900, margin: '0px 15px', width: 'calc(100% - 30px)', overflow: 'auto'}}>
@@ -897,6 +909,7 @@ export default function Chemical(props) {
                     slots={{
                         toolbar: CustomToolbar,
                     }}
+                    localeText={{noRowsLabel: privilege.chem_r ? "No rows" : "You don't have the privilege to access this data"}}
                 />
             </Paper>
             <AddChemicalRecord {...addProps}/>

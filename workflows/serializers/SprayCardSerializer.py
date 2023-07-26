@@ -30,11 +30,14 @@ class SprayCardGetSerializer(serializers.ModelSerializer):
 
 class AssignmentGetSerializer(serializers.ModelSerializer):
     assign_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
-    assign_to = serializers.StringRelatedField()
+    assign_to = serializers.SerializerMethodField()
 
     class Meta:
         model = SprayCardAssignment
         fields = "__all__"
+
+    def get_assign_to(self, obj):
+        return "{} ({} {})".format(obj.assign_to.user.username, obj.assign_to.first_name, obj.assign_to.last_name)
 
 
 class SprayCardContentGetSerializer(serializers.ModelSerializer):
@@ -197,7 +200,6 @@ class SprayCardAssignSerializer(serializers.ModelSerializer):
         except SprayCard.DoesNotExist:
             raise serializers.ValidationError("The spray card record does not exist.")
 
-        # Extract the assignees from the assignments
         assignments = SprayCardAssignment.objects.filter(spray_card=spray_card_process, is_active=True)
         assignee_list = [assignment.assign_to for assignment in assignments]
 
@@ -210,9 +212,6 @@ class SprayCardAssignSerializer(serializers.ModelSerializer):
 
         try:
             assignee = UserProfile.objects.get(uid=assignee_id, is_active=True)
-            user_tree = UserTree("hard-code-testing")
-            if not user_tree.is_descendant(assigner_id, assignee_id):
-                raise serializers.ValidationError("The assigner could not assign to the assignee.")
         except UserProfile.DoesNotExist:
             raise serializers.ValidationError("The assignee does not exist.")
 

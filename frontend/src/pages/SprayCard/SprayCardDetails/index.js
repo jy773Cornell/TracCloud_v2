@@ -15,7 +15,8 @@ export default function Index({
                                   sprayOptions,
                                   setAssignSprayCard,
                                   refreshRecord,
-                                  setRefreshRecord
+                                  setRefreshRecord,
+                                  privilege
                               }) {
 
     const [overviewExpanded, setOverviewExpanded] = React.useState(true);
@@ -127,7 +128,8 @@ export default function Index({
         sprayOptions,
         setAssignSprayCard,
         refreshRecord,
-        setRefreshRecord
+        setRefreshRecord,
+        privilege
     }
     const SprayCardContentRender = () => {
         return (

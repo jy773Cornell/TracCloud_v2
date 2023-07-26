@@ -1,45 +1,19 @@
-import React, {useEffect, useState} from 'react';
-import {getCookie} from "../../utils";
+import React, {lazy, useEffect, useState} from 'react';
+import {Grid} from "@mui/material";
 
-function App() {
-    // const [ws, setWs] = useState(null);
-    //
-    // useEffect(() => {
-    //     const websocket = new WebSocket('ws://' + window.location.host + '/ws/notifications/');
-    //
-    //     websocket.onopen = (event) => {
-    //         console.log('WebSocket is open now.');
-    //         websocket.send(JSON.stringify({message: 'Hello Server'}));
-    //     };
-    //
-    //     websocket.onmessage = (event) => {
-    //         console.log('Received:', event.data);
-    //     };
-    //
-    //     websocket.onclose = (event) => {
-    //         console.log('WebSocket is closed now.');
-    //     };
-    //
-    //     websocket.onerror = (event) => {
-    //         console.error('WebSocket error observed:', event);
-    //     };
-    //
-    //     setWs(websocket);
-    // }, []);
-    //
-    //
-    // const sendMessage = () => {
-    //     if (ws) {
-    //         ws.send(JSON.stringify({message: 'Hello from React'}));
-    //     }
-    // };
+const EmployeeList = lazy(() => import('./EmployeeList'))
 
+export default function People(props) {
     return (
-        <div>
-            {/*<button onClick={sendMessage}>Send Message</button>*/}
-            people
+        <div style={{margin: '0px 15px'}}>
+            <Grid container spacing={2}>
+                <Grid item xs={8}>
+                    <EmployeeList {...props}/>
+                </Grid>
+                <Grid item xs={4}>
+                    <EmployeeList {...props}/>
+                </Grid>
+            </Grid>
         </div>
     );
 }
-
-export default App;

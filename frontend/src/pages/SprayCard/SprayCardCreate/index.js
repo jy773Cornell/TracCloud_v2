@@ -27,7 +27,8 @@ export default function SprayCardCreate({
                                             refreshRecord,
                                             setRefreshRecord,
                                             setAssignSprayCard,
-                                            setSprayCardSelected
+                                            setSprayCardSelected,
+                                            privilege
                                         }) {
 
     const initialFieldValues = field_names.reduce((acc, cur) => {
@@ -40,7 +41,7 @@ export default function SprayCardCreate({
     }, {});
 
     const [fieldValues, setFieldValues] = useState(initialFieldValues);
-    const [selectedResponsible, setSelectedResponsible] = useState("");
+    const [selectedResponsible, setSelectedResponsible] = useState(null);
 
     const sprayCardFormProps = {
         uid,
@@ -59,7 +60,8 @@ export default function SprayCardCreate({
         field_names,
         selectedResponsible,
         setSelectedResponsible,
-        tag: "create"
+        tag: "create",
+        privilege
     };
 
     return (

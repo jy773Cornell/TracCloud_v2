@@ -13,6 +13,9 @@ const SprayCardDetails = lazy(() => import('./SprayCardDetails'))
 
 function SprayCard(props) {
     const uid = props.uid
+    const employerID = props.employerID
+    const privilege = props.privilege;
+
     const {sprayCardStore} = useStore()
 
     const [sprayData, setSprayData] = React.useState({});
@@ -33,12 +36,14 @@ function SprayCard(props) {
         refreshRecord,
         setRefreshRecord,
         setAssignSprayCard,
-        setSprayCardSelected
+        setSprayCardSelected,
+        privilege
     };
 
     const assignSprayCardProps = {
         uid,
         sprayData,
+        sprayOptions,
         assignSprayCard,
         setAssignSprayCard,
         sprayCardSelected,
@@ -62,12 +67,13 @@ function SprayCard(props) {
         sprayOptions,
         setAssignSprayCard,
         refreshRecord,
-        setRefreshRecord
+        setRefreshRecord,
+        privilege
     };
 
     useEffect(() => {
         const fetchData = async () => {
-            const data = await sprayCardStore.getSprayData(uid);
+            const data = await sprayCardStore.getSprayData(uid, employerID);
             setSprayData(data["record_data"]);
             setSprayOption(data["option_data"]);
             setMounted(true);
@@ -81,7 +87,7 @@ function SprayCard(props) {
             <AddButton
                 variant="contained"
                 startIcon={<AddIcon/>}
-                disabled={!mounted}
+                disabled={!mounted || !privilege.spraycard_c}
                 onClick={() => setAddSprayCard(true)}
             >
                 Add Spray Card Process

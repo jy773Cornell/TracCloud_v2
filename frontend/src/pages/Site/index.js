@@ -203,6 +203,8 @@ function AddSiteRecord({
 
 export default function Site(props) {
     const uid = props.uid;
+    const privilege = props.privilege;
+
     const [siteList, setSiteList] = useState([]);
     const [siteType, setSiteType] = useState([]);
     const [cropList, setCropList] = useState([]);
@@ -232,17 +234,19 @@ export default function Site(props) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/site/list/get/" + "?uid=" + uid, requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        const record_list = data.data;
-                        setSiteList(record_list);
-                        const record_row = record_list.map((record) => createRowData(record))
-                        updateRowData(record_row);
-                    })
-                }
-            })
+        if (privilege.site_r) {
+            await fetch("/api/site/list/get/" + "?uid=" + uid, requestOptions)
+                .then((response) => {
+                    if (response.ok) {
+                        response.json().then((data) => {
+                            const record_list = data.data;
+                            setSiteList(record_list);
+                            const record_row = record_list.map((record) => createRowData(record))
+                            updateRowData(record_row);
+                        })
+                    }
+                })
+        }
     }
 
     async function CropListGet(uid) {
@@ -609,13 +613,19 @@ export default function Site(props) {
                 if (editRowId !== params.id) {
                     return (
                         <>
-                            <IconButton onClick={() => onEditClicked(params)}>
+                            <IconButton
+                                onClick={() => onEditClicked(params)}
+                                disabled={!privilege.site_u}
+                            >
                                 <EditIcon/>
                             </IconButton>
-                            <IconButton onClick={(event) => {
-                                setAnchorEl(event.currentTarget);
-                                setPopoverRowId(params.id);
-                            }}>
+                            <IconButton
+                                onClick={(event) => {
+                                    setAnchorEl(event.currentTarget);
+                                    setPopoverRowId(params.id);
+                                }}
+                                disabled={!privilege.site_d}
+                            >
                                 <DeleteIcon/>
                             </IconButton>
                             {!end_site_types.includes(params.row.type) && (
@@ -892,7 +902,9 @@ export default function Site(props) {
             <AddButton
                 variant="contained"
                 startIcon={<AddIcon/>}
-                onClick={() => onAddClicked()}>
+                onClick={() => onAddClicked()}
+                disabled={!privilege.site_c}
+            >
                 Add Site
             </AddButton>
             <TreeButton
@@ -919,6 +931,7 @@ export default function Site(props) {
                         slots={{
                             toolbar: CustomToolbar,
                         }}
+                        localeText={{noRowsLabel: privilege.site_r ? "No rows" : "You don't have the privilege to access this data"}}
                     />
                 </Paper>
             </StyledContainer>

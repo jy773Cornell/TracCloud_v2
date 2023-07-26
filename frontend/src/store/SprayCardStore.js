@@ -21,14 +21,25 @@ class SprayCardStore {
         return result;
     }
 
-    async getSprayData(uid) {
+    async getSprayData(uid, employerID) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
 
-        const responses = await Promise.all([fetch("/api/crop/list/get/" + "?uid=" + uid, requestOptions), fetch("/api/site/list/get/" + "?uid=" + uid, requestOptions), fetch("/api/chemical/list/get/" + "?uid=" + uid, requestOptions), fetch("/api/equipment/list/get/" + "?uid=" + uid, requestOptions), fetch("/api/operation/purchase/list/get/" + "?uid=" + uid, requestOptions), fetch("/api/operation/application/list/get/?" + "uid=" + uid, requestOptions), fetch("/api/crop/category/", requestOptions), fetch("/api/operation/application/target/", requestOptions), fetch("/api/operation/application/desicisionsupport/", requestOptions), fetch("/api/unit/", requestOptions), fetch("/api/crop/growthstage/", requestOptions),
+        const responses = await Promise.all([
+            fetch("/api/crop/list/get/" + "?uid=" + employerID, requestOptions),
+            fetch("/api/site/list/get/" + "?uid=" + employerID, requestOptions),
+            fetch("/api/chemical/list/get/" + "?uid=" + employerID, requestOptions),
+            fetch("/api/equipment/list/get/" + "?uid=" + employerID, requestOptions),
+            fetch("/api/operation/purchase/list/get/" + "?uid=" + employerID, requestOptions),
+            fetch("/api/operation/application/list/get/?" + "uid=" + employerID, requestOptions),
+            fetch("/api/crop/category/", requestOptions),
+            fetch("/api/operation/application/target/", requestOptions),
+            fetch("/api/operation/application/desicisionsupport/", requestOptions),
+            fetch("/api/unit/", requestOptions),
+            fetch("/api/crop/growthstage/", requestOptions),
 
-            fetch("/workflow/usertree/subtree/get/?" + "uid=" + uid, requestOptions),]);
+            fetch("/workflow/spraycard/assignees/get/?" + "uid=" + uid + "&employer_id=" + employerID, requestOptions),]);
 
         const jsonDataPromises = responses.map((response) => {
             if (response.ok) {
@@ -67,7 +78,7 @@ class SprayCardStore {
                 decisionSupport: jsonData[8].data,
                 unit: jsonData[9].data,
                 growthStage: jsonData[10].data,
-                userSubTree: jsonData[11].data,
+                assigneeList: jsonData[11].data,
             }, "option_data": {
                 chemicalOptions: jsonData[4].data.map(item => {
                     const chemical = jsonData[2].data.find(chem => chem.chemid === item.chemical);
@@ -114,6 +125,9 @@ class SprayCardStore {
                 })),
                 siteUnitOptions: jsonData[9].data.filter(item => item.usage === "site").map(item => ({
                     label: item.name, id: item.unitid
+                })),
+                assigneeOptions: jsonData[11].data.map(item => ({
+                    label: `${item.first_name} ${item.last_name}`, type: item.type, id: item.uid
                 })),
             }
         };

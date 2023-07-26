@@ -126,10 +126,10 @@ export default function Login() {
                         </Grid>
                         <Grid item xs={8}>
                             <Typography>
-                                <Link href="/workflow/registration">Don't have an account? Sign Up</Link>
+                                <Link href="/workflow/registration" target="_blank" rel="noopener noreferrer">Don't have an account? Sign Up</Link>
                             </Typography>
                             <StyledTypography>
-                                <Link href="/workflow/password_reset">Forgot password?</Link>
+                                <Link href="/workflow/password_reset" target="_blank" rel="noopener noreferrer">Forgot password?</Link>
                             </StyledTypography>
                         </Grid>
                     </Grid>

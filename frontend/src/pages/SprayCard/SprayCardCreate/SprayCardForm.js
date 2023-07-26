@@ -13,7 +13,6 @@ import {getCookie} from "../../../utils";
 
 const ModalStepper = lazy(() => import('../ModalStepper'))
 const SiteTreeView = lazy(() => import('../SiteTreeView'))
-const UserTreeView = lazy(() => import('../UserTreeView'))
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small"/>;
 const checkedIcon = <CheckBoxIcon fontSize="small"/>;
@@ -39,7 +38,8 @@ export default function SprayCardForm({
                                           field_names,
                                           selectedResponsible,
                                           setSelectedResponsible,
-                                          tag
+                                          tag,
+                                          privilege
                                       }) {
     const [formData, setFormData] = useState({});
     const [fieldErrors, setFieldErrors] = useState({});
@@ -88,7 +88,7 @@ export default function SprayCardForm({
             const data = await response.json();
             setSprayCardSelected(data.data);
             setOpenSprayCard(false);
-            setAssignSprayCard(true);
+            privilege.spraycard_a ? setAssignSprayCard(true) : null;
             setSuccessSnackbar(true);
             setRefreshRecord(~refreshRecord);
         }
@@ -727,7 +727,6 @@ export default function SprayCardForm({
         Object.keys(siteSelected).map(index => {
             newGrowthStageOptions[index] = sprayOptions.growthStageOptions.filter(item => item.crop_id === siteSelected[index].ccid)
         })
-        console.log(newGrowthStageOptions)
         setCropGrowthStageOptions(newGrowthStageOptions);
     };
 
@@ -881,13 +880,32 @@ export default function SprayCardForm({
     }
 
     const responsibleRender = () => {
-        return (<>
-            <Grid item xs={4}/>
-            <Grid item xs={4}>
-                <UserTreeView {...userTreeProps}/>
+        return (
+            <Grid item xs={6}>
+                <Autocomplete
+                    value={selectedResponsible}
+                    options={sprayOptions?.assigneeOptions || []}
+                    getOptionLabel={(option) => option.label}
+                    groupBy={(option) => option.type}
+                    disableClearable
+                    onChange={(event, value) => {
+                        setSelectedResponsible(value)
+                    }}
+                    renderInput={(params) => (<TextField
+                        {...params}
+                        variant="outlined"
+                        label="Responsible Person"
+                        error={fieldErrors?.[field_names[11]] || false}
+                    />)}
+                    renderGroup={(params) => {
+                        return (<li key={params.key}>
+                            <GroupHeader>{params.group}</GroupHeader>
+                            <GroupItems>{params.children}</GroupItems>
+                        </li>);
+                    }}
+                />
             </Grid>
-            <Grid item xs={4}/>
-        </>);
+        );
     }
 
     const responsibleStepRender = () => {
@@ -999,6 +1017,11 @@ export default function SprayCardForm({
     }
 
     const saveResponsible = () => {
+        setFieldErrors(prevErrors => ({
+            ...prevErrors,
+            [field_names[11]]: fieldValues[field_names[11]] === "",
+        }))
+
         if (fieldValues[field_names[11]]) {
             setFormData({
                 ...formData, [field_names[11]]: fieldValues[field_names[11]],
@@ -1009,10 +1032,6 @@ export default function SprayCardForm({
             return false;
         }
     }
-
-    const userTreeProps = {
-        sprayData, selected: selectedResponsible, setSelected: setSelectedResponsible
-    };
 
     const stepperProps = {
         steps,
@@ -1067,11 +1086,14 @@ export default function SprayCardForm({
     }, [fieldValues]);
 
     useEffect(() => {
-        handleInputChange(null, selectedResponsible, field_names[11])
+        handleInputChange(null, selectedResponsible?.id, field_names[11])
     }, [selectedResponsible]);
 
     useEffect(() => {
-        tag === "create" ? setFieldValues(initialFieldValues) : null;
+        if (tag === "create") {
+            setFieldValues(initialFieldValues);
+            setSelectedResponsible(null);
+        }
         setFieldErrors({});
         setFormData({});
         setActiveStep(0);

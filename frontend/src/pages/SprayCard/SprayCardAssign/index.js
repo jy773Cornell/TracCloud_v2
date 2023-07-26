@@ -1,16 +1,16 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import {Card, CardContent, Grid, Modal} from "@mui/material";
+import {Autocomplete, Card, CardContent, Checkbox, Grid, Modal, TextField} from "@mui/material";
 import {lazy, useState} from "react";
 import OperationSnackbars from "../../../components/Snackbars";
 import {getCookie} from "../../../utils";
-
-const UserTreeView = lazy(() => import('../UserTreeView'))
+import {GroupHeader, GroupItems} from "../SprayCardCreate/styles";
 
 export default function Index({
                                   uid,
                                   sprayData,
+                                  sprayOptions,
                                   assignSprayCard,
                                   setAssignSprayCard,
                                   sprayCardSelected,
@@ -44,13 +44,28 @@ export default function Index({
 
     const assignRender = () => {
         return (
-            <>
-                <Grid item xs={4}/>
-                <Grid item xs={4}>
-                    <UserTreeView {...userTreeProps}/>
-                </Grid>
-                <Grid item xs={4}/>
-            </>
+            <Grid item xs={6}>
+                <Autocomplete
+                    options={sprayOptions?.assigneeOptions || []}
+                    getOptionLabel={(option) => option.label}
+                    groupBy={(option) => option.type}
+                    disableClearable
+                    onChange={(event, value) => {
+                        setSelectedAssignee(value)
+                    }}
+                    renderInput={(params) => (<TextField
+                        {...params}
+                        variant="outlined"
+                        label="Assign Process"
+                    />)}
+                    renderGroup={(params) => {
+                        return (<li key={params.key}>
+                            <GroupHeader>{params.group}</GroupHeader>
+                            <GroupItems>{params.children}</GroupItems>
+                        </li>);
+                    }}
+                />
+            </Grid>
         );
     }
 
@@ -63,12 +78,6 @@ export default function Index({
                 {assignRender()}
             </Grid>);
     }
-
-    const userTreeProps = {
-        sprayData,
-        selected: selectedAssignee,
-        setSelected: setSelectedAssignee
-    };
 
     const assignSuccessProps = {
         open: successSnackbar,
@@ -100,7 +109,7 @@ export default function Index({
                                 <Box sx={{flex: '1 1 auto'}}/>
                                 <Button
                                     disabled={selectedAssignee === ""}
-                                    onClick={() => SprayCardAssign(sprayCardSelected.scpid, uid, selectedAssignee)}
+                                    onClick={() => SprayCardAssign(sprayCardSelected.scpid, uid, selectedAssignee.id)}
                                     color={"success"}
                                     sx={{mr: 1}}>
                                     Assign

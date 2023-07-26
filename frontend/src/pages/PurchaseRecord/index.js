@@ -237,6 +237,8 @@ function AddPurchaseRecord({
 
 export default function PurchaseRecord(props) {
     const uid = props.uid;
+    const privilege = props.privilege;
+
     const [purchaseList, setPurchaseList] = useState([]);
     const [chemicalList, setChemicalList] = useState([]);
 
@@ -260,14 +262,16 @@ export default function PurchaseRecord(props) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/operation/purchase/list/get/" + "?uid=" + uid, requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        setPurchaseList(data.data);
-                    })
-                }
-            })
+        if (privilege.purchase_r) {
+            await fetch("/api/operation/purchase/list/get/" + "?uid=" + uid, requestOptions)
+                .then((response) => {
+                    if (response.ok) {
+                        response.json().then((data) => {
+                            setPurchaseList(data.data);
+                        })
+                    }
+                })
+        }
     }
 
     async function ChemicalListGet(uid) {
@@ -482,26 +486,34 @@ export default function PurchaseRecord(props) {
             disableClickEventBubbling: true,
             renderCell: (params) => {
                 if (editRowId !== params.id) {
-                    return (<>
-                        <IconButton onClick={() => onEditClicked(params)}>
-                            <EditIcon/>
-                        </IconButton>
-                        <IconButton onClick={(event) => {
-                            setAnchorEl(event.currentTarget);
-                            setPopoverRowId(params.id);
-                        }}>
-                            <DeleteIcon/>
-                        </IconButton>
-                        {popoverRowId === params.id &&
-                            <ConfirmPopover anchorEl={anchorEl}
-                                            setAnchorEl={setAnchorEl}
-                                            onDeleteClicked={onDeleteClicked}
-                                            params={params}
-                                            msg="Delete this record?"
-                                            type="delete"
-                            />
-                        }
-                    </>);
+                    return (
+                        <>
+                            <IconButton
+                                onClick={() => onEditClicked(params)}
+                                disabled={!privilege.purchase_u}
+                            >
+                                <EditIcon/>
+                            </IconButton>
+                            <IconButton
+                                onClick={(event) => {
+                                    setAnchorEl(event.currentTarget);
+                                    setPopoverRowId(params.id);
+                                }}
+                                disabled={!privilege.purchase_d}
+                            >
+                                <DeleteIcon/>
+                            </IconButton>
+                            {popoverRowId === params.id &&
+                                <ConfirmPopover anchorEl={anchorEl}
+                                                setAnchorEl={setAnchorEl}
+                                                onDeleteClicked={onDeleteClicked}
+                                                params={params}
+                                                msg="Delete this record?"
+                                                type="delete"
+                                />
+                            }
+                        </>
+                    );
                 } else {
                     return (
                         <>
@@ -804,7 +816,9 @@ export default function PurchaseRecord(props) {
             <AddButton
                 variant="contained"
                 startIcon={<AddIcon/>}
-                onClick={() => onAddClicked()}>
+                onClick={() => onAddClicked()}
+                disabled={!privilege.purchase_c}
+            >
                 Add Purchase Record
             </AddButton>
             <Paper style={{height: 900, margin: '0px 15px', width: 'calc(100% - 30px)', overflow: 'auto'}}>
@@ -817,6 +831,7 @@ export default function PurchaseRecord(props) {
                     slots={{
                         toolbar: CustomToolbar,
                     }}
+                    localeText={{noRowsLabel: privilege.purchase_r ? "No rows" : "You don't have the privilege to access this data"}}
                 />
             </Paper>
             <AddPurchaseRecord {...addProps}/>

@@ -28,7 +28,8 @@ export default function SprayCardEdit({
                                           setEditSprayCard,
                                           setRefreshRecord,
                                           setAssignSprayCard,
-                                          sprayCardSelected
+                                          sprayCardSelected,
+                                          privilege
                                       }) {
 
     const initialFieldValues = field_names.reduce((acc, cur) => {
@@ -101,7 +102,7 @@ export default function SprayCardEdit({
             initialFieldValues[field_names[12]][i] = sprayOptions.growthStageOptions.find(option => option.id === preGrowthStage[i]);
         }
 
-        setSelectedResponsible(sprayCardContents[0].responsible_person);
+        setSelectedResponsible(sprayOptions.assigneeOptions.find(option => option.id === sprayCardContents[0].responsible_person));
         initialFieldValues[field_names[11]] = sprayCardContents[0].responsible_person;
 
         return initialFieldValues
@@ -124,7 +125,8 @@ export default function SprayCardEdit({
         field_names,
         selectedResponsible,
         setSelectedResponsible,
-        tag: "edit"
+        tag: "edit",
+        privilege
     };
 
     useEffect(() => {

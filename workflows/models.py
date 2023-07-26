@@ -8,6 +8,8 @@ from django.core.mail import send_mail
 from api.utils.UUIDGen import gen_uuid
 from django.urls import reverse
 from api.models import Operation, UserRelation, UserType
+from user_management.models import UserPrivilege
+from user_management.utils.NewAccount import default_privilege
 
 '''
     Registration Process:
@@ -39,7 +41,11 @@ class Registration(models.Model):
     @transition(field=state, source='pending', target='approved')
     def approve(self):
         new_user = User.objects.create_user(self.username, self.email, self.password)
-        UserProfile.objects.create(uid=gen_uuid("UID"), user=new_user, type=self.type)
+        uid = gen_uuid("UID")
+        UserProfile.objects.create(uid=uid, user=new_user, type=self.type)
+
+        privilege = default_privilege(self.type_id)
+        UserPrivilege.objects.create(uroid=gen_uuid("UROID"), user_id=uid, **privilege)
 
         send_mail(
             'Your registration was approved！',

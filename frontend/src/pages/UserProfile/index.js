@@ -10,7 +10,7 @@ const Loading = lazy(() => import('../../components/Loading'))
 const field_names = [
     "type", "first_name", "last_name", "pesticide_applicator_no", "pesticide_expire_date",
     "business_name", "address_line1", "address_line2", "city", "state", "zipcode", "county", "country",
-    "cell_phone", "email",]
+    "cell_phone", "email", "relation_type"]
 
 export default function UserProfile(props) {
     const uid = props.uid;

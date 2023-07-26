@@ -3,8 +3,7 @@ import {Button} from "@mui/material";
 import {orange} from '@mui/material/colors';
 import {pink} from '@mui/material/colors';
 
-
-export const AddButton = styled(Button)(({theme}) => ({
+export const AddButton = styled(Button)(() => ({
     margin: "15px 15px",
     backgroundColor: orange[500],
     '&:hover': {

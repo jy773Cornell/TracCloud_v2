@@ -72,6 +72,7 @@ export default function SprayDataModal({
                                            purchaseList,
                                            sprayApplicationList,
                                            reportID,
+                                           privilege,
                                        }) {
     const [rows, setRows] = useState([]);
     const [rowsSelected, setRowsSelected] = React.useState([]);
@@ -320,6 +321,7 @@ export default function SprayDataModal({
                             dataList={rows}/>,
                     }}
                     density="compact"
+                    localeText={{noRowsLabel: privilege.spray_r ? "No rows" : "You don't have the privilege to access this data"}}
                 />
             </Paper>
         </Modal>

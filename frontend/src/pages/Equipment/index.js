@@ -157,6 +157,7 @@ function AddEquipmentRecord({
 
 export default function Equipment(props) {
     const uid = props.uid;
+    const privilege = props.privilege;
 
     const [rows, setRows] = useState([]);
     const [formData, setFormData] = useState({});
@@ -176,16 +177,18 @@ export default function Equipment(props) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/equipment/list/get/" + "?uid=" + uid, requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        const record_list = data.data;
-                        const record_row = record_list.map((record) => createRowData(record))
-                        setRows(record_row);
-                    })
-                }
-            })
+        if (privilege.equip_r) {
+            await fetch("/api/equipment/list/get/" + "?uid=" + uid, requestOptions)
+                .then((response) => {
+                    if (response.ok) {
+                        response.json().then((data) => {
+                            const record_list = data.data;
+                            const record_row = record_list.map((record) => createRowData(record))
+                            setRows(record_row);
+                        })
+                    }
+                })
+        }
     }
 
     async function EquipmentRecordUpdate() {
@@ -303,26 +306,34 @@ export default function Equipment(props) {
             disableClickEventBubbling: true,
             renderCell: (params) => {
                 if (editRowId !== params.id) {
-                    return (<>
-                        <IconButton onClick={() => onEditClicked(params)}>
-                            <EditIcon/>
-                        </IconButton>
-                        <IconButton onClick={(event) => {
-                            setAnchorEl(event.currentTarget);
-                            setPopoverRowId(params.id);
-                        }}>
-                            <DeleteIcon/>
-                        </IconButton>
-                        {popoverRowId === params.id &&
-                            <ConfirmPopover anchorEl={anchorEl}
-                                            setAnchorEl={setAnchorEl}
-                                            onDeleteClicked={onDeleteClicked}
-                                            params={params}
-                                            msg="Delete this record?"
-                                            type="delete"
-                            />
-                        }
-                    </>);
+                    return (
+                        <>
+                            <IconButton
+                                onClick={() => onEditClicked(params)}
+                                disabled={!privilege.equip_u}
+                            >
+                                <EditIcon/>
+                            </IconButton>
+                            <IconButton
+                                onClick={(event) => {
+                                    setAnchorEl(event.currentTarget);
+                                    setPopoverRowId(params.id);
+                                }}
+                                disabled={!privilege.equip_d}
+                            >
+                                <DeleteIcon/>
+                            </IconButton>
+                            {popoverRowId === params.id &&
+                                <ConfirmPopover anchorEl={anchorEl}
+                                                setAnchorEl={setAnchorEl}
+                                                onDeleteClicked={onDeleteClicked}
+                                                params={params}
+                                                msg="Delete this record?"
+                                                type="delete"
+                                />
+                            }
+                        </>
+                    );
                 } else {
                     return (
                         <>
@@ -487,7 +498,9 @@ export default function Equipment(props) {
             <AddButton
                 variant="contained"
                 startIcon={<AddIcon/>}
-                onClick={() => onAddClicked()}>
+                onClick={() => onAddClicked()}
+                disabled={!privilege.equip_c}
+            >
                 Add Equipment
             </AddButton>
             <Paper style={{height: 900, margin: '0px 15px', width: 'calc(100% - 30px)', overflow: 'auto'}}>
@@ -500,6 +513,7 @@ export default function Equipment(props) {
                     slots={{
                         toolbar: CustomToolbar,
                     }}
+                    localeText={{noRowsLabel: privilege.equip_r ? "No rows" : "You don't have the privilege to access this data"}}
                 />
             </Paper>
             <AddEquipmentRecord {...addProps}/>

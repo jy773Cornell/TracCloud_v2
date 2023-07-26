@@ -1,10 +1,9 @@
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
 from api.utils.ModelManager import request_data_transform
 from api.utils.UUIDGen import gen_uuid
-from user_management.serializer import *
+from user_management.serializers.EmploySerializer import *
 from user_management.utils.NewAccount import *
 from django.db import transaction
 
@@ -87,41 +86,9 @@ class EmployerGetView(APIView):
                     employer_id = user.added_by_id
                 else:
                     employer_id = uid
-                return Response({'Succeeded': 'Employer Info Fetched.', 'employer_id': employer_id}, status=status.HTTP_200_OK)
+                return Response({'Succeeded': 'Employer Info Fetched.', 'employer_id': employer_id},
+                                status=status.HTTP_200_OK)
 
             return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class PrivilegeGetView(APIView):
-    serializer_class = PrivilegeGetSerializer
-    lookup_url_kwarg = "uid"
-
-    def get(self, request, format=None):
-        uid = request.GET.get(self.lookup_url_kwarg)
-        if uid:
-            privilege = UserPrivilege.objects.filter(user_id=uid).first()
-            if privilege:
-                data = self.serializer_class(privilege).data
-                return Response({'Succeeded': 'Privilege Info Fetched.', 'data': data}, status=status.HTTP_200_OK)
-
-            return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
-
-        return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class PrivilegeUpdateView(APIView):
-    serializer_class = PrivilegeUpdateSerializer
-
-    def post(self, request, format=None):
-        uid = request.data["user_id"]
-
-        if uid:
-            privilege = UserPrivilege.objects.filter(user_id=uid)
-            serializer = self.serializer_class(data=request.data)
-            if privilege and serializer.is_valid():
-                privilege.update(**serializer.data)
-                return Response({'Succeeded': 'Privilege Info Updated.'}, status=status.HTTP_200_OK)
-
-        return Response({'Bad Request': 'Invalid Post parameter'}, status=status.HTTP_400_BAD_REQUEST)

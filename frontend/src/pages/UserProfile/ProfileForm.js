@@ -7,8 +7,6 @@ import dayjs from "dayjs";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import Paper from "@mui/material/Paper";
 
-const userType = {"Grower": "Grower", "Applicator": "Applicator",};
-
 export default function ProfileForm({
                                         field_names,
                                         profile,
@@ -84,51 +82,49 @@ export default function ProfileForm({
                             sx={{width: '100%'}}
                         />}
                     </Grid>
-                    {profile[field_names[0]] === userType["Applicator"] &&
-                        <>
-                            <Grid item xs={6}>
-                                {isEdit ? <TextField
-                                    label="Pesticide Certification I.D. Number"
-                                    variant="outlined"
-                                    required={true}
-                                    value={fieldValues[field_names[3]]}
-                                    onChange={(event) => {
-                                        handleInputChange(event, event.target.value, field_names[3]);
-                                    }}
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    sx={{width: '100%'}}
-                                /> : <TextField
-                                    label="Pesticide Certification I.D. Number"
-                                    variant="outlined"
-                                    value={profile[field_names[3]]}
-                                    InputProps={{readOnly: true}}
-                                    sx={{width: '100%'}}
-                                />}
-                            </Grid>
-                            <Grid item xs={6}>
-                                {isEdit ? <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DatePicker
-                                        label="Pesticide Certification Expire Date"
-                                        variant="outlined"
-                                        required={true}
-                                        value={dayjs(fieldValues[field_names[4]])}
-                                        onChange={(event) => {
-                                            handleInputChange(event, dayjs(event).format('YYYY-MM-DD'), field_names[4]);
-                                        }}
-                                        sx={{width: '100%'}}
-                                    />
-                                </LocalizationProvider> : <TextField
-                                    label="Pesticide Certification Expire Date"
-                                    variant="outlined"
-                                    value={profile[field_names[4]]}
-                                    InputProps={{readOnly: true,}}
-                                    sx={{width: '100%'}}
-                                />}
-                            </Grid>
-                        </>}
-                    {profile[field_names[0]] === userType["Grower"] &&
+                    <Grid item xs={6}>
+                        {isEdit ? <TextField
+                            label="Pesticide Certification I.D. Number"
+                            variant="outlined"
+                            required={true}
+                            value={fieldValues[field_names[3]]}
+                            onChange={(event) => {
+                                handleInputChange(event, event.target.value, field_names[3]);
+                            }}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            sx={{width: '100%'}}
+                        /> : <TextField
+                            label="Pesticide Certification I.D. Number"
+                            variant="outlined"
+                            value={profile[field_names[3]]}
+                            InputProps={{readOnly: true}}
+                            sx={{width: '100%'}}
+                        />}
+                    </Grid>
+                    <Grid item xs={6}>
+                        {isEdit ? <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                                label="Pesticide Certification Expire Date"
+                                variant="outlined"
+                                required={true}
+                                value={dayjs(fieldValues[field_names[4]])}
+                                onChange={(event) => {
+                                    handleInputChange(event, dayjs(event).format('YYYY-MM-DD'), field_names[4]);
+                                }}
+                                sx={{width: '100%'}}
+                            />
+                        </LocalizationProvider> : <TextField
+                            label="Pesticide Certification Expire Date"
+                            variant="outlined"
+                            value={profile[field_names[4]]}
+                            InputProps={{readOnly: true,}}
+                            sx={{width: '100%'}}
+                        />}
+                    </Grid>
+                    {
+                        profile[field_names[15]] === "Owner" &&
                         <>
                             <Grid item xs={12}>
                                 {isEdit ? <TextField
@@ -299,7 +295,8 @@ export default function ProfileForm({
                                     sx={{width: '100%'}}
                                 />}
                             </Grid>
-                        </>}
+                        </>
+                    }
                     <Grid item xs={6}>
                         {isEdit ? <TextField
                             label="Cell Phone"

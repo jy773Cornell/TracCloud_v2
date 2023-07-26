@@ -39,15 +39,16 @@ class EmployerGetSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class PrivilegeGetSerializer(serializers.ModelSerializer):
+class AssigneeGetSerializer(serializers.ModelSerializer):
+    type = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
+
     class Meta:
-        model = UserPrivilege
+        model = UserProfile
         fields = "__all__"
 
+    def get_type(self, obj):
+        return obj.type.name
 
-class PrivilegeUpdateSerializer(serializers.ModelSerializer):
-    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=UserProfile.objects.all())
-
-    class Meta:
-        model = UserPrivilege
-        exclude = ["uroid", "user"]
+    def get_user(self, obj):
+        return obj.user.username

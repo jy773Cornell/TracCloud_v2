@@ -26,6 +26,8 @@ function CustomToolbar() {
 
 export default function SprayDataGrid({props, height, width}) {
     const uid = props.uid;
+    const privilege = props.privilege;
+
     const [sprayApplicationList, setSprayApplicationList] = useState([]);
     const [cropList, setCropList] = useState([]);
     const [siteList, setSiteList] = useState([]);
@@ -39,71 +41,81 @@ export default function SprayDataGrid({props, height, width}) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/crop/list/get/" + "?uid=" + uid, requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        setCropList(data.data);
-                    })
-                }
-            })
+        if (privilege.spray_r) {
+            await fetch("/api/crop/list/get/" + "?uid=" + uid, requestOptions)
+                .then((response) => {
+                    if (response.ok) {
+                        response.json().then((data) => {
+                            setCropList(data.data);
+                        })
+                    }
+                })
+        }
     }
 
     async function SiteListGet(uid) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/site/list/get/" + "?uid=" + uid, requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        setSiteList(flatten(data.data));
-                    })
-                }
-            })
+        if (privilege.spray_r) {
+            await fetch("/api/site/list/get/" + "?uid=" + uid, requestOptions)
+                .then((response) => {
+                    if (response.ok) {
+                        response.json().then((data) => {
+                            setSiteList(flatten(data.data));
+                        })
+                    }
+                })
+        }
     }
 
     async function ChemicalListGet(uid) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/chemical/list/get/" + "?uid=" + uid, requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        setChemicalList(data.data);
-                    })
-                }
-            })
+        if (privilege.spray_r) {
+            await fetch("/api/chemical/list/get/" + "?uid=" + uid, requestOptions)
+                .then((response) => {
+                    if (response.ok) {
+                        response.json().then((data) => {
+                            setChemicalList(data.data);
+                        })
+                    }
+                })
+        }
     }
 
     async function PurchaseListGet(uid) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/operation/purchase/list/get/" + "?uid=" + uid, requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        setPurchaseList(data.data);
-                    })
-                }
-            })
+        if (privilege.spray_r) {
+            await fetch("/api/operation/purchase/list/get/" + "?uid=" + uid, requestOptions)
+                .then((response) => {
+                    if (response.ok) {
+                        response.json().then((data) => {
+                            setPurchaseList(data.data);
+                        })
+                    }
+                })
+        }
     }
 
     async function SprayApplicationListGet(uid) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/api/operation/application/list/get/?" + "uid=" + uid, requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        // const sprayList = data.data.filter(item => item.type === "Spray")
-                        setSprayApplicationList(data.data);
-                    })
-                }
-            })
+        if (privilege.spray_r) {
+            await fetch("/api/operation/application/list/get/?" + "uid=" + uid, requestOptions)
+                .then((response) => {
+                    if (response.ok) {
+                        response.json().then((data) => {
+                            // const sprayList = data.data.filter(item => item.type === "Spray")
+                            setSprayApplicationList(data.data);
+                        })
+                    }
+                })
+        }
     }
 
     const flatten = (data) => {
@@ -369,6 +381,7 @@ export default function SprayDataGrid({props, height, width}) {
                 slots={{
                     toolbar: CustomToolbar,
                 }}
+                localeText={{noRowsLabel: privilege.spray_r ? "No rows" : "You don't have the privilege to access this data"}}
             />
         </Paper>
     );

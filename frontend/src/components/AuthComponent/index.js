@@ -26,8 +26,12 @@ export default function AuthComponent({uid, setUID, setEmployerID, setPrivilege}
                 if (response.ok) {
                     response.json().then(async (data) => {
                         setUID(data.uid);
-                        await Promise.all([EmployerIDGet(data.uid), PrivilegeGet(data.uid)]);
-                        setAuthStatus("authorized");
+                        if (data.type === "Admin") {
+                            window.location.href = 'admin';
+                        } else {
+                            await Promise.all([EmployerIDGet(data.uid), PrivilegeGet(data.uid)]);
+                            setAuthStatus("authorized");
+                        }
                     })
                 } else {
                     setAuthStatus("unauthorized");
