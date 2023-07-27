@@ -54,6 +54,12 @@ export default function EmployeeDataGrid({
     }
 
     const createRowData = (record) => {
+        for (let key in record) {
+            if (record[key] === null) {
+                record[key] = "";
+            }
+        }
+
         return {
             "id": record.uid,
             "user": record.user,

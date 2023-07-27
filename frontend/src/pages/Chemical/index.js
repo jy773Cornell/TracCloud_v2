@@ -60,6 +60,12 @@ function createAPIData(data) {
 }
 
 function createRowData(record) {
+    for (let key in record) {
+        if (record[key] === null) {
+            record[key] = "";
+        }
+    }
+
     return {
         "id": record.chemid,
         "trade_name": record.trade_name,
@@ -621,7 +627,7 @@ export default function Chemical(props) {
             headerName: 'Trade Name',
             width: columnWidth,
             valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[1]] : params.value)
+                return (editRowId === params.id ? fieldValues[field_names[0]] : params.value)
             },
         },
         {
@@ -633,9 +639,9 @@ export default function Chemical(props) {
                     options={chemicalProductBaseOptions}
                     disableClearable
                     readOnly={editRowId !== rowID}
-                    value={editRowId === rowID ? fieldValues[field_names[0]] : params.value}
+                    value={editRowId === rowID ? fieldValues[field_names[1]] : params.value}
                     onChange={(event, value) => {
-                        handleInputChange(event, value, field_names[0]);
+                        handleInputChange(event, value, field_names[1]);
                     }}
                     renderInput={(params) => {
                         return (
@@ -643,7 +649,7 @@ export default function Chemical(props) {
                                 <TextField {...params} variant="standard"
                                            InputProps={{disableUnderline: true}}
                                            sx={{width: columnWidth}}/> :
-                                <TextField {...params} variant="standard" error={inputError[field_names[0]]}
+                                <TextField {...params} variant="standard" error={inputError[field_names[1]]}
                                            sx={{width: editWidth}}
                                            onChange={(event) => {
                                                handleEPANOChange(event);
@@ -662,9 +668,9 @@ export default function Chemical(props) {
                     options={unitOptions}
                     disableClearable
                     readOnly={editRowId !== rowID}
-                    value={editRowId === rowID ? fieldValues[field_names[7]] : params.value}
+                    value={editRowId === rowID ? fieldValues[field_names[2]] : params.value}
                     onChange={(event, value) => {
-                        handleInputChange(event, value, field_names[7]);
+                        handleInputChange(event, value, field_names[2]);
                     }}
                     renderInput={(params) => {
                         return (
@@ -672,7 +678,7 @@ export default function Chemical(props) {
                                 <TextField {...params} variant="standard"
                                            InputProps={{disableUnderline: true}}
                                            sx={{width: columnWidth}}/> :
-                                <TextField {...params} variant="standard" error={inputError[field_names[7]]}
+                                <TextField {...params} variant="standard" error={inputError[field_names[2]]}
                                            sx={{width: editWidth}}
                                 />
                         )
@@ -684,7 +690,7 @@ export default function Chemical(props) {
             headerName: 'Restricted Use',
             width: columnWidth,
             valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[2]] : params.value)
+                return (editRowId === params.id ? fieldValues[field_names[3]] : params.value)
             },
         },
         {
@@ -720,11 +726,11 @@ export default function Chemical(props) {
                             sx={{width: columnWidth}}/> :
                         <TextField
                             variant="standard"
-                            value={fieldValues[field_names[8]]}
-                            error={inputError[field_names[8]]}
+                            value={fieldValues[field_names[6]]}
+                            error={inputError[field_names[6]]}
                             sx={{width: editWidth}}
                             onChange={(event) => {
-                                handleInputChange(event, event.target.value, field_names[8]);
+                                handleInputChange(event, event.target.value, field_names[6]);
                             }}
                         />
                 )
@@ -747,11 +753,11 @@ export default function Chemical(props) {
                             sx={{width: columnWidth}}/> :
                         <TextField
                             variant="standard"
-                            value={fieldValues[field_names[9]]}
-                            error={inputError[field_names[9]]}
+                            value={fieldValues[field_names[7]]}
+                            error={inputError[field_names[7]]}
                             sx={{width: editWidth}}
                             onChange={(event) => {
-                                handleInputChange(event, event.target.value, field_names[9]);
+                                handleInputChange(event, event.target.value, field_names[7]);
                             }}
                         />
                 )
@@ -762,7 +768,7 @@ export default function Chemical(props) {
             headerName: 'Product Type',
             width: columnWidth,
             valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[6]] : params.value)
+                return (editRowId === params.id ? fieldValues[field_names[8]] : params.value)
             },
         },
         {
@@ -770,7 +776,7 @@ export default function Chemical(props) {
             headerName: 'Company',
             width: columnWidth,
             valueGetter: (params) => {
-                return (editRowId === params.id ? fieldValues[field_names[3]] : params.value)
+                return (editRowId === params.id ? fieldValues[field_names[9]] : params.value)
             },
         },
         {

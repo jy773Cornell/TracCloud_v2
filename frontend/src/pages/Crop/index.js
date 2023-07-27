@@ -33,6 +33,12 @@ function createAPIData(data) {
 }
 
 function createRowData(record) {
+    for (let key in record) {
+        if (record[key] === null) {
+            record[key] = "";
+        }
+    }
+
     return {
         "id": record.cid,
         "crop": record.crop,

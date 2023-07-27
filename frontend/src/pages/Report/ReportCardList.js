@@ -13,12 +13,6 @@ import {Container} from "@mui/system";
 
 const report_list = [
     {
-        id: "restricted_pesticide_purchases",
-        name: "Restricted Pesticide Purchases",
-        description: "This is the description for Restricted Pesticide Purchases report",
-        link: ""
-    },
-    {
         id: "central_posting",
         name: "Central Posting",
         description: "This is the description for Central Posting report",

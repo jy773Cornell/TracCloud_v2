@@ -338,6 +338,12 @@ export default function PurchaseRecord(props) {
     }
 
     const createRowData = (record) => {
+        for (let key in record) {
+            if (record[key] === null) {
+                record[key] = "";
+            }
+        }
+
         const chemical = chemicalList.find(item => item.chemid === record.chemical);
 
         return {

@@ -48,6 +48,12 @@ export default function ClientDataGrid({
     }
 
     const createRowData = (record) => {
+        for (let key in record) {
+            if (record[key] === null) {
+                record[key] = "";
+            }
+        }
+
         return {
             "id": record.scpid,
             "state": record.state,

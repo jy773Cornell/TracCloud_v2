@@ -8,6 +8,8 @@ from openpyxl import load_workbook
 from openpyxl.styles import Font, NamedStyle
 from django.core.cache import cache
 from rest_framework.views import APIView
+from datetime import datetime, timedelta
+from api.models import *
 
 
 class CentralPostingView(APIView):
@@ -28,17 +30,29 @@ class CentralPostingView(APIView):
         arial_8_font = Font(name='Arial', size=8)
         record_row = 5
 
+        if report_data:
+            user = UserProfile.objects.get(uid=report_data[0]["user"])
+            business_name = user.business_name
+            address = ' '.join(filter(None, [user.address_line1, user.address_line2]))
+
+            sheet['C2'].value = business_name
+            sheet['F2'].value = address
+
         for each_record in report_data:
             site_list = each_record["site"].split(" - ")
-
             for col, value in zip(['A', 'B', 'C', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'],
                                   [site_list[0], site_list[1], site_list[2],
-                                   each_record["trade_name"], each_record["active_ingredient"],
-                                   each_record["chemical_purchase"],
-                                   each_record["start_time"].split(" ")[0],
-                                   each_record["start_time"], each_record["finish_time"],
-                                   each_record["rei"], datetime.date.today().strftime('%Y-%m-%d'),
-                                   datetime.datetime.now().strftime('%H:%M:%S')]):
+                                   each_record["trade_name"],
+                                   each_record["active_ingredient"],
+                                   each_record["epa_reg_no"],
+                                   each_record["start_datetime"].split(" ")[0],
+                                   each_record["start_datetime"],
+                                   each_record["finish_datetime"],
+                                   each_record["rei"],
+                                   (datetime.strptime(each_record["finish_datetime"], "%Y-%m-%d %H:%M") + timedelta(
+                                       hours=int(each_record["rei"]))).strftime('%Y-%m-%d'),
+                                   (datetime.strptime(each_record["finish_datetime"], "%Y-%m-%d %H:%M") + timedelta(
+                                       hours=int(each_record["rei"]))).strftime('%H:%M')]):
                 cell = sheet[f'{col}{record_row}']
                 cell.value = value
                 cell.font = arial_8_font

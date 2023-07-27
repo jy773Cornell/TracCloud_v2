@@ -99,10 +99,10 @@ applicator_privileges = {
     # Business Management Privileges
     "employee_c": False,
     "employee_r": True,
-    "employee_d": True,
+    "employee_d": False,
     "client_add": False,
     "client_r": True,
-    "client_d": True,
+    "client_d": False,
     "privilege_set": False,
 
     # Business Data Privileges

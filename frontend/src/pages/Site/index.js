@@ -42,6 +42,12 @@ function createAPIData(data) {
 }
 
 function createRowData(record) {
+    for (let key in record) {
+        if (record[key] === null) {
+            record[key] = "";
+        }
+    }
+
     return {
         "id": record.sid,
         "type": record.type,
@@ -763,6 +769,10 @@ export default function Site(props) {
                     }}
                     sx={{width: columnWidth}}/> : <TextField
                     variant="standard"
+                    type="number"
+                    inputProps={{
+                        step: 0.01,
+                    }}
                     value={fieldValues[field_names[3]]}
                     error={inputError[field_names[3]]}
                     sx={{width: editWidth}}

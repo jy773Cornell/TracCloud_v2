@@ -57,7 +57,7 @@ function ReportToolbar({reportID, rowsSelected, dataList}) {
             </Button>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
                 <MenuItem id="xlsx" onClick={handleFormatClick}>Download as XLSX</MenuItem>
-                <MenuItem id="pdf" onClick={handleFormatClick}>Download as PDF</MenuItem>
+                {/*<MenuItem id="pdf" onClick={handleFormatClick}>Download as PDF</MenuItem>*/}
             </Menu>
         </GridToolbarContainer>
     );
@@ -91,8 +91,15 @@ export default function SprayDataModal({
                     siteStr = `${site.name} - ${siteStr}`;
                 }
 
+                for (let key in record) {
+                    if (record[key] === null) {
+                        record[key] = "";
+                    }
+                }
+
                 return {
                     "id": record.arid,
+                    "user": record.user,
                     "crop": crop.crop,
                     "start_datetime": record.start_datetime,
                     "finish_datetime": record.finish_datetime,

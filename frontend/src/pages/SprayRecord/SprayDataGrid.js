@@ -144,6 +144,12 @@ export default function SprayDataGrid({props, height, width}) {
             siteStr = `${site.name} - ${siteStr}`;
         }
 
+        for (let key in record) {
+            if (record[key] === null) {
+                record[key] = "";
+            }
+        }
+
         return {
             "id": record.arid,
             "crop": crop.crop,

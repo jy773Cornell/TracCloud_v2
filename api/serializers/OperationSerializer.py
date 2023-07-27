@@ -141,8 +141,8 @@ class ApplicationCreateSerializer(serializers.ModelSerializer):
 
 
 class ApplicationGetSerializer(serializers.ModelSerializer):
-    applicator = serializers.StringRelatedField()
-    responsible_person = serializers.StringRelatedField()
+    applicator = serializers.SerializerMethodField()
+    responsible_person = serializers.SerializerMethodField()
     rate_unit = serializers.SerializerMethodField()
     amount_unit = serializers.SerializerMethodField()
     area_unit = serializers.SerializerMethodField()
@@ -155,6 +155,12 @@ class ApplicationGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApplicationRecord
         fields = "__all__"
+
+    def get_applicator(self, obj):
+        return "{} {}".format(obj.applicator.first_name, obj.applicator.last_name)
+
+    def get_responsible_person(self, obj):
+        return "{} {}".format(obj.responsible_person.first_name, obj.responsible_person.last_name)
 
     def get_growth_stage(self, obj):
         return next((item['name'] for item in cache.get("CropGrowthStage") if item['cgsid'] == obj.growth_stage_id),
