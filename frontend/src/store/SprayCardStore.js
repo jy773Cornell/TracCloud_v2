@@ -127,7 +127,7 @@ class SprayCardStore {
                     label: item.name, id: item.unitid
                 })),
                 assigneeOptions: jsonData[11].data.map(item => ({
-                    label: `${item.first_name} ${item.last_name}`, type: item.type, id: item.uid
+                    label: `${item.user} (${item.first_name} ${item.last_name})`, type: item.type, id: item.uid
                 })),
             }
         };

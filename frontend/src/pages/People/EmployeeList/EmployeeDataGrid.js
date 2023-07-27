@@ -1,7 +1,6 @@
 import * as React from "react";
 import Paper from "@mui/material/Paper";
 import {
-    DataGrid,
     GridToolbarColumnsButton,
     GridToolbarContainer,
     GridToolbarDensitySelector,
@@ -9,6 +8,8 @@ import {
     GridToolbarFilterButton
 } from "@mui/x-data-grid";
 import {useEffect, useState} from "react";
+import {Button} from "@mui/material";
+import {StyledDataGrid} from "../styles";
 
 
 function CustomToolbar() {
@@ -27,6 +28,7 @@ export default function EmployeeDataGrid({
                                              setRefreshRecord
                                          }) {
     const [employeeList, setEmployeeList] = useState([]);
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [rows, setRows] = useState([]);
 
     const [mounted, setMounted] = useState(false);
@@ -64,6 +66,10 @@ export default function EmployeeDataGrid({
         };
     }
 
+    const handleUserClick = (employee) => {
+        setSelectedEmployee(employee);
+    }
+
     const columnWidth = 150;
     const columnMiddleWidth = 250;
     const columnLongWidth = 300;
@@ -72,6 +78,16 @@ export default function EmployeeDataGrid({
             field: 'user',
             headerName: 'Employee User',
             width: columnWidth,
+            renderCell: (params) => {
+                return (
+                    <Button
+                        variant="text"
+                        disabled={!privilege.privilege_set}
+                        onClick={() => handleUserClick(employeeList.find(employees => employees.uid === params.row.id))}>
+                        {params.row.user}
+                    </Button>
+                );
+            }
         },
         {
             field: 'name',
@@ -128,16 +144,16 @@ export default function EmployeeDataGrid({
     return (
         <div>
             <Paper style={{height: 900}}>
-                <DataGrid
+                <StyledDataGrid
                     columns={columns}
                     rows={rows}
                     disableRowSelectionOnClick={true}
                     disableClickEdit={true}
                     rowSelection={false}
+                    getRowClassName={(params) => params.id === selectedEmployee?.uid ? `highlight` : null}
                     slots={{
                         toolbar: CustomToolbar,
                     }}
-                    density="compact"
                     localeText={{noRowsLabel: privilege.employee_r ? "No rows" : "You don't have the privilege to access this data"}}
                 />
             </Paper>

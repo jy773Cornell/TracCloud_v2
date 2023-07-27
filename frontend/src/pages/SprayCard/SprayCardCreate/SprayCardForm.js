@@ -879,12 +879,33 @@ export default function SprayCardForm({
         </Grid>);
     }
 
+    const sortAssigneeOptions = (assigneeOptions) => {
+        let sortedOptions = [...assigneeOptions].sort((a, b) => {
+            if (a.type < b.type) {
+                return -1;
+            }
+            if (a.type > b.type) {
+                return 1;
+            }
+            if (a.type === b.type) {
+                if (a.label < b.label) {
+                    return -1;
+                }
+                if (a.label > b.label) {
+                    return 1;
+                }
+            }
+            return 0;
+        });
+        return sortedOptions;
+    }
+
     const responsibleRender = () => {
         return (
             <Grid item xs={6}>
                 <Autocomplete
                     value={selectedResponsible}
-                    options={sprayOptions?.assigneeOptions || []}
+                    options={sprayOptions?.assigneeOptions ? sortAssigneeOptions(sprayOptions.assigneeOptions) : []}
                     getOptionLabel={(option) => option.label}
                     groupBy={(option) => option.type}
                     disableClearable

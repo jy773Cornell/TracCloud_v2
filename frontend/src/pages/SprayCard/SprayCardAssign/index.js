@@ -7,7 +7,7 @@ import OperationSnackbars from "../../../components/Snackbars";
 import {getCookie} from "../../../utils";
 import {GroupHeader, GroupItems} from "../SprayCardCreate/styles";
 
-export default function Index({
+export default function sprayCardAssign({
                                   uid,
                                   sprayData,
                                   sprayOptions,
@@ -42,11 +42,33 @@ export default function Index({
             })
     }
 
+    const sortAssigneeOptions = (assigneeOptions) => {
+        let sortedOptions = [...assigneeOptions].sort((a, b) => {
+            if (a.type < b.type) {
+                return -1;
+            }
+            if (a.type > b.type) {
+                return 1;
+            }
+            if (a.type === b.type) {
+                if (a.label < b.label) {
+                    return -1;
+                }
+                if (a.label > b.label) {
+                    return 1;
+                }
+            }
+            return 0;
+        });
+        return sortedOptions;
+    }
+
+
     const assignRender = () => {
         return (
             <Grid item xs={6}>
                 <Autocomplete
-                    options={sprayOptions?.assigneeOptions || []}
+                    options={sprayOptions?.assigneeOptions ? sortAssigneeOptions(sprayOptions.assigneeOptions) : []}
                     getOptionLabel={(option) => option.label}
                     groupBy={(option) => option.type}
                     disableClearable
