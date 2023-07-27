@@ -7,10 +7,11 @@ import {
     GridToolbarExport,
     GridToolbarFilterButton
 } from "@mui/x-data-grid";
-import {useEffect, useState} from "react";
+import {lazy, useEffect, useState} from "react";
 import {Button} from "@mui/material";
 import {StyledDataGrid} from "../styles";
 
+const EmployeeSettingForm = lazy(() => import('./EmployeeSettingForm'))
 
 function CustomToolbar() {
     return (<GridToolbarContainer>
@@ -30,8 +31,8 @@ export default function EmployeeDataGrid({
     const [employeeList, setEmployeeList] = useState([]);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [rows, setRows] = useState([]);
-
     const [mounted, setMounted] = useState(false);
+    const [settingFormOpen, setSettingFormOpen] = useState(false);
 
     async function EmployeeListGet(uid) {
         const requestOptions = {
@@ -68,6 +69,7 @@ export default function EmployeeDataGrid({
 
     const handleUserClick = (employee) => {
         setSelectedEmployee(employee);
+        setSettingFormOpen(true);
     }
 
     const columnWidth = 150;
@@ -82,7 +84,6 @@ export default function EmployeeDataGrid({
                 return (
                     <Button
                         variant="text"
-                        disabled={!privilege.privilege_set}
                         onClick={() => handleUserClick(employeeList.find(employees => employees.uid === params.row.id))}>
                         {params.row.user}
                     </Button>
@@ -141,6 +142,16 @@ export default function EmployeeDataGrid({
         }
     }, [refreshRecord]);
 
+    const settingProps = {
+        privilege,
+        employer_id,
+        refreshRecord,
+        setRefreshRecord,
+        settingFormOpen,
+        setSettingFormOpen,
+        selectedEmployee
+    }
+
     return (
         <div>
             <Paper style={{height: 900}}>
@@ -157,6 +168,7 @@ export default function EmployeeDataGrid({
                     localeText={{noRowsLabel: privilege.employee_r ? "No rows" : "You don't have the privilege to access this data"}}
                 />
             </Paper>
+            <EmployeeSettingForm {...settingProps}/>
         </div>
     );
 }

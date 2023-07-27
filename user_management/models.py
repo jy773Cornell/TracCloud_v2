@@ -12,8 +12,10 @@ class UserPrivilege(models.Model):
 
     employee_c = models.BooleanField(verbose_name="Employee Create", default=False)
     employee_r = models.BooleanField(verbose_name="Employee Read", default=False)
+    employee_d = models.BooleanField(verbose_name="Employee Delete", default=False)
     client_add = models.BooleanField(verbose_name="Client Add", default=False)
     client_r = models.BooleanField(verbose_name="Client Read", default=False)
+    client_d = models.BooleanField(verbose_name="Client Delete", default=False)
     privilege_set = models.BooleanField(verbose_name="Privilege Set", default=False)
 
     # Business Data Privileges
@@ -55,8 +57,10 @@ full_privileges = {
     # Business Management Privileges
     "employee_c": True,
     "employee_r": True,
+    "employee_d": True,
     "client_add": True,
     "client_r": True,
+    "client_d": True,
     "privilege_set": True,
 
     # Business Data Privileges
@@ -95,8 +99,10 @@ applicator_privileges = {
     # Business Management Privileges
     "employee_c": False,
     "employee_r": True,
+    "employee_d": True,
     "client_add": False,
     "client_r": True,
+    "client_d": True,
     "privilege_set": False,
 
     # Business Data Privileges

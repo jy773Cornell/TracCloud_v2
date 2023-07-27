@@ -33,3 +33,14 @@ def new_account_notify(first_name, last_name, username, password, email):
         [email],
         fail_silently=False,
     )
+
+
+def delete_account_notify(username, first_name, last_name, email):
+    send_mail(
+        'Your Trac Cloud Account Has Been Disabled！',
+        f'Dear {first_name} {last_name},'
+        f'\n    Your Trac Cloud account {username} has been disabled by your employer.',
+        os.getenv("EMAIL_HOST_USER"),
+        [email],
+        fail_silently=False,
+    )

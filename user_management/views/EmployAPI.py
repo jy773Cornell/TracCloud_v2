@@ -89,9 +89,14 @@ class EmployeeDeleteView(APIView):
             employer_id = data["employer_id"]
             employee_id = data["employee_id"]
 
-            employee_to_be_deleted = UserProfile.objects.filter(uid=employee_id, added_by_id=employer_id)
+            employee_to_be_deleted = UserProfile.objects.filter(uid=employee_id, added_by_id=employer_id).first()
+            username = employee_to_be_deleted.user.username
+            email = employee_to_be_deleted.email
+            first_name = employee_to_be_deleted.first_name
+            last_name = employee_to_be_deleted.last_name
             if employee_to_be_deleted:
-                employee_to_be_deleted.first().user.delete()
+                employee_to_be_deleted.user.delete()
+                delete_account_notify(username, first_name, last_name, email)
                 return Response({'Succeeded': 'Employee Deleted.'}, status=status.HTTP_200_OK)
 
             return Response({'Bad Request: Invalid User Relation.'}, status=status.HTTP_400_BAD_REQUEST)

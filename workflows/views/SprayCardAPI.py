@@ -18,9 +18,12 @@ class SprayCardListGetView(APIView):
             if user:
                 spray_card_assign_list = SprayCardAssignment.objects.filter(assign_to=uid, is_active=True).order_by(
                     '-assign_time')
-                data = []
+                data_set = set()
+
                 for assignment in spray_card_assign_list:
-                    data.append(self.serializer_class(assignment.spray_card).data)
+                    data_tuple = tuple(self.serializer_class(assignment.spray_card).data.items())
+                    data_set.add(data_tuple)
+                data = [dict(t) for t in data_set]
                 return Response({'Succeeded': 'Spray Card Process List Info Fetched.', 'data': data},
                                 status=status.HTTP_200_OK)
 

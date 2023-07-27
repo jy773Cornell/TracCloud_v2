@@ -38,7 +38,7 @@ export default function NewEmployeeForm({
     }
 
     async function NewEmployeeAdd(employer_id) {
-        setIsLoading(true);  // set loading true before request
+        setIsLoading(true);
         const apiData = {employer_id: employer_id, added_by_id: uid, ...fieldValues};
         console.log(apiData);
         const csrftoken = getCookie('csrftoken');
@@ -57,7 +57,7 @@ export default function NewEmployeeForm({
                     setShowAddModal(false);
                     setRefreshRecord(~refreshRecord);
                 }
-                setIsLoading(false);  // set loading false after request ends
+                setIsLoading(false);
             })
     }
 
