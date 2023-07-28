@@ -25,7 +25,7 @@ function App() {
 
     const authProps = {uid, setUID, setEmployerID, setPrivilege};
 
-    // Using Django inner views
+    // Using Django built-in views
     function RedirectToURL({url}) {
         useEffect(() => {
             window.location.href = url;

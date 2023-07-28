@@ -385,7 +385,7 @@ export default function PurchaseRecord(props) {
     }
 
     const onSaveClicked = () => {
-        if (Object.values(fieldValues).every(value => value !== "")) {
+        if (Object.entries(fieldValues).every(([key, value]) => key === field_names[5] ? true : value !== "")) {
             PurchaseRecordUpdate();
             const index = rows.findIndex(item => item.id === fieldValues.id);
             setRows([
@@ -523,14 +523,14 @@ export default function PurchaseRecord(props) {
                 } else {
                     return (
                         <>
+                            <IconButton onClick={() => onCancelClicked()}>
+                                < CancelIcon/>
+                            </IconButton>
                             <IconButton onClick={(event) => {
                                 setAnchorEl(event.currentTarget);
                                 setPopoverRowId(params.id);
                             }}>
                                 <SaveIcon/>
-                            </IconButton>
-                            <IconButton onClick={() => onCancelClicked()}>
-                                < CancelIcon/>
                             </IconButton>
                             {popoverRowId === params.id &&
                                 <ConfirmPopover anchorEl={anchorEl}
@@ -742,7 +742,6 @@ export default function PurchaseRecord(props) {
                         onChange={(event) => {
                             handleInputChange(event, event.target.value, field_names[5]);
                         }}
-                        error={inputError[field_names[5]]}
                     />)
             },
         },

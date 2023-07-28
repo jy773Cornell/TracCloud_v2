@@ -255,7 +255,7 @@ export default function Equipment(props) {
     }
 
     const onSaveClicked = () => {
-        if (Object.values(fieldValues).every(value => value !== "")) {
+        if (fieldValues[field_names[0]] !== "") {
             EquipmentRecordUpdate();
             const index = rows.findIndex(item => item.id === fieldValues.id);
             setRows([
@@ -343,14 +343,14 @@ export default function Equipment(props) {
                 } else {
                     return (
                         <>
+                            <IconButton onClick={() => onCancelClicked()}>
+                                < CancelIcon/>
+                            </IconButton>
                             <IconButton onClick={(event) => {
                                 setAnchorEl(event.currentTarget);
                                 setPopoverRowId(params.id);
                             }}>
                                 <SaveIcon/>
-                            </IconButton>
-                            <IconButton onClick={() => onCancelClicked()}>
-                                < CancelIcon/>
                             </IconButton>
                             {popoverRowId === params.id &&
                                 <ConfirmPopover anchorEl={anchorEl}
@@ -411,7 +411,6 @@ export default function Equipment(props) {
                         <TextField
                             variant="standard"
                             value={fieldValues[field_names[1]]}
-                            error={inputError[field_names[1]]}
                             sx={{width: editWidth}}
                             onChange={(event) => {
                                 handleInputChange(event, event.target.value, field_names[1]);
@@ -438,7 +437,6 @@ export default function Equipment(props) {
                         <TextField
                             variant="standard"
                             value={fieldValues[field_names[2]]}
-                            error={inputError[field_names[2]]}
                             sx={{width: editWidth}}
                             onChange={(event) => {
                                 handleInputChange(event, event.target.value, field_names[2]);

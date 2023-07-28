@@ -9,6 +9,15 @@ import {
     GridToolbarFilterButton
 } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
+import IconButton from "@mui/material/IconButton";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ConfirmPopover from "../../components/ConfirmPopover";
+import CancelIcon from "@mui/icons-material/Cancel";
+import SaveIcon from "@mui/icons-material/Save";
+import {TextField} from "@mui/material";
+import {getCookie} from "../../utils";
+import OperationSnackbars from "../../components/Snackbars";
 
 const columnSmallWidth = 100;
 const columnWidth = 200;
@@ -35,7 +44,14 @@ export default function SprayDataGrid({props, height, width}) {
     const [purchaseList, setPurchaseList] = useState([]);
 
     const [rows, setRows] = useState([]);
+    const [noteValue, setNoteValue] = useState("");
+    const [mounted, setMounted] = useState(false);
+    const [refreshRecord, setRefreshRecord] = useState(false);
     const [isExpended, setIsExpended] = useState(true);
+    const [isSave, setIsSave] = useState(false);
+    const [editRowId, setEditRowId] = useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [popoverRowId, setPopoverRowId] = useState(null);
 
     async function CropListGet(uid) {
         const requestOptions = {
@@ -118,6 +134,25 @@ export default function SprayDataGrid({props, height, width}) {
         }
     }
 
+    async function ApplicationRecordUpdate(user_id, arid, note) {
+        const apiData = {user_id: user_id, arid: arid, note: note}
+        console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
+        const requestOptions = {
+            method: "PUT",
+            headers: {"Content-Type": "application/json", 'X-CSRFToken': csrftoken,},
+            body: JSON.stringify(apiData),
+        };
+        await fetch("/api/operation/application/update/", requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    setIsSave(true);
+                    setEditRowId(null);
+                    setRefreshRecord(~refreshRecord);
+                }
+            })
+    }
+
     const flatten = (data) => {
         let result = [];
         for (let i = 0; i < data.length; i++) {
@@ -195,7 +230,61 @@ export default function SprayDataGrid({props, height, width}) {
         }
     }
 
+    const onEditClicked = (params) => {
+        setNoteValue(params.row.note);
+        setEditRowId(params.id);
+    };
+
+    const onCancelClicked = () => {
+        setEditRowId(null);
+    }
+
     const columns = [
+        {
+            field: 'operations',
+            headerName: 'Operations',
+            sortable: false,
+            width: 150,
+            disableColumnMenu: true,
+            disableClickEventBubbling: true,
+            renderCell: (params) => {
+                if (editRowId !== params.id) {
+                    return (
+                        <>
+                            <IconButton
+                                onClick={() => onEditClicked(params)}
+                                disabled={!privilege.spray_u}
+                            >
+                                <EditIcon/>
+                            </IconButton>
+                        </>
+                    );
+                } else {
+                    return (
+                        <>
+                            <IconButton onClick={() => onCancelClicked()}>
+                                < CancelIcon/>
+                            </IconButton>
+                            <IconButton onClick={(event) => {
+                                setAnchorEl(event.currentTarget);
+                                setPopoverRowId(params.id);
+                            }}>
+                                <SaveIcon/>
+                            </IconButton>
+                            {popoverRowId === params.id &&
+                                <ConfirmPopover anchorEl={anchorEl}
+                                                setAnchorEl={setAnchorEl}
+                                                onSaveClicked={() => ApplicationRecordUpdate(uid, editRowId, noteValue)}
+                                                params={params}
+                                                msg="Update this record?"
+                                                type="update"
+                                />
+                            }
+                        </>
+                    )
+                }
+            },
+        },
         {
             field: 'crop',
             headerName: 'Crop',
@@ -350,6 +439,27 @@ export default function SprayDataGrid({props, height, width}) {
             field: 'note',
             headerName: 'Note',
             width: columnLongWidth,
+            renderCell: (params, rowID = params.id) => {
+                return (
+                    editRowId !== rowID ?
+                        <TextField
+                            variant="standard"
+                            value={params.value}
+                            InputProps={{
+                                disableUnderline: true,
+                                readOnly: true,
+                            }}
+                            sx={{width: columnLongWidth}}/> :
+                        <TextField
+                            variant="standard"
+                            value={noteValue}
+                            sx={{width: columnLongWidth}}
+                            onChange={(event) => {
+                                setNoteValue(event.target.value);
+                            }}
+                        />
+                )
+            },
         },
         {
             field: 'update_time',
@@ -370,25 +480,42 @@ export default function SprayDataGrid({props, height, width}) {
         };
 
         fetchData();
+        setMounted(true);
     }, []);
 
     useEffect(() => {
         updateRowData();
     }, [sprayApplicationList]);
 
+    useEffect(() => {
+        if (mounted) {
+            SprayApplicationListGet(uid);
+        }
+    }, [refreshRecord]);
+
+    const saveProps = {
+        open: isSave,
+        setOpen: setIsSave,
+        msg: "Spray record is uploaded successfully!",
+        tag: "success"
+    };
+
     return (
-        <Paper style={{height: height, margin: '15px 15px', width: width, overflow: 'auto'}}>
-            <DataGrid
-                columns={columns}
-                rows={rows}
-                disableRowSelectionOnClick={true}
-                disableClickEdit={true}
-                rowSelection={false}
-                slots={{
-                    toolbar: CustomToolbar,
-                }}
-                localeText={{noRowsLabel: privilege.spray_r ? "No rows" : "You don't have the privilege to access this data"}}
-            />
-        </Paper>
+        <>
+            <Paper style={{height: height, margin: '15px 15px', width: width, overflow: 'auto'}}>
+                <DataGrid
+                    columns={columns}
+                    rows={rows}
+                    disableRowSelectionOnClick={true}
+                    disableClickEdit={true}
+                    rowSelection={false}
+                    slots={{
+                        toolbar: CustomToolbar,
+                    }}
+                    localeText={{noRowsLabel: privilege.spray_r ? "No rows" : "You don't have the privilege to access this data"}}
+                />
+            </Paper>
+            <OperationSnackbars  {...saveProps}/>
+        </>
     );
 }

@@ -72,6 +72,11 @@ export default function ClientDataGrid({
             width: columnWidth,
         },
         {
+            field: 'business_name',
+            headerName: 'Business Name',
+            width: columnWidth,
+        },
+        {
             field: 'name',
             headerName: 'Name',
             width: columnWidth,

@@ -46,6 +46,7 @@ class UserPrivilege(models.Model):
     equip_d = models.BooleanField(verbose_name="Equipment Delete", default=False)
 
     spray_r = models.BooleanField(verbose_name="Spray Data Read", default=False)
+    spray_u = models.BooleanField(verbose_name="Spray Data Update", default=False)
 
     spraycard_c = models.BooleanField(verbose_name="Spray Card Create", default=False)
     spraycard_a = models.BooleanField(verbose_name="Spray Card Assign", default=False)
@@ -90,6 +91,7 @@ full_privileges = {
     "equip_d": True,
 
     "spray_r": True,
+    "spray_u": True,
 
     "spraycard_c": True,
     "spraycard_a": True,
@@ -132,6 +134,7 @@ applicator_privileges = {
     "equip_d": False,
 
     "spray_r": True,
+    "spray_u": False,
 
     "spraycard_c": False,
     "spraycard_a": False,

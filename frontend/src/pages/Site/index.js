@@ -662,14 +662,14 @@ export default function Site(props) {
                 } else {
                     return (
                         <>
+                            <IconButton onClick={() => onCancelClicked(params)}>
+                                < CancelIcon/>
+                            </IconButton>
                             <IconButton onClick={(event) => {
                                 setAnchorEl(event.currentTarget);
                                 setPopoverRowId(params.id);
                             }}>
                                 <SaveIcon/>
-                            </IconButton>
-                            <IconButton onClick={() => onCancelClicked(params)}>
-                                < CancelIcon/>
                             </IconButton>
                             {
                                 popoverRowId === params.id &&

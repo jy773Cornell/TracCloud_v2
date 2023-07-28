@@ -424,14 +424,14 @@ export default function Crop(props) {
                 } else {
                     return (
                         <>
+                            <IconButton onClick={() => onCancelClicked()}>
+                                < CancelIcon/>
+                            </IconButton>
                             <IconButton onClick={(event) => {
                                 setAnchorEl(event.currentTarget);
                                 setPopoverRowId(params.id);
                             }}>
                                 <SaveIcon/>
-                            </IconButton>
-                            <IconButton onClick={() => onCancelClicked()}>
-                                < CancelIcon/>
                             </IconButton>
                             {popoverRowId === params.id &&
                                 <ConfirmPopover anchorEl={anchorEl}

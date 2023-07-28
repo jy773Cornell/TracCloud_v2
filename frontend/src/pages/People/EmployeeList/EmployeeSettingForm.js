@@ -47,7 +47,8 @@ const PrivilegeNameList = {
     "equip_r": "Access Equipment",
     "equip_u": "Update Equipment",
     "equip_d": "Delete Equipment",
-    "spray_r": "Access Spray",
+    "spray_r": "Access Spray Record",
+    "spray_u": "Update Spray Record",
     "spraycard_c": "Create Spray Card",
     "spraycard_a": "Assign Spray Card",
 };
