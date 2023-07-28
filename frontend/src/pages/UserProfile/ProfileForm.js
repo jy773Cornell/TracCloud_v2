@@ -86,7 +86,6 @@ export default function ProfileForm({
                         {isEdit ? <TextField
                             label="Pesticide Certification I.D. Number"
                             variant="outlined"
-                            required={true}
                             value={fieldValues[field_names[3]]}
                             onChange={(event) => {
                                 handleInputChange(event, event.target.value, field_names[3]);
@@ -130,7 +129,9 @@ export default function ProfileForm({
                                 {isEdit ? <TextField
                                     label="Business Name"
                                     variant="outlined"
+                                    required={true}
                                     value={fieldValues[field_names[5]]}
+                                    error={inputError[field_names[5]]}
                                     onChange={(event) => {
                                         handleInputChange(event, event.target.value, field_names[5]);
                                     }}
@@ -153,6 +154,7 @@ export default function ProfileForm({
                                     required={true}
                                     autoComplete="address-line1"
                                     value={fieldValues[field_names[6]]}
+                                    error={inputError[field_names[6]]}
                                     onChange={(event) => {
                                         handleInputChange(event, event.target.value, field_names[6]);
                                     }}
@@ -172,7 +174,6 @@ export default function ProfileForm({
                                 {isEdit ? <TextField
                                     label="Address Line2"
                                     variant="outlined"
-                                    required={true}
                                     autoComplete="address-line2"
                                     value={fieldValues[field_names[7]]}
                                     onChange={(event) => {
@@ -322,7 +323,9 @@ export default function ProfileForm({
                         {isEdit ? <TextField
                             label="Email"
                             variant="outlined"
+                            required={true}
                             value={fieldValues[field_names[14]]}
+                            error={inputError[field_names[14]]}
                             autoComplete="email"
                             onChange={(event) => {
                                 handleInputChange(event, event.target.value, field_names[14]);
