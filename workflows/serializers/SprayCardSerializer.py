@@ -49,6 +49,7 @@ class SprayCardContentGetSerializer(serializers.ModelSerializer):
     area_unit = serializers.SerializerMethodField()
     target = serializers.SerializerMethodField()
     decision_support = serializers.SerializerMethodField()
+    responsible_person = serializers.SerializerMethodField()
     update_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
 
     class Meta:
@@ -125,6 +126,10 @@ class SprayCardContentGetSerializer(serializers.ModelSerializer):
             "id":
                 obj.decision_support_id
         }
+
+    def get_responsible_person(self, obj):
+        return "{} ({} {})".format(obj.responsible_person.user.username, obj.responsible_person.first_name,
+                                   obj.responsible_person.last_name)
 
 
 class SprayCardCreateSerializer(serializers.ModelSerializer):

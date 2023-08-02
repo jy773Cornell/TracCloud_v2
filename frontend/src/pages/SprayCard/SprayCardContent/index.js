@@ -19,6 +19,8 @@ export default function sprayCardContent({
                                              privilege
                                          }) {
     const [sprayCardContents, setSprayCardContents] = React.useState([]);
+    const [responsiblePerson, setResponsiblePerson] = React.useState([]);
+    const [gallonsWaterRate, setGallonsWaterRate] = React.useState([]);
     const [chemicalContents, setChemicalContents] = React.useState([]);
     const [totalAmount, setTotalAmount] = React.useState([]);
     const [totalCost, setTotalCost] = React.useState([]);
@@ -175,12 +177,50 @@ export default function sprayCardContent({
 
         const uniqueSites = [...new Map(sprayCardContents.map(item => [JSON.stringify(item.site), item.site])).values()];
         setSiteContents(uniqueSites);
+
+        setGallonsWaterRate(sprayCardContents[0]?.gallons_water_rate || "")
+
+        setResponsiblePerson(sprayCardContents[0]?.responsible_person || "")
+    };
+
+    const responsibleContentRender = () => {
+        return (
+            <Grid item xs={12}>
+                <Grid container justifyContent="center" spacing={2}>
+                    <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            value={responsiblePerson}
+                            label={"Responsible Person"}
+                            focused
+                            InputProps={{
+                                readOnly: true,
+                            }}
+                        />
+                    </Grid>
+                </Grid>
+            </Grid>
+        )
     };
 
     const chemicalContentRender = () => {
         return (
             <Grid item xs={12}>
                 <Grid container justifyContent="center" spacing={2}>
+                    <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            value={gallonsWaterRate}
+                            label={"Gallons Water Rate"}
+                            color="secondary"
+                            focused
+                            InputProps={{
+                                readOnly: true,
+                            }}
+                        />
+                    </Grid>
                     {Object.keys(chemicalContents).map((rowIdx) => (
                         <React.Fragment key={rowIdx}>
                             <Grid item xs={12}>
@@ -443,6 +483,7 @@ export default function sprayCardContent({
         <>
             <Grid container justifyContent="center" spacing={3}>
                 {["completed", "withdrew"].includes(sprayCardSelected?.state) ? null : operationRender()}
+                {responsibleContentRender()}
                 {chemicalContentRender()}
                 {cropContentRender()}
                 {siteContentRender()}
