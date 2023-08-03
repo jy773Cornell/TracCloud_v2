@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'frontend.apps.FrontendConfig',
     'workflows.apps.WorkflowsConfig',
-    'notifications.apps.NotificationsConfig',
     'user_management.apps.UserManagementConfig',
 ]
 
