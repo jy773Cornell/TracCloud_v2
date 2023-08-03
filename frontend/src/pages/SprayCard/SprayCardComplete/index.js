@@ -81,7 +81,7 @@ export default function SprayCardComplete({
                 "start_datetime": fieldValues[field_names[0]],
                 "finish_datetime": fieldValues[field_names[1]],
                 "harvestable_date": addDaysToDate(fieldValues[field_names[1]], chemicalList[chemical_idx].phi),
-                "equipment": fieldValues[field_names[2]],
+                "equipment_id": fieldValues[field_names[2]],
                 "amount_pesticide_per_tank": fieldValues[field_names[3]][chemical_idx],
                 "average_temp": fieldValues[field_names[4]],
                 "wind_speed": fieldValues[field_names[5]],

@@ -4,23 +4,6 @@ import {useState} from "react";
 const end_site_types = ["Row", "Hole Code#", "Section", "Block"]
 
 class SprayCardStore {
-    end_site_types = ["Row", "Hole Code#", "Section", "Block"]
-    chemicalOptions = [];
-
-    flatten(data) {
-        let result = [];
-        for (let i = 0; i < data.length; i++) {
-            let obj = {};
-            obj = {...data[i]};
-            delete obj.children;
-            result.push(obj);
-            if (data[i].children) {
-                result = result.concat(this.flatten(data[i].children));
-            }
-        }
-        return result;
-    }
-
     async getSprayData(uid, employerID) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},

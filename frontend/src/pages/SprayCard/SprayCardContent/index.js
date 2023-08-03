@@ -317,7 +317,7 @@ export default function sprayCardContent({
                                     fullWidth
                                     variant="outlined"
                                     value={cropContents[rowIdx].label}
-                                    label={"Crop " + (Number(rowIdx) + 1) + " (Variety, Growth Stage)"}
+                                    label={"Crop " + (Number(rowIdx) + 1) + " (Variety)"}
                                     color="warning"
                                     focused
                                     InputProps={{
