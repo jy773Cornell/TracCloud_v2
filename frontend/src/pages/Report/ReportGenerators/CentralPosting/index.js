@@ -17,10 +17,22 @@ export default function CentralPostingGenerator(reportData, format) {
             const reportFile = await response.arrayBuffer();
             const blob = new Blob([reportFile], {type: format === "pdf" ? "application/pdf" : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
             const downloadUrl = URL.createObjectURL(blob);
+
+            // Extract the filename from the Content-Disposition header
+            const contentDisposition = response.headers.get('Content-Disposition');
+            let filename = "file";
+            if (contentDisposition) {
+                const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                const matches = filenameRegex.exec(contentDisposition);
+                if (matches != null && matches[1]) {
+                    filename = matches[1].replace(/['"]/g, '');
+                }
+            }
+
             const downloadLink = document.createElement("a");
             downloadLink.href = downloadUrl;
 
-            downloadLink.download = "Central Posting " + dayjs().format('YYYY-MM-DD_HH-mm-ss') + (format === "pdf" ? ".pdf" : ".xlsx");
+            downloadLink.download = filename
             downloadLink.click();
             URL.revokeObjectURL(downloadUrl);
             resolve();

@@ -10,6 +10,53 @@ from django.core.cache import cache
 from rest_framework.views import APIView
 from datetime import datetime, timedelta
 from api.models import *
+from message.models import *
+from api.utils.UUIDGen import *
+from django.core.files.base import ContentFile
+
+
+def save_file(file, file_name):
+    file_content = file.read()
+    document = Document.objects.create(
+        did=gen_uuid("DID"),
+        name=file_name,
+        file=ContentFile(file_content, name=file_name),
+    )
+    document.save()
+
+
+def generate_response(workbook, report_name, file_format):
+    # Create a temporary directory
+    with TemporaryDirectory() as tmp_dir:
+        # Save the workbook to a temporary file
+        file_name = f"{report_name} {datetime.now().strftime('%Y-%m-%d_%H-%M')}.{file_format.lower()}"
+        tmp_file_path = os.path.join(tmp_dir, file_name)
+        workbook.save(tmp_file_path)
+
+        if file_format == "pdf":
+            # Use unoconv to convert the file to the requested format
+            output_file_path = os.path.join(tmp_dir, "temp.pdf")
+            command = ['unoconv', '-f', 'pdf', tmp_file_path]
+            subprocess.run(command, check=True, env=os.environ.copy())
+        else:
+            output_file_path = tmp_file_path
+
+        # Read the converted file and create the response
+        if not os.path.exists(output_file_path):
+            raise FileNotFoundError(f"Output file not created: {output_file_path}")
+
+        with open(output_file_path, 'rb') as output_file:
+            save_file(output_file, file_name)
+
+            output_file.seek(0)
+            response = HttpResponse(
+                output_file.read(),
+                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' if file_format.lower() == "xlsx" else 'application/pdf'
+            )
+            response[
+                'Content-Disposition'] = f"attachment; filename={file_name}"
+
+    return response
 
 
 class CentralPostingView(APIView):
@@ -22,7 +69,7 @@ class CentralPostingView(APIView):
         workbook = load_workbook(buffer)
 
         self.fill_data(workbook, report_data)
-        response = self.generate_response(workbook, file_format)
+        response = generate_response(workbook, "Central Posting", file_format)
         return response
 
     def fill_data(self, workbook, report_data):
@@ -61,39 +108,3 @@ class CentralPostingView(APIView):
 
         worksheet = workbook.active
         worksheet.page_setup.scale = 60
-
-    def generate_response(self, workbook, file_format):
-        # Create a temporary directory
-        with TemporaryDirectory() as tmp_dir:
-            # Save the workbook to a temporary file
-            tmp_file_name = 'temp.xlsx'
-            tmp_file_path = os.path.join(tmp_dir, tmp_file_name)
-            workbook.save(tmp_file_path)
-
-            if file_format == "pdf":
-                # Use unoconv to convert the file to the requested format
-                output_file_path = os.path.join(tmp_dir, "temp.pdf")
-                command = ['unoconv', '-f', 'pdf', tmp_file_path]
-                subprocess.run(command, check=True, env=os.environ.copy())
-            else:
-                output_file_path = tmp_file_path
-
-            # Read the converted file and create the response
-            if not os.path.exists(output_file_path):
-                raise FileNotFoundError(f"Output file not created: {output_file_path}")
-
-            with open(output_file_path, 'rb') as output_file:
-                if file_format.lower() == 'xlsx':
-                    response = HttpResponse(
-                        output_file.read(),
-                        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                    )
-                    response['Content-Disposition'] = 'attachment; filename="template_with_data.xlsx"'
-                else:
-                    response = HttpResponse(
-                        output_file.read(),
-                        content_type='application/pdf'
-                    )
-                    response['Content-Disposition'] = 'attachment; filename="template_with_data.pdf"'
-
-        return response

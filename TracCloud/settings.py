@@ -26,8 +26,6 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
-# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,10 +37,12 @@ INSTALLED_APPS = [
     'django_redis',
     'channels',
     'corsheaders',
+    'storages',
     'api.apps.ApiConfig',
     'frontend.apps.FrontendConfig',
     'workflows.apps.WorkflowsConfig',
     'user_management.apps.UserManagementConfig',
+    'message.apps.MessageConfig',
 ]
 
 MIDDLEWARE = [
@@ -152,6 +152,20 @@ CACHES = {
         },
     },
 }
+
+# BLOB STORAGE SETTING
+
+AZURE_CONNECTION_STRING = os.getenv("AZURE_CONNECTION_STRING")
+DEFAULT_FILE_STORAGE = 'TracCloud.azure_storage.AzureMediaStorage'
+# STATICFILES_STORAGE = 'TracCloud.azure_storage.AzureStaticStorage'
+
+MEDIA_LOCATION = os.getenv("MEDIA_LOCATION")
+STATIC_LOCATION = os.getenv("STATIC_LOCATION")
+AZURE_ACCOUNT_NAME = os.getenv("AZURE_ACCOUNT_NAME")
+
+AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
+MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{MEDIA_LOCATION}/'
+# STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
 
 # EMAIL SETTING
 
