@@ -51,6 +51,10 @@ class UserPrivilege(models.Model):
     spraycard_c = models.BooleanField(verbose_name="Spray Card Create", default=False)
     spraycard_a = models.BooleanField(verbose_name="Spray Card Assign", default=False)
 
+    report_c = models.BooleanField(verbose_name="Report Create", default=False)
+    report_r = models.BooleanField(verbose_name="Report Read", default=False)
+    report_d = models.BooleanField(verbose_name="Report Delete", default=False)
+
     update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
 
 
@@ -95,6 +99,10 @@ full_privileges = {
 
     "spraycard_c": True,
     "spraycard_a": True,
+
+    "report_c": True,
+    "report_r": True,
+    "report_d": True,
 }
 
 applicator_privileges = {
@@ -138,4 +146,8 @@ applicator_privileges = {
 
     "spraycard_c": False,
     "spraycard_a": False,
+
+    "report_c": False,
+    "report_r": True,
+    "report_d": False,
 }

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'workflows.apps.WorkflowsConfig',
     'user_management.apps.UserManagementConfig',
     'message.apps.MessageConfig',
+    'media.apps.MediaConfig',
 ]
 
 MIDDLEWARE = [
@@ -162,6 +163,7 @@ DEFAULT_FILE_STORAGE = 'TracCloud.azure_storage.AzureMediaStorage'
 MEDIA_LOCATION = os.getenv("MEDIA_LOCATION")
 STATIC_LOCATION = os.getenv("STATIC_LOCATION")
 AZURE_ACCOUNT_NAME = os.getenv("AZURE_ACCOUNT_NAME")
+AZURE_ACCOUNT_KEY = os.getenv("AZURE_ACCOUNT_KEY")
 
 AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
 MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{MEDIA_LOCATION}/'

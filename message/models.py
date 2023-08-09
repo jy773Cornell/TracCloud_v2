@@ -1,5 +1,6 @@
 from django.db import models
 from api.models import *
+from media.models import *
 
 
 class Message(models.Model):
@@ -11,7 +12,7 @@ class Message(models.Model):
     recipient = models.ForeignKey(UserProfile, verbose_name="Recipient", to_field="uid",
                                   related_name="recipient_user", on_delete=models.CASCADE)
     text = models.TextField(verbose_name="Text", null=True, blank=True)
-    documents = models.ManyToManyField("Document", verbose_name="Documents", related_name='document', blank=True)
+    reports = models.ManyToManyField(Report, verbose_name="Reports", related_name='reports', blank=True)
     is_read = models.BooleanField(verbose_name="Is Read", default=False)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
 
@@ -25,11 +26,3 @@ class MessageType(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class Document(models.Model):
-    did = models.CharField(verbose_name="DID", primary_key=True, max_length=48)
-    name = models.CharField(verbose_name="File Name", max_length=256)
-    file = models.FileField(upload_to='documents/')
-    is_active = models.BooleanField(verbose_name="Is Active", default=True)
-    create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)

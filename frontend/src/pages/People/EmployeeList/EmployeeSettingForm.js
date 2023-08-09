@@ -51,12 +51,15 @@ const PrivilegeNameList = {
     "spray_u": "Update Spray Record",
     "spraycard_c": "Create Spray Card",
     "spraycard_a": "Assign Spray Card",
+    "report_c": "Create Report",
+    "report_r": "Access Report",
+    "report_d": "Delete Report",
 };
 
 
 export default function EmployeeSettingForm({
                                                 privilege,
-                                                employer_id,
+                                                employerID,
                                                 refreshRecord,
                                                 setRefreshRecord,
                                                 settingFormOpen,
@@ -137,7 +140,7 @@ export default function EmployeeSettingForm({
     }
 
     const handleDeleteConfirm = () => {
-        DeleteEmployee(employer_id, selectedEmployee.uid);
+        DeleteEmployee(employerID, selectedEmployee.uid);
         setOpenDialog(false);
     }
 

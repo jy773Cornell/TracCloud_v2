@@ -237,6 +237,7 @@ function AddPurchaseRecord({
 
 export default function PurchaseRecord(props) {
     const uid = props.uid;
+    const employerID = props.employerID
     const privilege = props.privilege;
 
     const [purchaseList, setPurchaseList] = useState([]);
@@ -308,7 +309,7 @@ export default function PurchaseRecord(props) {
     }
 
     async function PurchaseRecordDelete(prid) {
-        const apiData = {"user_id": uid, "prid": prid}
+        const apiData = {"user_id": employerID, "prid": prid}
         console.log(apiData);
         const csrftoken = getCookie('csrftoken');
         const requestOptions = {
@@ -421,7 +422,7 @@ export default function PurchaseRecord(props) {
 
     const onAddClicked = () => {
         setFormData({
-            "user_id": uid,
+            "user_id": employerID,
             [field_names[0]]: dayjs().format('YYYY-MM-DD'),
         });
         setFieldValues(Object.fromEntries(field_names.map((item, index) =>
@@ -783,8 +784,8 @@ export default function PurchaseRecord(props) {
 
     useEffect(() => {
         const fetchData = async () => {
-            await ChemicalListGet(uid);
-            await PurchaseListGet(uid);
+            await ChemicalListGet(employerID);
+            await PurchaseListGet(employerID);
         };
 
         fetchData();
@@ -802,7 +803,7 @@ export default function PurchaseRecord(props) {
 
     useEffect(() => {
         if (mounted) {
-            PurchaseListGet(uid);
+            PurchaseListGet(employerID);
         }
     }, [refreshRecord]);
 

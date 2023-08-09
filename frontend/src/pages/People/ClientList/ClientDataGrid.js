@@ -21,7 +21,7 @@ function CustomToolbar() {
 }
 
 export default function ClientDataGrid({
-                                           employer_id,
+                                           employerID,
                                            privilege,
                                            refreshRecord,
                                            setRefreshRecord
@@ -100,7 +100,7 @@ export default function ClientDataGrid({
 
     useEffect(() => {
         const fetchData = async () => {
-            await Promise.all([ClientListGet(employer_id)]);
+            await Promise.all([ClientListGet(employerID)]);
         };
 
         fetchData();
@@ -109,7 +109,7 @@ export default function ClientDataGrid({
 
     useEffect(() => {
         if (mounted) {
-            ClientListGet(employer_id);
+            ClientListGet(employerID);
         }
     }, [refreshRecord]);
 
@@ -125,7 +125,6 @@ export default function ClientDataGrid({
                     slots={{
                         toolbar: CustomToolbar,
                     }}
-                    density="compact"
                     localeText={{noRowsLabel: privilege.client_r ? "No rows" : "You don't have the privilege to access this data"}}
                 />
             </Paper>

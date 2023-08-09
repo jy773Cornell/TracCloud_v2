@@ -187,6 +187,7 @@ function AddCropRecord({
 
 export default function Crop(props) {
     const uid = props.uid;
+    const employerID = props.employerID;
     const privilege = props.privilege;
 
     const [cropCategory, setCropCategory] = useState([]);
@@ -274,7 +275,7 @@ export default function Crop(props) {
     }
 
     async function CropRecordDelete(cid) {
-        const apiData = {"user": uid, "cid": cid}
+        const apiData = {"user": employerID, "cid": cid}
         console.log(apiData);
         const csrftoken = getCookie('csrftoken');
         const requestOptions = {
@@ -348,7 +349,7 @@ export default function Crop(props) {
     };
 
     const onAddClicked = () => {
-        setFormData({"user_id": uid,});
+        setFormData({"user_id": employerID,});
         setFieldValues(Object.fromEntries(field_names.map(item => [item, ""])));
         setEditRowId(null);
         setShowAddModal(true);
@@ -572,7 +573,7 @@ export default function Crop(props) {
             await Promise.all([
                 CropCategoryGet(),
                 CropVarietyGet(),
-                CropListGet(uid)
+                CropListGet(employerID)
             ]);
         };
 
@@ -591,7 +592,7 @@ export default function Crop(props) {
 
     useEffect(() => {
         if (mounted) {
-            CropListGet(uid);
+            CropListGet(employerID);
         }
     }, [refreshRecord]);
 

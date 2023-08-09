@@ -9,7 +9,7 @@ const field_names = ["type_id", "first_name", "last_name", "email"]
 
 export default function NewEmployeeForm({
                                             uid,
-                                            employer_id,
+                                            employerID,
                                             refreshRecord,
                                             setRefreshRecord,
                                             showAddModal,
@@ -94,7 +94,7 @@ export default function NewEmployeeForm({
 
     const handleAddButtonPressed = () => {
         if (checkInputs()) {
-            NewEmployeeAdd(employer_id);
+            NewEmployeeAdd(employerID);
         }
     };
 

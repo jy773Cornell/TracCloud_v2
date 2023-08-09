@@ -35,21 +35,5 @@ class MessageTypeAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-class DocumentAdmin(admin.ModelAdmin):
-    list_display = ('did', 'name', 'file', 'is_active', 'create_time',)
-
-    list_per_page = 10
-
-    ordering = ['-create_time']
-
-    exclude = ["did"]
-
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.did = gen_uuid("DID")
-        super().save_model(request, obj, form, change)
-
-
 admin.site.register(Message, MessageAdmin)
 admin.site.register(MessageType, MessageTypeAdmin)
-admin.site.register(Document, DocumentAdmin)

@@ -7,14 +7,14 @@ const NewEmployeeForm = lazy(() => import('./NewEmployeeForm'))
 
 export default function EmployeeList(props) {
     const uid = props.uid;
-    const employer_id = props.employerID;
+    const employerID = props.employerID;
     const privilege = props.privilege;
 
     const [refreshRecord, setRefreshRecord] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
 
     const dataGridProps = {
-        employer_id,
+        employerID,
         privilege,
         refreshRecord,
         setRefreshRecord
@@ -22,7 +22,7 @@ export default function EmployeeList(props) {
 
     const formProps = {
         uid,
-        employer_id,
+        employerID,
         refreshRecord,
         setRefreshRecord,
         showAddModal,

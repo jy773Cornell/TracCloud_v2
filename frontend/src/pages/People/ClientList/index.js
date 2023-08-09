@@ -6,13 +6,13 @@ const ClientDataGrid = lazy(() => import('./ClientDataGrid'))
 
 export default function ClientList(props) {
     const uid = props.uid;
-    const employer_id = props.employerID;
+    const employerID = props.employerID;
     const privilege = props.privilege;
 
     const [refreshRecord, setRefreshRecord] = useState(false);
 
     const dataGridProps = {
-        employer_id,
+        employerID,
         privilege,
         refreshRecord,
         setRefreshRecord

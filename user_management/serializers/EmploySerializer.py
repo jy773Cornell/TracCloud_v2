@@ -19,7 +19,7 @@ class EmployeeGetSerializer(serializers.ModelSerializer):
         return obj.user.username
 
     def get_added_by(self, obj):
-        return obj.added_by.user.username
+        return "{} ({} {})".format(obj.added_by.user.username, obj.added_by.first_name, obj.added_by.last_name)
 
 
 class EmployeeCreateSerializer(serializers.ModelSerializer):

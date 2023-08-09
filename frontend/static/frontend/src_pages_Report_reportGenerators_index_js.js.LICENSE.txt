@@ -1,7 +1,7 @@
 /*!****************************************************!*\
-  !*** ./src/pages/Report/reportGenerators/index.js ***!
+  !*** ./src/pages/Report/ReportGenerators/index.js ***!
   \****************************************************/
 
 /*!*******************************************************************!*\
-  !*** ./src/pages/Report/reportGenerators/CentralPosting/index.js ***!
+  !*** ./src/pages/Report/ReportGenerators/CentralPosting/index.js ***!
   \*******************************************************************/

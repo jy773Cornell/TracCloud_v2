@@ -23,7 +23,7 @@ function CustomToolbar() {
 }
 
 export default function EmployeeDataGrid({
-                                             employer_id,
+                                             employerID,
                                              privilege,
                                              refreshRecord,
                                              setRefreshRecord
@@ -34,12 +34,12 @@ export default function EmployeeDataGrid({
     const [mounted, setMounted] = useState(false);
     const [settingFormOpen, setSettingFormOpen] = useState(false);
 
-    async function EmployeeListGet(uid) {
+    async function EmployeeListGet(employer_id) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
         if (privilege.employee_r) {
-            await fetch("/user_manage/employee/list/get/" + "?employer_id=" + uid, requestOptions)
+            await fetch("/user_manage/employee/list/get/" + "?employer_id=" + employer_id, requestOptions)
                 .then((response) => {
                     if (response.ok) {
                         response.json().then((data) => {
@@ -129,13 +129,13 @@ export default function EmployeeDataGrid({
         {
             field: 'added_by',
             headerName: 'Added By',
-            width: columnWidth,
+            width: columnMiddleWidth,
         },
     ]
 
     useEffect(() => {
         const fetchData = async () => {
-            await Promise.all([EmployeeListGet(employer_id)]);
+            await Promise.all([EmployeeListGet(employerID)]);
         };
 
         fetchData();
@@ -144,13 +144,13 @@ export default function EmployeeDataGrid({
 
     useEffect(() => {
         if (mounted) {
-            EmployeeListGet(employer_id);
+            EmployeeListGet(employerID);
         }
     }, [refreshRecord]);
 
     const settingProps = {
         privilege,
-        employer_id,
+        employerID,
         refreshRecord,
         setRefreshRecord,
         settingFormOpen,

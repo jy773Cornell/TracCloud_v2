@@ -209,6 +209,7 @@ function AddSiteRecord({
 
 export default function Site(props) {
     const uid = props.uid;
+    const employerID = props.employerID;
     const privilege = props.privilege;
 
     const [siteList, setSiteList] = useState([]);
@@ -336,7 +337,7 @@ export default function Site(props) {
     }
 
     async function SiteRecordDelete(sid) {
-        const apiData = {"user": uid, "sid": sid}
+        const apiData = {"user": employerID, "sid": sid}
         console.log(apiData);
         const csrftoken = getCookie('csrftoken');
         const requestOptions = {
@@ -547,7 +548,7 @@ export default function Site(props) {
         const site_type = siteType.find(item => item.name === params.row.type)
         SiteTypeOptionsFresh(site_type.level + 1)
 
-        setFormData({"user_id": uid, "parent_id": id});
+        setFormData({"user_id": employerID, "parent_id": id});
         setFieldValues(Object.fromEntries(field_names.map(item => [item, ""])));
         setEditRowId(add_row_id);
         clearInputError();
@@ -563,7 +564,7 @@ export default function Site(props) {
     };
 
     const onAddClicked = () => {
-        setFormData({"user_id": uid,});
+        setFormData({"user_id": employerID,});
         setFieldValues(Object.fromEntries(field_names.map(item => [item, ""])));
         setEditRowId(null);
         setShowAddModal(true);
@@ -887,8 +888,8 @@ export default function Site(props) {
 
     useEffect(() => {
         const fetchData = async () => {
-            await Promise.all([SiteTypeGet(), UnitGet(), CropListGet(uid)]);
-            await SiteListGet(uid);
+            await Promise.all([SiteTypeGet(), UnitGet(), CropListGet(employerID)]);
+            await SiteListGet(employerID);
         };
 
         fetchData();
@@ -903,7 +904,7 @@ export default function Site(props) {
 
     useEffect(() => {
         if (mounted) {
-            SiteListGet(uid);
+            SiteListGet(employerID);
         }
     }, [refreshRecord]);
 

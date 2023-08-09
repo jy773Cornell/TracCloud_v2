@@ -163,6 +163,7 @@ function AddEquipmentRecord({
 
 export default function Equipment(props) {
     const uid = props.uid;
+    const employerID = props.employerID;
     const privilege = props.privilege;
 
     const [rows, setRows] = useState([]);
@@ -217,7 +218,7 @@ export default function Equipment(props) {
     }
 
     async function EquipmentRecordDelete(eid) {
-        const apiData = {"user": uid, "eid": eid}
+        const apiData = {"user": employerID, "eid": eid}
         console.log(apiData);
         const csrftoken = getCookie('csrftoken');
         const requestOptions = {
@@ -290,7 +291,7 @@ export default function Equipment(props) {
     };
 
     const onAddClicked = () => {
-        setFormData({"user_id": uid,});
+        setFormData({"user_id": employerID,});
         setFieldValues(Object.fromEntries(field_names.map(item => [item, ""])));
         setEditRowId(null);
         setShowAddModal(true);
@@ -483,7 +484,7 @@ export default function Equipment(props) {
 
     useEffect(() => {
         const fetchData = async () => {
-            await Promise.all([EquipmentListGet(uid)]);
+            await Promise.all([EquipmentListGet(employerID)]);
         };
 
         fetchData();
@@ -493,7 +494,7 @@ export default function Equipment(props) {
 
     useEffect(() => {
         if (mounted) {
-            EquipmentListGet(uid);
+            EquipmentListGet(employerID);
         }
     }, [refreshRecord]);
 

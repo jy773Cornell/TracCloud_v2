@@ -35,6 +35,7 @@ function CustomToolbar() {
 
 export default function SprayDataGrid({props, height, width}) {
     const uid = props.uid;
+    const employerID = props.employerID;
     const privilege = props.privilege;
 
     const [sprayApplicationList, setSprayApplicationList] = useState([]);
@@ -274,7 +275,7 @@ export default function SprayDataGrid({props, height, width}) {
                             {popoverRowId === params.id &&
                                 <ConfirmPopover anchorEl={anchorEl}
                                                 setAnchorEl={setAnchorEl}
-                                                onSaveClicked={() => ApplicationRecordUpdate(uid, editRowId, noteValue)}
+                                                onSaveClicked={() => ApplicationRecordUpdate(employerID, editRowId, noteValue)}
                                                 params={params}
                                                 msg="Update this record?"
                                                 type="update"
@@ -471,12 +472,12 @@ export default function SprayDataGrid({props, height, width}) {
     useEffect(() => {
         const fetchData = async () => {
             await Promise.all([
-                CropListGet(uid),
-                SiteListGet(uid),
-                await ChemicalListGet(uid),
-                PurchaseListGet(uid)
+                CropListGet(employerID),
+                SiteListGet(employerID),
+                await ChemicalListGet(employerID),
+                PurchaseListGet(employerID)
             ]);
-            await SprayApplicationListGet(uid);
+            await SprayApplicationListGet(employerID);
         };
 
         fetchData();
@@ -489,7 +490,7 @@ export default function SprayDataGrid({props, height, width}) {
 
     useEffect(() => {
         if (mounted) {
-            SprayApplicationListGet(uid);
+            SprayApplicationListGet(employerID);
         }
     }, [refreshRecord]);
 

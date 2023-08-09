@@ -26,7 +26,7 @@ class PrivilegeUpdateView(APIView):
     serializer_class = PrivilegeUpdateSerializer
 
     def post(self, request, format=None):
-        uid = request.data["user_id"]
+        uid = request.data.get("user_id")
 
         if uid:
             privilege = UserPrivilege.objects.filter(user_id=uid)

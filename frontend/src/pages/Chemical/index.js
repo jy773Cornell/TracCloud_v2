@@ -341,6 +341,7 @@ function AddChemicalRecord({
 
 export default function Chemical(props) {
     const uid = props.uid;
+    const employerID = props.employerID;
     const privilege = props.privilege;
 
     const [unit, setUnit] = useState([]);
@@ -428,7 +429,7 @@ export default function Chemical(props) {
     }
 
     async function ChemicalRecordDelete(chemid) {
-        const apiData = {"user": uid, "chemid": chemid}
+        const apiData = {"user": employerID, "chemid": chemid}
         console.log(apiData);
         const csrftoken = getCookie('csrftoken');
         const requestOptions = {
@@ -502,7 +503,7 @@ export default function Chemical(props) {
     };
 
     const onAddClicked = () => {
-        setFormData({"user_id": uid,});
+        setFormData({"user_id": employerID,});
         setFieldValues(Object.fromEntries(field_names.map(item => [item, ""])));
         setEditRowId(null);
         setShowAddModal(true);
@@ -873,7 +874,7 @@ export default function Chemical(props) {
 
     useEffect(() => {
         const fetchData = async () => {
-            await Promise.all([UnitGet(), ChemicalListGet(uid)]);
+            await Promise.all([UnitGet(), ChemicalListGet(employerID)]);
         };
 
         fetchData();
@@ -891,7 +892,7 @@ export default function Chemical(props) {
 
     useEffect(() => {
         if (mounted) {
-            ChemicalListGet(uid);
+            ChemicalListGet(employerID);
         }
     }, [refreshRecord]);
 

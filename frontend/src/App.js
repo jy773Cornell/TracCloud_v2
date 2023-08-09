@@ -25,6 +25,8 @@ function App() {
 
     const authProps = {uid, setUID, setEmployerID, setPrivilege};
 
+    const userProps = {uid, employerID, privilege}
+
     // Using Django built-in views
     function RedirectToURL({url}) {
         useEffect(() => {
@@ -43,17 +45,15 @@ function App() {
                     <Route path='/' element={<AuthComponent {...authProps} />}>
                         <Route path="home" element={<HomePage/>}/>
                         <Route path="profile" element={<UserProfile uid={uid}/>}/>
-                        <Route path="people"
-                               element={<People uid={uid} employerID={employerID} privilege={privilege}/>}/>
-                        <Route path="crop" element={<Crop uid={employerID} privilege={privilege}/>}/>
-                        <Route path="site" element={<Site uid={employerID} privilege={privilege}/>}/>
-                        <Route path="chemical" element={<Chemical uid={employerID} privilege={privilege}/>}/>
-                        <Route path="purchase" element={<PurchaseRecord uid={employerID} privilege={privilege}/>}/>
-                        <Route path="equipment" element={<Equipment uid={employerID} privilege={privilege}/>}/>
-                        <Route path="spray" element={<SprayRecord uid={employerID} privilege={privilege}/>}/>
-                        <Route path="spraycard"
-                               element={<SprayCard uid={uid} employerID={employerID} privilege={privilege}/>}/>
-                        <Route path="report" element={<Report uid={employerID} privilege={privilege}/>}/>
+                        <Route path="people" element={<People {...userProps}/>}/>
+                        <Route path="crop" element={<Crop {...userProps}/>}/>
+                        <Route path="site" element={<Site {...userProps}/>}/>
+                        <Route path="chemical" element={<Chemical {...userProps}/>}/>
+                        <Route path="purchase" element={<PurchaseRecord {...userProps}/>}/>
+                        <Route path="equipment" element={<Equipment {...userProps}/>}/>
+                        <Route path="spray" element={<SprayRecord {...userProps}/>}/>
+                        <Route path="spraycard" element={<SprayCard {...userProps}/>}/>
+                        <Route path="report" element={<Report {...userProps}/>}/>
                         <Route path="admin" element={<RedirectToURL url={'/admin'}/>}/>
                     </Route>
                     <Route path='*' element={<Navigate to="home" replace/>}/>
