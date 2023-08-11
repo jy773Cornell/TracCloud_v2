@@ -20,12 +20,26 @@ const Report = lazy(() => import('./pages/Report'))
 
 function App() {
     const [uid, setUID] = useState("")
+    const [username, setUsername] = useState("")
+    const [relationType, setRelationType] = useState("")
+    const [userType, SetUserType] = useState("")
     const [employerID, setEmployerID] = useState("")
     const [privilege, setPrivilege] = useState({})
 
-    const authProps = {uid, setUID, setEmployerID, setPrivilege};
+    const authProps = {
+        uid,
+        setUID,
+        setEmployerID,
+        setPrivilege,
+        relationType,
+        setRelationType,
+        userType,
+        SetUserType,
+        username,
+        setUsername
+    };
 
-    const userProps = {uid, employerID, privilege}
+    const userProps = {uid, username, employerID, privilege, userType, relationType}
 
     // Using Django built-in views
     function RedirectToURL({url}) {
@@ -43,8 +57,8 @@ function App() {
                     <Route path="login" element={<Login/>}/>
                     <Route eaxct path='/' element={<Navigate to="home" replace/>}/>
                     <Route path='/' element={<AuthComponent {...authProps} />}>
-                        <Route path="home" element={<HomePage/>}/>
-                        <Route path="profile" element={<UserProfile uid={uid}/>}/>
+                        <Route path="home" element={<HomePage {...userProps}/>}/>
+                        <Route path="profile" element={<UserProfile {...userProps}/>}/>
                         <Route path="people" element={<People {...userProps}/>}/>
                         <Route path="crop" element={<Crop {...userProps}/>}/>
                         <Route path="site" element={<Site {...userProps}/>}/>

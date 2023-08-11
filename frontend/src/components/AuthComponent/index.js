@@ -6,7 +6,18 @@ import {getToken, getCookie} from "../../utils";
 const Loading = lazy(() => import('../Loading'))
 const Layout = lazy(() => import('../Layout'))
 
-export default function AuthComponent({uid, setUID, setEmployerID, setPrivilege}) {
+export default function AuthComponent({
+                                          uid,
+                                          setUID,
+                                          setEmployerID,
+                                          setPrivilege,
+                                          relationType,
+                                          setRelationType,
+                                          userType,
+                                          SetUserType,
+                                          username,
+                                          setUsername
+                                      }) {
     const [authStatus, setAuthStatus] = useState("loading")
 
     async function AuthCheck() {
@@ -26,6 +37,10 @@ export default function AuthComponent({uid, setUID, setEmployerID, setPrivilege}
                 if (response.ok) {
                     response.json().then(async (data) => {
                         setUID(data.uid);
+                        setRelationType(data.relation_type);
+                        SetUserType(data.type);
+                        setUsername(data.username);
+
                         if (data.type === "Admin") {
                             window.location.href = 'admin';
                         } else {
@@ -71,10 +86,17 @@ export default function AuthComponent({uid, setUID, setEmployerID, setPrivilege}
         AuthCheck();
     }, [])
 
+    const layoutProps = {
+        uid,
+        username,
+        relationType,
+        userType
+    }
+
     if (authStatus === "loading") {
         return <Loading/>
     } else if (authStatus === "authorized") {
-        return <Layout uid={uid}/>
+        return <Layout {...layoutProps}/>
     } else if (authStatus === "unauthorized") {
         return <Navigate to="/login" replace/>
     }

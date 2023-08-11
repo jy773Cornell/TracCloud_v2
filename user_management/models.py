@@ -10,6 +10,8 @@ class UserPrivilege(models.Model):
 
     # Business Management Privileges
 
+    business_u = models.BooleanField(verbose_name="Business Update", default=False)
+
     employee_c = models.BooleanField(verbose_name="Employee Create", default=False)
     employee_r = models.BooleanField(verbose_name="Employee Read", default=False)
     employee_d = models.BooleanField(verbose_name="Employee Delete", default=False)
@@ -60,6 +62,7 @@ class UserPrivilege(models.Model):
 
 full_privileges = {
     # Business Management Privileges
+    "business_u": True,
     "employee_c": True,
     "employee_r": True,
     "employee_d": True,
@@ -107,6 +110,7 @@ full_privileges = {
 
 applicator_privileges = {
     # Business Management Privileges
+    "business_u": False,
     "employee_c": False,
     "employee_r": True,
     "employee_d": False,

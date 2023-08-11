@@ -62,7 +62,14 @@ class UserAuthCheckView(APIView):
     def post(self, request, format=None):
         if request.user.is_authenticated:
             user = UserProfile.objects.get(user=request.user)
-            return Response({'Succeeded': 'Authorized.', "uid": user.uid, "type": user.type.name},
-                            status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "Succeeded": 'Authorized.',
+                    "uid": user.uid,
+                    "username": user.user.username,
+                    "type": user.type.name,
+                    "relation_type": user.type.relation_type.name if user.type.relation_type else ""
+                },
+                status=status.HTTP_200_OK)
         else:
             return Response({'Failed': 'Unauthorized.'}, status=status.HTTP_401_UNAUTHORIZED)

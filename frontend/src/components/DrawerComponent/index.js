@@ -30,7 +30,6 @@ export default function LayoutDrawer(props) {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const width = isMobile ? '100%' : drawerWidth;
-    const [recordOpen, setRecordOpen] = useState(false);
 
     const handleMenuButtonPressed = (url) => {
         navigate(url);
@@ -39,8 +38,8 @@ export default function LayoutDrawer(props) {
         }
     }
 
-    const DrawerList = () => (
-        <List>
+    const CommonPages = () => (
+        <>
             <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/home')}
                                 selected={location.pathname === "/home"}>
@@ -68,6 +67,12 @@ export default function LayoutDrawer(props) {
                     <ListItemText primary="People"/>
                 </ListItemButton>
             </ListItem>
+        </>
+    )
+
+    const OwnerEmployeeDrawerList = () => (
+        <List>
+            {CommonPages()}
             <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/crop')}
                                 selected={location.pathname === "/crop"}>
@@ -115,71 +120,15 @@ export default function LayoutDrawer(props) {
                 </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-                    <ListItemButton
-                        onClick={() => handleMenuButtonPressed('/spray')}
-                        selected={location.pathname === "/spray"}>
-                        <ListItemIcon>
-                            <WaterfallChartIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary="SprayData"/>
-                    </ListItemButton>
-                </ListItem>
-            {/*<ListItem disablePadding>*/}
-            {/*    <ListItemButton onClick={() => setRecordOpen(!recordOpen)}>*/}
-            {/*        <ListItemIcon>*/}
-            {/*            <PostAddIcon/>*/}
-            {/*        </ListItemIcon>*/}
-            {/*        <ListItemText primary="Records"/>*/}
-            {/*        {recordOpen ? <ExpandLess/> : <ExpandMore/>}*/}
-            {/*    </ListItemButton>*/}
-            {/*</ListItem>*/}
-            {/*<Collapse in={recordOpen} timeout="auto" unmountOnExit>*/}
-            {/*    <ListItem disablePadding>*/}
-            {/*        <ListItemButton*/}
-            {/*            sx={{*/}
-            {/*                pl: 4,*/}
-            {/*                backgroundColor: grey[100],*/}
-            {/*                '&:hover': {backgroundColor: grey[100],},*/}
-            {/*            }}*/}
-            {/*            onClick={() => handleMenuButtonPressed('/record/spray')}*/}
-            {/*            selected={location.pathname === "/record/spray"}>*/}
-            {/*            <ListItemIcon>*/}
-            {/*                <WaterfallChartIcon/>*/}
-            {/*            </ListItemIcon>*/}
-            {/*            <ListItemText primary="Spray"/>*/}
-            {/*        </ListItemButton>*/}
-            {/*    </ListItem>*/}
-            {/*    <ListItem disablePadding>*/}
-            {/*        <ListItemButton*/}
-            {/*            sx={{*/}
-            {/*                pl: 4,*/}
-            {/*                backgroundColor: grey[100],*/}
-            {/*                '&:hover': {backgroundColor: grey[100],},*/}
-            {/*            }}*/}
-            {/*            onClick={() => handleMenuButtonPressed('/record/harvest')}*/}
-            {/*            selected={location.pathname === "/record/harvest"}>*/}
-            {/*            <ListItemIcon>*/}
-            {/*                <EmojiNatureIcon/>*/}
-            {/*            </ListItemIcon>*/}
-            {/*            <ListItemText primary="Harvest"/>*/}
-            {/*        </ListItemButton>*/}
-            {/*    </ListItem>*/}
-            {/*    <ListItem disablePadding>*/}
-            {/*        <ListItemButton*/}
-            {/*            sx={{*/}
-            {/*                pl: 4,*/}
-            {/*                backgroundColor: grey[100],*/}
-            {/*                '&:hover': {backgroundColor: grey[100],},*/}
-            {/*            }}*/}
-            {/*            onClick={() => handleMenuButtonPressed('/record/purchase')}*/}
-            {/*            selected={location.pathname === "/record/purchase"}>*/}
-            {/*            <ListItemIcon>*/}
-            {/*                <ShoppingCartIcon/>*/}
-            {/*            </ListItemIcon>*/}
-            {/*            <ListItemText primary="Purchase"/>*/}
-            {/*        </ListItemButton>*/}
-            {/*    </ListItem>*/}
-            {/*</Collapse>*/}
+                <ListItemButton
+                    onClick={() => handleMenuButtonPressed('/spray')}
+                    selected={location.pathname === "/spray"}>
+                    <ListItemIcon>
+                        <WaterfallChartIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="SprayData"/>
+                </ListItemButton>
+            </ListItem>
             <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/spraycard')}
                                 selected={location.pathname === "/spraycard"}>
@@ -201,6 +150,12 @@ export default function LayoutDrawer(props) {
         </List>
     )
 
+    const ClientDrawerList = () => (
+        <List>
+            {CommonPages()}
+        </List>
+    )
+
     const MenuList = () => (
         <Box
             sx={{
@@ -217,15 +172,8 @@ export default function LayoutDrawer(props) {
                     Trac Cloud
                 </DrawerHeader>
                 <Divider/>
-                {DrawerList()}
+                {props.relationType === "Client" ? ClientDrawerList() : OwnerEmployeeDrawerList()}
             </div>
-            {/*<div style={{display: 'flex', justifyContent: 'center'}}>*/}
-            {/*    <img*/}
-            {/*        src="../../static/frontend/img/expo.png"*/}
-            {/*        alt="QR Code"*/}
-            {/*        style={{width: '120px', height: '120px', marginTop: '20px', marginBottom: '20px'}}*/}
-            {/*    />*/}
-            {/*</div>*/}
         </Box>
     );
 

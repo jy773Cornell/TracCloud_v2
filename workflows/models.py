@@ -40,11 +40,11 @@ class Registration(models.Model):
 
     @transition(field=state, source='pending', target='approved')
     def approve(self):
-        new_user = User.objects.create_user(self.username, self.email, self.password)
+        new_user = User.objects.create_user(self.username, self.password)
         uid = gen_uuid("UID")
-        UserProfile.objects.create(uid=uid, user=new_user, type=self.type)
+        UserProfile.objects.create(uid=uid, user=new_user, type=self.type, email=self.email)
 
-        privilege = default_privilege(self.type_id)
+        privilege = default_privilege(self.type_id, self.type.relation_type_id)
         UserPrivilege.objects.create(uroid=gen_uuid("UROID"), user_id=uid, **privilege)
 
         send_mail(
@@ -274,25 +274,24 @@ class Connection(models.Model):
     )
     state = FSMField(default='initiated', choices=STATE_CHOICES)
 
-    connection_request = models.ForeignKey(UserRelation, verbose_name="Connection Request", on_delete=models.CASCADE)
+    relation = models.ForeignKey(UserRelation, verbose_name="Connection Request", on_delete=models.CASCADE)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
 
     @transition(field=state, source='initiated', target='pending')
-    def initiate(self, requester, provider, relation_type):
-        self.connection_request = UserRelation.objects.create(
+    def initiate(self, requester, provider):
+        self.relation = UserRelation.objects.create(
             urid=gen_uuid("URID"),
             requester=requester,
             provider=provider,
-            type=relation_type,
             is_active=False
         )
 
     @transition(field=state, source='pending', target='connected')
     def approve(self):
-        self.connection_request.is_active = True
-        self.connection_request.save()
+        self.relation.is_active = True
+        self.relation.save()
 
         self.is_active = False
 

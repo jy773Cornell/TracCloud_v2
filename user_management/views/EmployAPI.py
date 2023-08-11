@@ -16,12 +16,14 @@ class EmployeeListGetView(APIView):
         employer_id = request.GET.get(self.lookup_url_kwarg)
 
         if employer_id:
-            requester_ids = UserRelation.objects.filter(
-                requester_id=employer_id,
-                provider__type__relation_type__name='Employee').values_list('provider', flat=True)
             provider_ids = UserRelation.objects.filter(
+                requester_id=employer_id,
+                provider__type__relation_type__name='Employee',
+                is_active=True).values_list('provider', flat=True)
+            requester_ids = UserRelation.objects.filter(
                 provider_id=employer_id,
-                requester__type__relation_type__name='Employee').values_list('requester', flat=True)
+                requester__type__relation_type__name='Employee',
+                is_active=True).values_list('requester', flat=True)
 
             unique_ids = list(set(requester_ids).union(set(provider_ids)))
             user_profiles = UserProfile.objects.filter(uid__in=unique_ids)

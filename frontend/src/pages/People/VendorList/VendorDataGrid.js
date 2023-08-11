@@ -10,7 +10,7 @@ import {
 } from "@mui/x-data-grid";
 import {useEffect, useState} from "react";
 import IconButton from "@mui/material/IconButton";
-import SendIcon from '@mui/icons-material/Send';
+import CallReceivedIcon from '@mui/icons-material/CallReceived';
 import DeleteIcon from "@mui/icons-material/Delete";
 import ConfirmPopover from "../../../components/ConfirmPopover";
 
@@ -24,19 +24,19 @@ function CustomToolbar() {
     </GridToolbarContainer>);
 }
 
-export default function ClientDataGrid({
+export default function VendorDataGrid({
                                            employerID,
                                            privilege,
                                            refreshRecord,
                                            setRefreshRecord
                                        }) {
-    const [clientList, setClientList] = useState([]);
+    const [vendorList, setVendorList] = useState([]);
     const [rows, setRows] = useState([]);
     const [mounted, setMounted] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [popoverRowId, setPopoverRowId] = useState(null);
 
-    async function ClientListGet(uid) {
+    async function VendorListGet(uid) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
@@ -45,7 +45,7 @@ export default function ClientDataGrid({
                 if (response.ok) {
                     response.json().then((data) => {
                         const record_list = data.data;
-                        setClientList(record_list);
+                        setVendorList(record_list);
                         const record_row = record_list.map((record) => createRowData(record))
                         setRows(record_row);
                     })
@@ -84,7 +84,7 @@ export default function ClientDataGrid({
                         <IconButton
                             // onClick={() => onDownloadClicked(params)}
                         >
-                            <SendIcon/>
+                            <CallReceivedIcon/>
                         </IconButton>
                         <IconButton
                             onClick={(event) => {
@@ -143,7 +143,7 @@ export default function ClientDataGrid({
 
     useEffect(() => {
         const fetchData = async () => {
-            await Promise.all([ClientListGet(employerID)]);
+            await Promise.all([VendorListGet(employerID)]);
         };
 
         fetchData();
@@ -152,7 +152,7 @@ export default function ClientDataGrid({
 
     useEffect(() => {
         if (mounted) {
-            ClientListGet(employerID);
+            VendorListGet(employerID);
         }
     }, [refreshRecord]);
 
@@ -168,7 +168,6 @@ export default function ClientDataGrid({
                     slots={{
                         toolbar: CustomToolbar,
                     }}
-                    localeText={{noRowsLabel: privilege.client_r ? "No rows" : "You don't have the privilege to access this data"}}
                 />
             </Paper>
         </div>

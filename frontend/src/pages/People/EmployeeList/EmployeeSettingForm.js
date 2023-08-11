@@ -20,6 +20,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 const PrivilegeTransferList = lazy(() => import('./PrivilegeTransferList'))
 
 const PrivilegeNameList = {
+    "business_u": "Edit Business Profile",
     "employee_c": "Create Employee",
     "employee_r": "Access Employee",
     "employee_d": "Delete Employee",

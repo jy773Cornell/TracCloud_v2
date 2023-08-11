@@ -11,7 +11,6 @@ class RegistrationRequestView(APIView):
 
     def post(self, request, format=None):
         serializer = self.serializer_class(data=request.data)
-
         if serializer.is_valid():
             data = serializer.validated_data
             data["rpid"] = gen_uuid("RPID")

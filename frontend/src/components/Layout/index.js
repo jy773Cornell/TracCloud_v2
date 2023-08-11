@@ -7,8 +7,6 @@ const LayoutAppBar = lazy(() => import('../AppBarComponent'))
 const LayoutDrawer = lazy(() => import('../DrawerComponent'))
 
 export default function Layout(props) {
-    const [username, setUsername] = useState("")
-    const [userType, setUserType] = useState("")
     const [menuOpen, setMenuOpen] = useState(true)
 
     const navigate = useNavigate();
@@ -36,35 +34,22 @@ export default function Layout(props) {
             })
     }
 
-    async function UserInfoGet(props) {
-        const requestOptions = {
-            method: "GET", headers: {"Content-Type": "application/json"},
-        };
-        await fetch("/api/user/get/" + "?uid=" + props.uid, requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        setUsername(data.data.username);
-                        setUserType(data.data.type);
-                    })
-                }
-            })
+    const drawerProps = {
+        ...props,
+        setMenuOpen,
     }
 
-    useEffect(() => {
-        UserInfoGet(props);
-    }, [])
+    const appBarProps = {
+        ...props,
+        toggleMenuOpen,
+        handleLogout,
+    }
 
     return (
         <StyledRoot>
-            {menuOpen ? <LayoutDrawer userType={userType} setMenuOpen={setMenuOpen}/> : null}
+            {menuOpen ? <LayoutDrawer {...drawerProps}/> : null}
             <StyledContainer>
-                <LayoutAppBar
-                    username={username}
-                    userType={userType}
-                    toggleMenuOpen={toggleMenuOpen}
-                    handleLogout={handleLogout}
-                />
+                <LayoutAppBar {...appBarProps}/>
                 <Outlet/>
             </StyledContainer>
         </StyledRoot>

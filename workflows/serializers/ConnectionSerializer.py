@@ -4,21 +4,20 @@ from api.models import UserRelation, UserRelationType
 from api.utils.UUIDGen import gen_uuid
 from workflows.utils.UserTree import *
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 
 class ConnectionInitiateSerializer(serializers.ModelSerializer):
     requester_id = serializers.CharField(required=True)
-    provider_name = serializers.CharField(required=True)
-    type_id = serializers.CharField(required=True)
+    provider_id = serializers.CharField(required=True)
 
     class Meta:
         model = Connection
-        fields = ('requester_id', 'provider_name', 'type_id')
+        fields = ('requester_id', 'provider_id')
 
     def validate(self, data):
         requester_id = data.get('requester_id')
-        provider_name = data.get('provider_name')
-        type_id = data.get('type_id')
+        provider_id = data.get('provider_id')
 
         try:
             requester = UserProfile.objects.get(uid=requester_id, is_active=True)
@@ -26,24 +25,19 @@ class ConnectionInitiateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("The requester does not exist.")
 
         try:
-            provider = User.objects.get(username=provider_name)
-            provider = UserProfile.objects.get(user=provider, is_active=True)
-        except User.DoesNotExist or UserProfile.DoesNotExist:
+            provider = UserProfile.objects.get(uid=provider_id, is_active=True)
+        except UserProfile.DoesNotExist:
             raise serializers.ValidationError("The provider does not exist.")
 
-        try:
-            relation_type = UserRelationType.objects.get(urtid=type_id, is_active=True)
-        except UserRelationType.DoesNotExist:
-            raise serializers.ValidationError("The relation type does not exist.")
+        relation_exists = UserRelation.objects.filter(
+            Q(provider=provider, requester=requester) | Q(provider=requester, requester=provider),
+            is_active=True
+        ).exists()
 
-        try:
-            UserRelation.objects.get(provider=provider, requester=requester, is_active=True)
-            UserRelation.objects.get(provider=requester, requester=provider, is_active=True)
+        if relation_exists:
             raise serializers.ValidationError("The connection between users already exists.")
-        except UserRelation.DoesNotExist:
-            pass
 
-        return {'cpid': gen_uuid("CPID"), 'requester': requester, 'provider': provider, 'relation_type': relation_type}
+        return {'cpid': gen_uuid("CPID"), 'requester': requester, 'provider': provider}
 
 
 class ConnectionApproveSerializer(serializers.ModelSerializer):

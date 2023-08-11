@@ -4,7 +4,7 @@ import {grey} from "@mui/material/colors";
 import {useLocation, useNavigate} from "react-router-dom";
 import {Container} from "@mui/system";
 
-const entry_list = [
+const CommonEntries = [
     {
         id: "profile_page",
         name: "Profile",
@@ -17,6 +17,14 @@ const entry_list = [
         description: "Organize your business!",
         path: "/people"
     },
+]
+
+const ClientEntryList = [
+    ...CommonEntries,
+];
+
+const OwnerEmployeeEntryList = [
+    ...CommonEntries,
     {
         id: "crop_page",
         name: "Crops",
@@ -102,11 +110,13 @@ function EntryCard({entry}) {
     );
 }
 
-export default function HomePage() {
+export default function HomePage(props) {
+    const entries = props.relationType === "Client" ? ClientEntryList : OwnerEmployeeEntryList;
+
     return (
         <Container>
-            <Grid container spacing={1}>
-                {entry_list.map((entry) => {
+            <Grid container spacing={2}>
+                {entries.map((entry) => {
                     return (
                         <Grid item xs={6} md={4} lg={3} key={entry.id}>
                             <EntryCard entry={entry}/>

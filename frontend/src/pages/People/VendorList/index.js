@@ -2,10 +2,10 @@ import React, {lazy, useEffect, useState} from 'react';
 import {AddButton} from "./styles";
 import AddIcon from "@mui/icons-material/Add";
 
-const ClientDataGrid = lazy(() => import('./ClientDataGrid'))
+const VendorDataGrid = lazy(() => import('./VendorDataGrid'))
 const ConnectionForm = lazy(() => import('../ConnectionForm'))
 
-export default function ClientList(props) {
+export default function VendorList(props) {
     const uid = props.uid;
     const employerID = props.employerID;
     const privilege = props.privilege;
@@ -38,9 +38,9 @@ export default function ClientList(props) {
                 onClick={() => setOpenForm(true)}
                 disabled={!privilege.client_add}
             >
-                New Client
+                New Vendor
             </AddButton>
-            <ClientDataGrid {...dataGridProps}/>
+            <VendorDataGrid {...dataGridProps}/>
             <ConnectionForm {...formProps}/>
         </div>
     );

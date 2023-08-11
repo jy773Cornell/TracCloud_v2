@@ -15,7 +15,7 @@ class ConnectionInitiateView(APIView):
             data = serializer.validated_data
             with transaction.atomic():
                 connection_process = Connection(cpid=data["cpid"])
-                connection_process.initiate(data["requester"], data["provider"], data["relation_type"])
+                connection_process.initiate(data["requester"], data["provider"])
                 connection_process.save()
             return Response({'Succeeded': 'Process Has Been Initiated.'}, status=status.HTTP_200_OK)
 

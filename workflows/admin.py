@@ -62,6 +62,18 @@ class PasswordResetAdmin(admin.ModelAdmin):
     exclude = ["prpid"]
 
 
+class ConnectionAdmin(admin.ModelAdmin):
+    list_display = ('cpid', 'state', 'relation', 'update_time', 'create_time', 'is_active')
+
+    list_filter = ('state', 'is_active',)
+
+    list_per_page = 10
+
+    ordering = ('-state', '-create_time')
+
+    exclude = ["cpid"]
+
+
 class SprayCardAdmin(admin.ModelAdmin):
     list_display = ('scpid', 'state', 'owner', 'holder', 'update_time', 'create_time', 'is_active')
 
@@ -88,5 +100,8 @@ class SprayCardAssignmentAdmin(admin.ModelAdmin):
 
 admin.site.register(Registration, RegistrationAdmin)
 admin.site.register(PasswordReset, PasswordResetAdmin)
+
+admin.site.register(Connection, ConnectionAdmin)
+
 admin.site.register(SprayCard, SprayCardAdmin)
 admin.site.register(SprayCardAssignment, SprayCardAssignmentAdmin)

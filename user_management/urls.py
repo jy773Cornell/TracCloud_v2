@@ -1,6 +1,7 @@
 from django.urls import path
 from user_management.views.PrivilegeAPI import *
 from user_management.views.EmployAPI import *
+from user_management.views.ClientVendorAPI import *
 
 urlpatterns = [
     path('privilege/get/', PrivilegeGetView.as_view()),
@@ -9,4 +10,6 @@ urlpatterns = [
     path('employee/create/', EmployeeCreateView.as_view()),
     path('employee/delete/', EmployeeDeleteView.as_view()),
     path('employer/get/', EmployerGetView.as_view()),
+    path('client/search/', ConnectionSearchAPIView.as_view()),
+    path('client_or_vendor/list/get/', ClientVendorListGetView.as_view()),
 ]

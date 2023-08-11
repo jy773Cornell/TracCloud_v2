@@ -5,8 +5,9 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
-import {Menu, MenuItem, Typography} from "@mui/material";
+import {Badge, Menu, MenuItem, Typography} from "@mui/material";
 import SettingsIcon from '@mui/icons-material/Settings';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 
 export default function LayoutAppBar(props) {
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -30,6 +31,16 @@ export default function LayoutAppBar(props) {
                         <Typography sx={{display: 'flex', alignItems: "center", padding: 1.5}}>
                             Hello, {props.username}
                         </Typography>
+                        <IconButton
+                            size="large"
+                            aria-label="new notifications"
+                            aria-haspopup="true"
+                            color="inherit"
+                        >
+                            <Badge badgeContent={0} color="error">
+                                <NotificationsIcon/>
+                            </Badge>
+                        </IconButton>
                         <IconButton
                             size="large"
                             color="inherit"
