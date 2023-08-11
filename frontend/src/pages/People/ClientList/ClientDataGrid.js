@@ -40,17 +40,20 @@ export default function ClientDataGrid({
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
         };
-        await fetch("/user_manage/client_or_vendor/list/get/" + "?uid=" + uid, requestOptions)
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        const record_list = data.data;
-                        setClientList(record_list);
-                        const record_row = record_list.map((record) => createRowData(record))
-                        setRows(record_row);
-                    })
-                }
-            })
+
+        if (privilege.client_r) {
+            await fetch("/user_manage/client_or_vendor/list/get/" + "?uid=" + uid, requestOptions)
+                .then((response) => {
+                    if (response.ok) {
+                        response.json().then((data) => {
+                            const record_list = data.data;
+                            setClientList(record_list);
+                            const record_row = record_list.map((record) => createRowData(record))
+                            setRows(record_row);
+                        })
+                    }
+                })
+        }
     }
 
     const createRowData = (record) => {
