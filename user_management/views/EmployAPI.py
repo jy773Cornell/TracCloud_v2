@@ -69,7 +69,7 @@ class EmployeeCreateView(APIView):
                 # Set default privilege
 
                 uroid = gen_uuid("UROID")
-                privilege = default_privilege(data["type_id"])
+                privilege = default_privilege(data["type_id"], "Employee")
                 UserPrivilege.objects.create(uroid=uroid, user_id=uid, **privilege)
 
                 # Email employee

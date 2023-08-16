@@ -7,7 +7,7 @@ const ClientList = lazy(() => import('./ClientList'))
 const VendorList = lazy(() => import('./VendorList'))
 
 export default function People(props) {
-    const relationType = props.relationType
+    const [refreshRecord, setRefreshRecord] = useState(false);
 
     const OwnerEmployeePeoplePage = () => (
         <Grid container spacing={2}>
@@ -28,9 +28,15 @@ export default function People(props) {
         </Grid>
     )
 
+    const reportWindowProps =
+        {
+            ...props,
+
+        }
+
     return (
         <div style={{margin: '0px 15px'}}>
-            {relationType === "Client" ? ClientPeoplePage() : OwnerEmployeePeoplePage()}
+            {props.relationType === "Client" ? ClientPeoplePage() : OwnerEmployeePeoplePage()}
             <Outlet/>
         </div>
     );

@@ -118,7 +118,6 @@ export default function VendorDataGrid({
                                 setAnchorEl(event.currentTarget);
                                 setPopoverRowId(params.id);
                             }}
-                            disabled={!privilege.client_d}
                         >
                             <DeleteIcon/>
                         </IconButton>
