@@ -13,6 +13,9 @@ import IconButton from "@mui/material/IconButton";
 import CallReceivedIcon from '@mui/icons-material/CallReceived';
 import DeleteIcon from "@mui/icons-material/Delete";
 import ConfirmPopover from "../../../components/ConfirmPopover";
+import {useLocation} from "react-router-dom";
+import {getCookie} from "../../../utils";
+import OperationSnackbars from "../../../components/Snackbars";
 
 
 function CustomToolbar() {
@@ -33,8 +36,11 @@ export default function VendorDataGrid({
     const [vendorList, setVendorList] = useState([]);
     const [rows, setRows] = useState([]);
     const [mounted, setMounted] = useState(false);
+    const [isDelete, setIsDelete] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [popoverRowId, setPopoverRowId] = useState(null);
+
+    const location = useLocation();
 
     async function VendorListGet(uid) {
         const requestOptions = {
@@ -53,6 +59,27 @@ export default function VendorDataGrid({
             })
     }
 
+    async function ConnectionDelete(requester_id, client_vendor_id) {
+        const apiData = {requester_id, client_vendor_id}
+        console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
+        const requestOptions = {
+            method: "POST",
+            headers: {"Content-Type": "application/json", 'X-CSRFToken': csrftoken,},
+            body: JSON.stringify(apiData),
+        };
+        await fetch("/user_manage/client_or_vendor/connection/delete/", requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    setIsDelete(true);
+                    setRefreshRecord(~refreshRecord);
+                }
+            })
+    }
+
+    const onDeleteClicked = async (params) => {
+        ConnectionDelete(employerID, params.id);
+    }
     const createRowData = (record) => {
         for (let key in record) {
             if (record[key] === null) {
@@ -99,7 +126,7 @@ export default function VendorDataGrid({
                             <ConfirmPopover
                                 anchorEl={anchorEl}
                                 setAnchorEl={setAnchorEl}
-                                // onDeleteClicked={onDeleteClicked}
+                                onDeleteClicked={onDeleteClicked}
                                 params={params}
                                 msg="Delete this connection?"
                                 type="delete"
@@ -156,6 +183,18 @@ export default function VendorDataGrid({
         }
     }, [refreshRecord]);
 
+    useEffect(() => {
+        // Toggle the flag whenever the location (URL) changes
+        setRefreshRecord(prev => !prev);
+    }, [location.pathname]);
+
+    const deleteProps = {
+        open: isDelete,
+        setOpen: setIsDelete,
+        msg: "The connection is deleted!",
+        tag: "success"
+    };
+
     return (
         <div>
             <Paper style={{height: 900}}>
@@ -170,6 +209,7 @@ export default function VendorDataGrid({
                     }}
                 />
             </Paper>
+            <OperationSnackbars  {...deleteProps}/>
         </div>
     );
 }

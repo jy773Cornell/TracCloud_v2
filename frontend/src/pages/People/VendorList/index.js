@@ -3,7 +3,7 @@ import {AddButton} from "./styles";
 import AddIcon from "@mui/icons-material/Add";
 
 const VendorDataGrid = lazy(() => import('./VendorDataGrid'))
-const ConnectionForm = lazy(() => import('../ConnectionForm'))
+const ConnectionForm = lazy(() => import('../ConnectionRequestForm'))
 
 export default function VendorList(props) {
     const uid = props.uid;

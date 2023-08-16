@@ -23,7 +23,6 @@ export default function Layout(props) {
                 "Content-Type": "application/json",
                 'X-CSRFToken': csrftoken,
             },
-
         };
         await fetch("/api/logout/", requestOptions)
             .then((response) => {

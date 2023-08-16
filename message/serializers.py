@@ -14,10 +14,10 @@ class NotificationGetSerializer(serializers.ModelSerializer):
         exclude = ('reports',)
 
     def get_author(self, obj):
-        return "{} ({} {})".format(obj.author.user.username, obj.author.first_name, obj.author.last_name)
+        return obj.author.user.username
 
     def get_recipient(self, obj):
-        return "{} ({} {})".format(obj.recipient.user.username, obj.recipient.first_name, obj.recipient.last_name)
+        return obj.recipient.user.username
 
     def get_type(self, obj):
         return next((item['name'] for item in cache.get("MessageType") if item['mtid'] == obj.type_id), None)

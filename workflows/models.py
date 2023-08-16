@@ -271,6 +271,7 @@ class Connection(models.Model):
         ('pending', 'Pending'),
         ('connected', 'Connected'),
         ('rejected', 'Rejected'),
+        ('archived', 'Archived'),
     )
     state = FSMField(default='initiated', choices=STATE_CHOICES)
 
@@ -298,3 +299,8 @@ class Connection(models.Model):
     @transition(field=state, source='pending', target='rejected')
     def reject(self):
         self.is_active = False
+
+    @transition(field=state, source='pending', target='archived')
+    def archive(self):
+        self.is_active = False
+

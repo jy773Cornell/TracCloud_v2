@@ -2,9 +2,12 @@ import * as React from 'react';
 import {useEffect, useState} from "react";
 import {Menu, MenuItem, Typography} from "@mui/material";
 import {Box} from "@mui/system";
+import {useLocation} from "react-router-dom";
 
 export default function NotificationList(props) {
     const [notificationList, setNotificationList] = useState([]);
+    const [notificationFetch, setNotificationFetch] = useState({})
+    const location = useLocation();
 
     async function NotificationListGet(recipient_id) {
         const requestOptions = {
@@ -48,7 +51,7 @@ export default function NotificationList(props) {
                     type: item.type,
                     author: item.author,
                     recipient: item.recipient,
-                    url: "",
+                    url: `people/connection/?mid=${item.mid}&cpid=${item.connection}`,
                 };
             })
         )
@@ -58,7 +61,21 @@ export default function NotificationList(props) {
         if (props.uid) {
             NotificationListGet(props.uid);
         }
-    }, [props.notificationFetch]);
+    }, [notificationFetch]);
+
+    useEffect(() => {
+        // Toggle the flag whenever the location (URL) changes
+        setNotificationFetch(prev => !prev);
+    }, [location.pathname]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setNotificationFetch(prev => !prev);
+        }, 30000);
+
+        // Cleanup on unmount
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <Menu
@@ -90,5 +107,4 @@ export default function NotificationList(props) {
                 </MenuItem>)}
         </Menu>
     );
-
 }

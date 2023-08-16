@@ -4,27 +4,27 @@ import * as React from "react";
 import {useEffect, useState} from "react";
 import OperationSnackbars from "../../components/Snackbars";
 
-export default function ConnectionForm({
-                                           employerID,
-                                           privilege,
-                                           refreshRecord,
-                                           setRefreshRecord,
-                                           openForm,
-                                           setOpenForm,
-                                       }) {
-    const [selectedClient, setSelectedClient] = useState(null);
+export default function ConnectionRequestForm({
+                                                  employerID,
+                                                  privilege,
+                                                  refreshRecord,
+                                                  setRefreshRecord,
+                                                  openForm,
+                                                  setOpenForm,
+                                              }) {
+    const [selectedUser, setSelectedUser] = useState(null);
     const [clientOptions, setClientOptions] = useState([]);
     const [searchValue, setSearchValue] = useState("");
     const [fieldError, setFieldError] = useState(false);
     const [isSend, setIsSend] = useState(false);
     const [isFailed, setIsFailed] = useState(false);
 
-    async function ClientUserListGet(inputUsername) {
+    async function SearchUserListGet(inputUsername) {
         const requestOptions = {
             method: "GET",
             headers: {"Content-Type": "application/json",},
         };
-        await fetch("/user_manage/client/search/" + "?search_username=" + inputUsername + "&request_user_id=" + employerID, requestOptions)
+        await fetch("/workflow/connection/search/" + "?search_username=" + inputUsername + "&request_user_id=" + employerID, requestOptions)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
@@ -57,7 +57,6 @@ export default function ConnectionForm({
                 setIsFailed(true);
                 setFieldError(true);
             }
-            console.log(responseData)
         } catch (error) {
             console.error("Failed to fetch", error);
         }
@@ -76,22 +75,23 @@ export default function ConnectionForm({
     }
 
     const handleSendButtonPressed = async () => {
-        if (!selectedClient) {
+        if (!selectedUser) {
             setFieldError(true);
         } else {
-            await RequestConnection(employerID, selectedClient);
+            await RequestConnection(employerID, selectedUser);
         }
     }
 
     useEffect(() => {
         if (searchValue) {
-            ClientUserListGet(searchValue);
+            SearchUserListGet(searchValue);
         }
     }, [searchValue]);
 
     useEffect(() => {
         setClientOptions([]);
         setFieldError(false);
+        setSelectedUser(null);
     }, [openForm]);
 
     const sendProps = {
@@ -127,7 +127,7 @@ export default function ConnectionForm({
                                     options={clientOptions || []}
                                     disableClearable={true}
                                     onChange={(event, value) => {
-                                        setSelectedClient(value.id);
+                                        setSelectedUser(value.id);
                                     }}
                                     renderInput={(params) => (
                                         <TextField

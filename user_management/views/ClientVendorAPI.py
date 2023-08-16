@@ -1,4 +1,3 @@
-import pytrie
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -7,35 +6,6 @@ from api.utils.ModelManager import request_data_transform
 from user_management.serializers.ClientVendorSerializer import *
 from user_management.utils.NewAccount import *
 from django.db.models import Q
-
-
-class ConnectionSearchAPIView(APIView):
-    serializer_class = ConnectionGetSerializer
-    lookup_url_kwarg1 = "search_username"
-    lookup_url_kwarg2 = "request_user_id"
-
-    def get(self, request, format=None):
-        search_username = request.GET.get(self.lookup_url_kwarg1)
-        request_user_id = request.GET.get(self.lookup_url_kwarg2)
-
-        if search_username and request_user_id:
-            # filter request user and employee users
-            valid_users = UserProfile.objects.filter(
-                type__relation_type__name__in=["Owner", "Client"],
-            ).exclude(uid=request_user_id).alive()
-
-            # Create a trie and insert user values
-            trie = pytrie.StringTrie()
-            for user in valid_users:
-                user_info = self.serializer_class(user).data
-                trie[user_info["user"]] = user_info
-
-            search_keys = trie.keys(prefix=search_username)
-            response_user_list = [trie[key] for key in search_keys]
-            return Response({'Succeeded': 'User Option List Fetched.', 'data': response_user_list},
-                            status=status.HTTP_200_OK)
-
-        return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ClientVendorListGetView(APIView):
@@ -73,7 +43,7 @@ class ClientVendorConnectionDeleteView(APIView):
     def post(self, request, format=None):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            requester_id = serializer.validated_data['requestor_id']
+            requester_id = serializer.validated_data['requester_id']
             client_vendor_id = serializer.validated_data['client_vendor_id']
 
             # Fetch the relation based on the validated data

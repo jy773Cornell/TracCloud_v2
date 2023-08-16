@@ -19,8 +19,6 @@ export default function AuthComponent({
                                           SetUserType,
                                           username,
                                           setUsername,
-                                          notificationFetch,
-                                          setNotificationFetch,
                                       }) {
     const [authStatus, setAuthStatus] = useState("loading")
 
@@ -95,8 +93,6 @@ export default function AuthComponent({
         username,
         relationType,
         userType,
-        notificationFetch,
-        setNotificationFetch,
     }
 
     if (authStatus === "loading") {

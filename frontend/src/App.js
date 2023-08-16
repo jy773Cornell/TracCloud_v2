@@ -18,6 +18,8 @@ const HarvestRecord = lazy(() => import('./pages/HarvestRecord'))
 const PurchaseRecord = lazy(() => import('./pages/PurchaseRecord'))
 const Report = lazy(() => import('./pages/Report'))
 
+const ConnectionResponseForm = lazy(() => import('./pages/People/ConnectionResponseForm'))
+
 export default function App() {
     const [uid, setUID] = useState("")
     const [username, setUsername] = useState("")
@@ -25,8 +27,6 @@ export default function App() {
     const [userType, SetUserType] = useState("")
     const [employerID, setEmployerID] = useState("")
     const [privilege, setPrivilege] = useState({})
-
-    const [notificationFetch, setNotificationFetch] = useState({})
 
     const authProps = {
         uid,
@@ -41,8 +41,6 @@ export default function App() {
         SetUserType,
         username,
         setUsername,
-        notificationFetch,
-        setNotificationFetch,
     };
 
     const userProps = {uid, username, employerID, privilege, userType, relationType}
@@ -55,14 +53,6 @@ export default function App() {
         return null;
     }
 
-    // Toggle notification flag so that notification
-    // will be updated each time it navigates to a different page
-    useEffect(() => {
-        return history.listen(() => {
-            setNotificationFetch(prevState => !prevState);
-        });
-    }, [history]);
-
     return (
         <HistoryRouter history={history}>
             <Suspense
@@ -73,7 +63,9 @@ export default function App() {
                     <Route path='/' element={<AuthComponent {...authProps} />}>
                         <Route path="home" element={<HomePage {...userProps}/>}/>
                         <Route path="profile" element={<UserProfile {...userProps}/>}/>
-                        <Route path="people" element={<People {...userProps}/>}/>
+                        <Route path="people" element={<People {...userProps}/>}>
+                            <Route path="connection" element={<ConnectionResponseForm {...userProps}/>}/>
+                        </Route>
                         <Route path="crop" element={<Crop {...userProps}/>}/>
                         <Route path="site" element={<Site {...userProps}/>}/>
                         <Route path="chemical" element={<Chemical {...userProps}/>}/>

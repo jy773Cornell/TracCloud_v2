@@ -1,6 +1,7 @@
 from django.db import models
 from api.models import *
 from media.models import *
+from workflows.models import *
 
 
 class Message(models.Model):
@@ -12,9 +13,15 @@ class Message(models.Model):
     recipient = models.ForeignKey(UserProfile, verbose_name="Recipient", to_field="uid",
                                   related_name="recipient_user", on_delete=models.CASCADE)
     text = models.TextField(verbose_name="Text", null=True, blank=True)
+    connection = models.ForeignKey(Connection, verbose_name="Connection", to_field="cpid",
+                                   related_name="message_connection", null=True, blank=True, on_delete=models.CASCADE)
     reports = models.ManyToManyField(Report, verbose_name="Reports", related_name='reports', blank=True)
     is_read = models.BooleanField(verbose_name="Is Read", default=False)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)
+
+    def read(self):
+        self.is_read = True
+        self.save()
 
 
 class MessageType(models.Model):

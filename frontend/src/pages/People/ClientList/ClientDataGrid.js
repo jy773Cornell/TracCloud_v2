@@ -15,6 +15,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ConfirmPopover from "../../../components/ConfirmPopover";
 import {getCookie} from "../../../utils";
 import OperationSnackbars from "../../../components/Snackbars";
+import {useLocation} from "react-router-dom";
 
 
 function CustomToolbar() {
@@ -39,6 +40,8 @@ export default function ClientDataGrid({
     const [anchorEl, setAnchorEl] = useState(null);
     const [popoverRowId, setPopoverRowId] = useState(null);
 
+    const location = useLocation();
+
     async function ClientListGet(uid) {
         const requestOptions = {
             method: "GET", headers: {"Content-Type": "application/json"},
@@ -59,8 +62,8 @@ export default function ClientDataGrid({
         }
     }
 
-    async function ConnectionDelete(requestor_id, client_vendor_id) {
-        const apiData = {requestor_id, client_vendor_id}
+    async function ConnectionDelete(requester_id, client_vendor_id) {
+        const apiData = {requester_id, client_vendor_id}
         console.log(apiData);
         const csrftoken = getCookie('csrftoken');
         const requestOptions = {
@@ -183,6 +186,11 @@ export default function ClientDataGrid({
             ClientListGet(employerID);
         }
     }, [refreshRecord]);
+
+    useEffect(() => {
+        // Toggle the flag whenever the location (URL) changes
+        setRefreshRecord(prev => !prev);
+    }, [location.pathname]);
 
     const deleteProps = {
         open: isDelete,

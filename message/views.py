@@ -8,16 +8,22 @@ from message.models import *
 from message.serializers import *
 
 
-def new_message(author, recipient, type_id, text):
+def new_message(author, recipient, type_id, text, connection):
     message = Message.objects.create(mid=gen_uuid("MID"), author=author, recipient=recipient, type_id=type_id,
-                                     text=text)
+                                     text=text, connection=connection)
     return message
 
 
-def create_connection_request_message(author, recipient):
+def create_connection_request_message(author, recipient, connection):
     type_id = next((item['mtid'] for item in cache.get("MessageType") if item["name"] == "Notification"), None)
     text = f"New connection request from {author.user.username}!"
-    new_message(author, recipient, type_id, text)
+    new_message(author, recipient, type_id, text, connection)
+
+
+def read_connection_message(connection):
+    messages = Message.objects.filter(connection=connection)
+    for message in messages:
+        message.read()
 
 
 class NotificationUnreadListGetView(APIView):

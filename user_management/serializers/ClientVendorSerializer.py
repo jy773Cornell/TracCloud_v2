@@ -4,21 +4,6 @@ from api.models import *
 from django.db.models import Q
 
 
-class ConnectionGetSerializer(serializers.ModelSerializer):
-    user = serializers.SerializerMethodField()
-    type = serializers.SerializerMethodField()
-
-    class Meta:
-        model = UserProfile
-        fields = ("uid", "user", "type", "business_name")
-
-    def get_type(self, obj):
-        return obj.type.name
-
-    def get_user(self, obj):
-        return obj.user.username
-
-
 class ClientVendorGetSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
@@ -35,12 +20,12 @@ class ClientVendorGetSerializer(serializers.ModelSerializer):
 
 
 class ClientVendorDeleteSerializer(serializers.ModelSerializer):
-    requestor_id = serializers.CharField()
+    requester_id = serializers.CharField()
     client_vendor_id = serializers.CharField()
 
     class Meta:
         model = UserRelation
-        fields = ["requestor_id", "client_vendor_id"]
+        fields = ["requester_id", "client_vendor_id"]
 
         def validate(self, data):
             for field in self.fields:

@@ -3,7 +3,7 @@ import {AddButton} from "./styles";
 import AddIcon from "@mui/icons-material/Add";
 
 const ClientDataGrid = lazy(() => import('./ClientDataGrid'))
-const ConnectionForm = lazy(() => import('../ConnectionForm'))
+const ConnectionForm = lazy(() => import('../ConnectionRequestForm'))
 
 export default function ClientList(props) {
     const uid = props.uid;

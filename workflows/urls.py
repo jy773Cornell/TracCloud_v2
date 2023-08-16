@@ -31,4 +31,6 @@ urlpatterns = [
     path('connection/initiate/', ConnectionInitiateView.as_view()),
     path('connection/approve/', ConnectionApproveView.as_view()),
     path('connection/reject/', ConnectionRejectView.as_view()),
+    path('connection/search/', ConnectionSearchAPIView.as_view()),
+    path('connection/requester/get/', ConnectionRequesterGetView.as_view()),
 ]
