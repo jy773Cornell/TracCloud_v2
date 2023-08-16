@@ -1,4 +1,5 @@
 from api.models import *
+from message.models import *
 from io import BytesIO
 from django.core.cache import cache
 from openpyxl import load_workbook
@@ -33,6 +34,8 @@ def preload_ref_data():
     cache.set('ApplicationTarget', list(ApplicationTarget.objects.all().values()), None)
 
     cache.set('Unit', list(Unit.objects.all().values()), None)
+
+    cache.set('MessageType', list(MessageType.objects.all().values()), None)
 
     workbook_bytes = create_workbook_bytes('api/static/ReportTemplates/CentralPosting-template.xlsx')
     cache.set('central_posting_template', workbook_bytes, None)

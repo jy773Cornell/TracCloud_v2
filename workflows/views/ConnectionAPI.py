@@ -2,6 +2,8 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from workflows.serializers.ConnectionSerializer import *
+from message.models import *
+from message.views import *
 from django.db import transaction
 
 
@@ -17,6 +19,9 @@ class ConnectionInitiateView(APIView):
                 connection_process = Connection(cpid=data["cpid"])
                 connection_process.initiate(data["requester"], data["provider"])
                 connection_process.save()
+
+                create_connection_request_message(data["requester"], data["provider"])
+
             return Response({'Succeeded': 'Process Has Been Initiated.'}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

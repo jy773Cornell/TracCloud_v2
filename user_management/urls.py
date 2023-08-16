@@ -12,4 +12,5 @@ urlpatterns = [
     path('employer/get/', EmployerGetView.as_view()),
     path('client/search/', ConnectionSearchAPIView.as_view()),
     path('client_or_vendor/list/get/', ClientVendorListGetView.as_view()),
+    path('client_or_vendor/connection/delete/', ClientVendorConnectionDeleteView.as_view()),
 ]

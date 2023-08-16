@@ -2,6 +2,8 @@ import pytrie
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
+from api.utils.ModelManager import request_data_transform
 from user_management.serializers.ClientVendorSerializer import *
 from user_management.utils.NewAccount import *
 from django.db.models import Q
@@ -63,3 +65,26 @@ class ClientVendorListGetView(APIView):
                             status=status.HTTP_200_OK)
 
         return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ClientVendorConnectionDeleteView(APIView):
+    serializer_class = ClientVendorDeleteSerializer
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            requester_id = serializer.validated_data['requestor_id']
+            client_vendor_id = serializer.validated_data['client_vendor_id']
+
+            # Fetch the relation based on the validated data
+            relation = UserRelation.objects.filter(
+                Q(provider=requester_id, requester=client_vendor_id) |
+                Q(provider=client_vendor_id, requester=requester_id),
+                is_active=True
+            )
+
+            relation.delete()
+
+            return Response({'Succeeded': 'Connection Deleted.'}, status=status.HTTP_200_OK)
+
+        return Response({'Bad Request': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)

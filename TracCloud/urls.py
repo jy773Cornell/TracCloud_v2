@@ -22,5 +22,6 @@ urlpatterns = [
     path('workflow/', include('workflows.urls')),
     path('user_manage/', include('user_management.urls')),
     path('media/', include('media.urls')),
+    path('message/', include('message.urls')),
     path('', include('frontend.urls')),
 ]

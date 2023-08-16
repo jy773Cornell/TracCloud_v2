@@ -9,14 +9,18 @@ const Layout = lazy(() => import('../Layout'))
 export default function AuthComponent({
                                           uid,
                                           setUID,
+                                          employerID,
                                           setEmployerID,
+                                          privilege,
                                           setPrivilege,
                                           relationType,
                                           setRelationType,
                                           userType,
                                           SetUserType,
                                           username,
-                                          setUsername
+                                          setUsername,
+                                          notificationFetch,
+                                          setNotificationFetch,
                                       }) {
     const [authStatus, setAuthStatus] = useState("loading")
 
@@ -90,7 +94,9 @@ export default function AuthComponent({
         uid,
         username,
         relationType,
-        userType
+        userType,
+        notificationFetch,
+        setNotificationFetch,
     }
 
     if (authStatus === "loading") {

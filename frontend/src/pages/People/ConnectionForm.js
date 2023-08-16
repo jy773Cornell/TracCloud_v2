@@ -91,6 +91,7 @@ export default function ConnectionForm({
 
     useEffect(() => {
         setClientOptions([]);
+        setFieldError(false);
     }, [openForm]);
 
     const sendProps = {

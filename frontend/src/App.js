@@ -18,7 +18,7 @@ const HarvestRecord = lazy(() => import('./pages/HarvestRecord'))
 const PurchaseRecord = lazy(() => import('./pages/PurchaseRecord'))
 const Report = lazy(() => import('./pages/Report'))
 
-function App() {
+export default function App() {
     const [uid, setUID] = useState("")
     const [username, setUsername] = useState("")
     const [relationType, setRelationType] = useState("")
@@ -26,17 +26,23 @@ function App() {
     const [employerID, setEmployerID] = useState("")
     const [privilege, setPrivilege] = useState({})
 
+    const [notificationFetch, setNotificationFetch] = useState({})
+
     const authProps = {
         uid,
         setUID,
+        employerID,
         setEmployerID,
+        privilege,
         setPrivilege,
         relationType,
         setRelationType,
         userType,
         SetUserType,
         username,
-        setUsername
+        setUsername,
+        notificationFetch,
+        setNotificationFetch,
     };
 
     const userProps = {uid, username, employerID, privilege, userType, relationType}
@@ -48,6 +54,14 @@ function App() {
         }, []);
         return null;
     }
+
+    // Toggle notification flag so that notification
+    // will be updated each time it navigates to a different page
+    useEffect(() => {
+        return history.listen(() => {
+            setNotificationFetch(prevState => !prevState);
+        });
+    }, [history]);
 
     return (
         <HistoryRouter history={history}>
@@ -76,5 +90,3 @@ function App() {
         </HistoryRouter>
     )
 }
-
-export default App

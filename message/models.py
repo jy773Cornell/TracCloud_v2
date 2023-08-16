@@ -5,7 +5,7 @@ from media.models import *
 
 class Message(models.Model):
     mid = models.CharField(verbose_name="MID", primary_key=True, max_length=48)
-    type = models.ForeignKey("MessageType", verbose_name="Documents", related_name='message_type',
+    type = models.ForeignKey("MessageType", verbose_name="Type", related_name='message_type',
                              null=True, blank=True, on_delete=models.SET_NULL)
     author = models.ForeignKey(UserProfile, verbose_name="Author", to_field="uid",
                                related_name="author_user", on_delete=models.CASCADE)

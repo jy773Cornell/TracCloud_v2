@@ -8,9 +8,30 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import {Badge, Menu, MenuItem, Typography} from "@mui/material";
 import SettingsIcon from '@mui/icons-material/Settings';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import {lazy, useState} from "react";
+
+const NotificationList = lazy(() => import('../NotificationList'))
+const SettingList = lazy(() => import('../SettingList'))
 
 export default function LayoutAppBar(props) {
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [settingAnchorEl, setSettingAnchorEl] = React.useState(null);
+    const [notificationAnchorEl, setNotificationAnchorEl] = React.useState(null);
+    const [notificationItems, setNotificationItems] = useState([]);
+
+    const notificationProps = {
+        ...props,
+        notificationAnchorEl,
+        setNotificationAnchorEl,
+        notificationItems,
+        setNotificationItems
+
+    }
+
+    const settingProps = {
+        ...props,
+        settingAnchorEl,
+        setSettingAnchorEl,
+    }
 
     return (
         <Box>
@@ -33,11 +54,12 @@ export default function LayoutAppBar(props) {
                         </Typography>
                         <IconButton
                             size="large"
+                            color="inherit"
                             aria-label="new notifications"
                             aria-haspopup="true"
-                            color="inherit"
+                            onClick={(event) => setNotificationAnchorEl(event.currentTarget)}
                         >
-                            <Badge badgeContent={0} color="error">
+                            <Badge badgeContent={notificationItems.length} color="error">
                                 <NotificationsIcon/>
                             </Badge>
                         </IconButton>
@@ -46,30 +68,16 @@ export default function LayoutAppBar(props) {
                             color="inherit"
                             aria-controls="setting-menu"
                             aria-haspopup="true"
-                            onClick={(event) => setAnchorEl(event.currentTarget)}
+                            onClick={(event) => setSettingAnchorEl(event.currentTarget)}
                         >
                             <SettingsIcon/>
                         </IconButton>
-                        <Menu
-                            id="setting-menu"
-                            anchorEl={anchorEl}
-                            keepMounted
-                            open={Boolean(anchorEl)}
-                            onClose={() => setAnchorEl(null)}
-                        >
-                            <MenuItem>
-                                <a href="/workflow/username_change/" target="_blank"
-                                   rel="noopener noreferrer">Username</a>
-                            </MenuItem>
-                            <MenuItem>
-                                <a href="/workflow/password_change/" target="_blank"
-                                   rel="noopener noreferrer">Password</a>
-                            </MenuItem>
-                        </Menu>
                         <IconButton size="large" aria-label="logout" color="inherit"
                                     onClick={props.handleLogout}>
                             <LogoutIcon/>
                         </IconButton>
+                        <NotificationList {...notificationProps}/>
+                        <SettingList {...settingProps}/>
                     </Box>
                 </Toolbar>
             </AppBar>
