@@ -137,7 +137,7 @@ export default function VendorDataGrid({
         },
         {
             field: 'user',
-            headerName: 'Client User',
+            headerName: 'Vendor User',
             width: columnWidth,
         },
         {
