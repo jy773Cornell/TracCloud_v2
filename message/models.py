@@ -12,6 +12,7 @@ class Message(models.Model):
                                related_name="author_user", on_delete=models.CASCADE)
     recipient = models.ForeignKey(UserProfile, verbose_name="Recipient", to_field="uid",
                                   related_name="recipient_user", on_delete=models.CASCADE)
+    subject = models.TextField(verbose_name="Subject", null=True, blank=True)
     text = models.TextField(verbose_name="Text", null=True, blank=True)
     connection = models.ForeignKey(Connection, verbose_name="Connection", to_field="cpid",
                                    related_name="message_connection", null=True, blank=True, on_delete=models.CASCADE)

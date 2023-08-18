@@ -19,6 +19,7 @@ const PurchaseRecord = lazy(() => import('./pages/PurchaseRecord'))
 const Report = lazy(() => import('./pages/Report'))
 
 const ConnectionResponseForm = lazy(() => import('./pages/People/ConnectionResponseForm'))
+const SharingHistoryList = lazy(() => import('./pages/People/ReportSharingWindow/SharingHistoryList'))
 
 export default function App() {
     const [uid, setUID] = useState("")

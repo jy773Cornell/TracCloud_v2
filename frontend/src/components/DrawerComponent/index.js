@@ -42,7 +42,7 @@ export default function LayoutDrawer(props) {
         <>
             <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/home')}
-                                selected={location.pathname === "/home"}>
+                                selected={location.pathname.startsWith("/home")}>
                     <ListItemIcon>
                         <HomeIcon/>
                     </ListItemIcon>
@@ -51,7 +51,7 @@ export default function LayoutDrawer(props) {
             </ListItem>
             <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/profile')}
-                                selected={location.pathname === "/profile"}>
+                                selected={location.pathname.startsWith("/profile")}>
                     <ListItemIcon>
                         <AccountBoxIcon/>
                     </ListItemIcon>
@@ -60,7 +60,7 @@ export default function LayoutDrawer(props) {
             </ListItem>
             <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/people')}
-                                selected={location.pathname === "/people"}>
+                                selected={location.pathname.startsWith("/people")}>
                     <ListItemIcon>
                         <PeopleIcon/>
                     </ListItemIcon>
@@ -75,7 +75,7 @@ export default function LayoutDrawer(props) {
             {CommonPages()}
             <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/crop')}
-                                selected={location.pathname === "/crop"}>
+                                selected={location.pathname.startsWith("/crop")}>
                     <ListItemIcon>
                         <GrassIcon/>
                     </ListItemIcon>
@@ -84,7 +84,7 @@ export default function LayoutDrawer(props) {
             </ListItem>
             <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/site')}
-                                selected={location.pathname === "/site"}>
+                                selected={location.pathname.startsWith("/site")}>
                     <ListItemIcon>
                         <HolidayVillageIcon/>
                     </ListItemIcon>
@@ -93,7 +93,7 @@ export default function LayoutDrawer(props) {
             </ListItem>
             <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/chemical')}
-                                selected={location.pathname === "/chemical"}>
+                                selected={location.pathname.startsWith("/chemical")}>
                     <ListItemIcon>
                         <ScienceIcon/>
                     </ListItemIcon>
@@ -103,7 +103,7 @@ export default function LayoutDrawer(props) {
             <ListItem disablePadding>
                 <ListItemButton
                     onClick={() => handleMenuButtonPressed('/purchase')}
-                    selected={location.pathname === "/purchase"}>
+                    selected={location.pathname.startsWith("/purchase")}>
                     <ListItemIcon>
                         <ShoppingCartIcon/>
                     </ListItemIcon>
@@ -112,7 +112,7 @@ export default function LayoutDrawer(props) {
             </ListItem>
             <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/equipment')}
-                                selected={location.pathname === "/equipment"}>
+                                selected={location.pathname.startsWith("/equipment")}>
                     <ListItemIcon>
                         <ConstructionIcon/>
                     </ListItemIcon>
@@ -122,7 +122,7 @@ export default function LayoutDrawer(props) {
             <ListItem disablePadding>
                 <ListItemButton
                     onClick={() => handleMenuButtonPressed('/spray')}
-                    selected={location.pathname === "/spray"}>
+                    selected={location.pathname.startsWith("/spray")}>
                     <ListItemIcon>
                         <WaterfallChartIcon/>
                     </ListItemIcon>
@@ -131,7 +131,7 @@ export default function LayoutDrawer(props) {
             </ListItem>
             <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/spraycard')}
-                                selected={location.pathname === "/spraycard"}>
+                                selected={location.pathname.startsWith("/spraycard")}>
                     <ListItemIcon>
                         <AssignmentTurnedInIcon/>
                     </ListItemIcon>
@@ -140,7 +140,7 @@ export default function LayoutDrawer(props) {
             </ListItem>
             <ListItem disablePadding>
                 <ListItemButton onClick={() => handleMenuButtonPressed('/report')}
-                                selected={location.pathname === "/report"}>
+                                selected={location.pathname.startsWith("/report")}>
                     <ListItemIcon>
                         <SummarizeIcon/>
                     </ListItemIcon>

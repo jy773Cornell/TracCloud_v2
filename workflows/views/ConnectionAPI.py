@@ -6,6 +6,7 @@ from message.models import *
 from message.views import *
 from django.db import transaction
 import pytrie
+from message.views import *
 
 
 class ConnectionInitiateView(APIView):
@@ -21,7 +22,7 @@ class ConnectionInitiateView(APIView):
                 connection_process.initiate(data["requester"], data["provider"])
                 connection_process.save()
 
-                create_connection_request_message(data["requester"], data["provider"], connection_process)
+                create_connection_request_notification(data["requester"], data["provider"], connection_process)
 
             return Response({'Succeeded': 'Process Has Been Initiated.'}, status=status.HTTP_200_OK)
 

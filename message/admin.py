@@ -4,7 +4,7 @@ from api.utils.UUIDGen import gen_uuid
 
 
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('mid', 'type', 'author', 'recipient', 'text', 'is_read', 'create_time',)
+    list_display = ('mid', 'type', 'author', 'recipient', 'subject', 'is_read', 'create_time',)
 
     list_filter = ('type',)
 

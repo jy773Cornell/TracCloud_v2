@@ -2,6 +2,7 @@ import React, {lazy, useEffect} from 'react';
 import {Navigate} from 'react-router-dom'
 import {useState} from "react";
 import {getToken, getCookie} from "../../utils";
+import {NotificationFetchContext} from '../NotificationList/NotificationFetchContext';
 
 const Loading = lazy(() => import('../Loading'))
 const Layout = lazy(() => import('../Layout'))
@@ -20,7 +21,8 @@ export default function AuthComponent({
                                           username,
                                           setUsername,
                                       }) {
-    const [authStatus, setAuthStatus] = useState("loading")
+    const [authStatus, setAuthStatus] = useState("loading");
+    const [notificationFetch, setNotificationFetch] = useState(false)
 
     async function AuthCheck() {
         const csrftoken = getCookie('csrftoken');
@@ -98,7 +100,12 @@ export default function AuthComponent({
     if (authStatus === "loading") {
         return <Loading/>
     } else if (authStatus === "authorized") {
-        return <Layout {...layoutProps}/>
+        return (
+            <NotificationFetchContext.Provider
+                value={{notificationFetch, toggleNotificationFetch: () => setNotificationFetch(prev => !prev)}}>
+                <Layout {...layoutProps}/>
+            </NotificationFetchContext.Provider>
+        );
     } else if (authStatus === "unauthorized") {
         return <Navigate to="/login" replace/>
     }

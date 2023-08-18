@@ -1,19 +1,20 @@
 import {getCookie} from "../../utils";
-import {Autocomplete, Button, Card, CardContent, Grid, Modal, TextField} from "@mui/material";
+import {Button, Card, CardContent, Grid, Modal, TextField} from "@mui/material";
 import * as React from "react";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import OperationSnackbars from "../../components/Snackbars";
-import {useNavigate} from 'react-router-dom';
 import {useLocation} from 'react-router-dom';
+import {NotificationFetchContext} from "../../components/NotificationList/NotificationFetchContext";
 
 export default function ConnectionResponseForm(props) {
+    const {notificationFetch, toggleNotificationFetch} = useContext(NotificationFetchContext);
+
     const [requester, SetRequester] = useState(null);
     const [openForm, setOpenForm] = useState(true);
     const [isSuccess, setIsSuccess] = useState(false);
     const [isFailed, setIsFailed] = useState(false);
     const [isWarning, setIsWarning] = useState(false);
 
-    const navigate = useNavigate();
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
 
@@ -57,9 +58,7 @@ export default function ConnectionResponseForm(props) {
                 setIsFailed(true);
             }
             setOpenForm(false);
-            setTimeout(() => {
-                navigate("/people");
-            }, 3000);
+            toggleNotificationFetch();
 
         } catch (error) {
             console.error("Failed to fetch", error);
@@ -88,9 +87,7 @@ export default function ConnectionResponseForm(props) {
                 setIsFailed(true);
             }
             setOpenForm(false);
-            setTimeout(() => {
-                navigate("/people");
-            }, 3000);
+            toggleNotificationFetch();
 
         } catch (error) {
             console.error("Failed to fetch", error);
@@ -146,7 +143,7 @@ export default function ConnectionResponseForm(props) {
                                 <Button variant="contained"
                                         onClick={() => {
                                             setOpenForm(false);
-                                            navigate("/people");
+                                            toggleNotificationFetch();
                                         }}
                                 >
                                     Later

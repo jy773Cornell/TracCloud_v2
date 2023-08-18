@@ -35,7 +35,7 @@ export default function ConnectionRequestForm({
     }
 
     async function RequestConnection(requester_id, provider_id) {
-        const apiData = {requester_id: requester_id, "provider_id": provider_id};
+        const apiData = {requester_id, provider_id};
         console.log(apiData);
         const csrftoken = getCookie('csrftoken');
         const requestOptions = {

@@ -2,6 +2,8 @@ from media.serializers.ReportSerializer import *
 from media.views.ReportGenerators import *
 from azure.storage.blob import BlobServiceClient
 from django.conf import settings
+from message.views import *
+from django.db import transaction
 
 
 class ReportListGetView(APIView):
@@ -69,3 +71,19 @@ class ReportDeleteView(APIView):
                 return Response({"error": "Report not found"}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({'Bad Request': 'Invalid POST parameters'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ReportsSendView(APIView):
+    serializer_class = ReportsSendSerializer
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            data = serializer.validated_data
+            with transaction.atomic():
+                create_new_reports_notification(data["author"], data["recipient"], data["reports"], data["subject"])
+
+            return Response({'Succeeded': 'Reports Has Been Sent.'}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

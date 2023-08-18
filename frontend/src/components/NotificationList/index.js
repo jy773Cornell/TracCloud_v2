@@ -1,13 +1,12 @@
 import * as React from 'react';
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {Menu, MenuItem, Typography} from "@mui/material";
 import {Box} from "@mui/system";
-import {useLocation} from "react-router-dom";
+import {NotificationFetchContext} from "./NotificationFetchContext";
 
 export default function NotificationList(props) {
+    const {notificationFetch, toggleNotificationFetch} = useContext(NotificationFetchContext);
     const [notificationList, setNotificationList] = useState([]);
-    const [notificationFetch, setNotificationFetch] = useState({})
-    const location = useLocation();
 
     async function NotificationListGet(recipient_id) {
         const requestOptions = {
@@ -42,16 +41,46 @@ export default function NotificationList(props) {
     };
 
     const createNotificationItems = (notificationData) => {
+        const subjectGenerator = (type, author) => {
+            let subject;
+
+            switch (type) {
+                case "Connection":
+                    subject = `New connection request from ${author}!`;
+                    break;
+                case "Reports":
+                    subject = `New shared reports from ${author}!`;
+                    break;
+            }
+
+            return subject;
+        }
+
+        const urlGenerator = (type, author, mid, connection) => {
+            let url;
+
+            switch (type) {
+                case "Connection":
+                    url = `people/connection/?mid=${mid}&cpid=${connection}`;
+                    break;
+                case "Reports":
+                    url = `people/?mid=${mid}&reportHistory=${true}`;
+                    break;
+            }
+
+            return url;
+        }
+
         return (
             notificationData.map(item => {
                 return {
                     id: item.mid,
-                    text: item.text,
+                    subject: subjectGenerator(item.type, item.author),
                     time: formatDate(item.create_time),
                     type: item.type,
                     author: item.author,
                     recipient: item.recipient,
-                    url: `people/connection/?mid=${item.mid}&cpid=${item.connection}`,
+                    url: urlGenerator(item.type, item.author, item.mid, item.connection),
                 };
             })
         )
@@ -64,13 +93,8 @@ export default function NotificationList(props) {
     }, [notificationFetch]);
 
     useEffect(() => {
-        // Toggle the flag whenever the location (URL) changes
-        setNotificationFetch(prev => !prev);
-    }, [location.pathname]);
-
-    useEffect(() => {
         const interval = setInterval(() => {
-            setNotificationFetch(prev => !prev);
+            toggleNotificationFetch();
         }, 30000);
 
         // Cleanup on unmount
@@ -91,7 +115,7 @@ export default function NotificationList(props) {
                         <a href={item.url}>
                             <Box display="flex" justifyContent="space-between" alignItems="center">
                                 <Typography variant="inherit" style={{fontSize: '0.9rem'}}>
-                                    {item.text}
+                                    {item.subject}
                                 </Typography>
                                 <Box mx={1}></Box>
                                 <Typography variant="inherit" noWrap style={{fontSize: '0.9rem'}}>

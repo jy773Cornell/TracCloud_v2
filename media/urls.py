@@ -5,6 +5,7 @@ urlpatterns = [
     path('report/list/get/', ReportListGetView.as_view()),
     path('report/download/', ReportDownloadView.as_view()),
     path('report/delete/', ReportDeleteView.as_view()),
+    path('reports/send/', ReportsSendView.as_view()),
 
     # ReportAPI
     path('report/central-posting/', CentralPostingView.as_view()),

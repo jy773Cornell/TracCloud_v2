@@ -32,6 +32,8 @@ function CustomToolbar() {
 export default function FileDataGrid({
                                          employerID,
                                          privilege,
+                                         selectedFiles,
+                                         setSelectedFiles,
                                      }) {
     const [fileList, setFileList] = useState([]);
     const [rows, setRows] = useState([]);
@@ -101,11 +103,15 @@ export default function FileDataGrid({
     }, []);
 
     return (
-        <Paper style={{height: 'calc(3/4 * 9/10 * 100vh)', marginLeft: '16px', marginTop: '16px', overflow: 'auto'}}>
+        <Paper style={{height: 'calc(3/4 * 5/6 * 100vh)', marginLeft: '16px', marginTop: '16px', overflow: 'auto'}}>
             <DataGrid
                 columns={columns}
                 rows={rows}
                 checkboxSelection
+                onRowSelectionModelChange={(newRowSelectionModel) => {
+                    setSelectedFiles(newRowSelectionModel);
+                }}
+                rowSelectionModel={selectedFiles}
                 slots={{
                     toolbar: () => <CustomToolbar/>,
                 }}
