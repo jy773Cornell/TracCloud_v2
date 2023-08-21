@@ -69,7 +69,7 @@ const OwnerEmployeeEntryList = [
     },
     {
         id: "generate_report_page",
-        name: "Generate Reports",
+        name: "Reports",
         description: "Create reports based on your business data!",
         path: "/report"
     },

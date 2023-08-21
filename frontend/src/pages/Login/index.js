@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {Grid, Button, Typography, Link, TextField, Checkbox, FormControlLabel} from '@mui/material'
+import {Grid, Button, Typography, Link, TextField, Checkbox, FormControlLabel, Popover} from '@mui/material'
 import {StyledCard, StyledGrid, StyledTypography} from "./styles";
 import {setToken, getCookie} from "../../utils";
 import {useNavigate} from "react-router-dom";
@@ -8,11 +8,49 @@ export default function Login() {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [remember, setRemember] = useState(false)
+    const [anchorEl, setAnchorEl] = useState(null);
     const [errors, setErrors] = useState({
         "status": [false, false], "message": ["", ""],
     })
 
     const navigate = useNavigate();
+
+    const QRCodes = () => {
+        return (
+            <>
+                <Popover
+                    open={Boolean(anchorEl)}
+                    anchorEl={anchorEl}
+                    onClose={() => setAnchorEl(null)}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'center',
+                    }}
+                >
+                    <Grid container>
+                        <Grid item xs={6} container direction="column" alignItems="center" justify="center">
+                            <img
+                                src="../../static/frontend/img/ios_QR.png"
+                                style={{width: '100px', height: '100px', margin: '8px', marginBottom: '0px'}}
+                                alt="iOS QR Code"/>
+                            <div style={{textAlign: 'center', marginBottom: '8px'}}>iOS</div>
+                        </Grid>
+                        <Grid item xs={6} container direction="column" alignItems="center" justify="center">
+                            <img
+                                src="../../static/frontend/img/android_QR.png"
+                                style={{width: '100px', height: '100px', margin: '8px', marginBottom: '0px'}}
+                                alt="Android QR Code"/>
+                            <div style={{textAlign: 'center', marginBottom: '8px'}}>Android</div>
+                        </Grid>
+                    </Grid>
+                </Popover>
+            </>
+        );
+    }
 
     function handleUsernameChange(event) {
         setUsername(event.target.value);
@@ -118,24 +156,24 @@ export default function Login() {
                         alignItems="center"
                         textAlign="center"
                     >
-                        <Grid item xs={4}>
-                            <img
-                                src="../../static/frontend/img/expo.png"
-                                style={{width: '100px', height: '100px', margin: '10px', marginBottom: '0px'}}
-                                alt="QR Code"/>
-                        </Grid>
-                        <Grid item xs={8}>
+                        <Grid item xs={12}>
+                            <Button sx={{marginTop: "8px"}} onClick={(event) => setAnchorEl(event.currentTarget)}>
+                                Obtain the Trac Cloud mobile App
+                            </Button>
+                            {QRCodes()}
                             <Typography>
-                                <Link href="/workflow/registration" target="_blank" rel="noopener noreferrer">Don't have an account? Sign Up</Link>
+                                <Link href="/workflow/registration" target="_blank" rel="noopener noreferrer">
+                                    Don't have an account? Sign Up</Link>
                             </Typography>
                             <StyledTypography>
-                                <Link href="/workflow/password_reset" target="_blank" rel="noopener noreferrer">Forgot password?</Link>
+                                <Link href="/workflow/password_reset" target="_blank" rel="noopener noreferrer">
+                                    Forgot password?
+                                </Link>
                             </StyledTypography>
                         </Grid>
                     </Grid>
                 </form>
             </StyledCard>
         </StyledGrid>
-
     )
 }
