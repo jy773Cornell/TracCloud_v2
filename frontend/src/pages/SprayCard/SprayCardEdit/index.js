@@ -102,8 +102,9 @@ export default function SprayCardEdit({
             initialFieldValues[field_names[12]][i] = sprayOptions.growthStageOptions.find(option => option.id === preGrowthStage[i]);
         }
 
-        setSelectedResponsible(sprayOptions.assigneeOptions.find(option => option.id === sprayCardContents[0].responsible_person));
-        initialFieldValues[field_names[11]] = sprayCardContents[0].responsible_person;
+        const preResponsible = sprayOptions.assigneeOptions.find(option => option.label === sprayCardContents[0].responsible_person)
+        setSelectedResponsible(preResponsible);
+        initialFieldValues[field_names[11]] = preResponsible.id;
 
         return initialFieldValues
     };

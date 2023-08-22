@@ -14,9 +14,7 @@ def generate_random(length=8):
 
 # Employee pricileges
 
-def default_privilege(type_id, relation_type):
-    user_type = next((item['name'] for item in cache.get("UserType") if item['utid'] == type_id), None)
-
+def default_privilege(type, relation_type):
     if relation_type in ["Owner", "Client"]:
         return full_privileges
     else:

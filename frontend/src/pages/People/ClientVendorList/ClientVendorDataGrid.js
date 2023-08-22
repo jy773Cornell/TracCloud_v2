@@ -8,7 +8,7 @@ import {
     GridToolbarExport,
     GridToolbarFilterButton
 } from "@mui/x-data-grid";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import IconButton from "@mui/material/IconButton";
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -17,6 +17,7 @@ import {getCookie} from "../../../utils";
 import OperationSnackbars from "../../../components/Snackbars";
 import {useLocation} from "react-router-dom";
 import CallReceivedIcon from "@mui/icons-material/CallReceived";
+import {NotificationFetchContext} from "../../../components/NotificationList/NotificationFetchContext";
 
 
 function CustomToolbar() {
@@ -39,6 +40,8 @@ export default function ClientVendorDataGrid({
                                                  setSelectedUser,
                                                  relationType
                                              }) {
+    const {notificationFetch, toggleNotificationFetch} = useContext(NotificationFetchContext);
+
     const [userList, setUserList] = useState([]);
     const [rows, setRows] = useState([]);
     const [mounted, setMounted] = useState(false);
@@ -196,7 +199,7 @@ export default function ClientVendorDataGrid({
         if (mounted) {
             ClientVendorListGet(employerID);
         }
-    }, [refreshRecord]);
+    }, [refreshRecord, notificationFetch]);
 
     useEffect(() => {
         // Toggle the flag whenever the location (URL) changes

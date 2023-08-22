@@ -33,7 +33,13 @@ export default function SharingHistoryList(props) {
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        setReportsHistoryList(data.data);
+                        setReportsHistoryList(data.report_messages);
+
+                        setReportUserName(
+                            props.relationType === "Client" ?
+                                data.users.author
+                                : data.users.recipient
+                        )
                     })
                 }
             })
@@ -116,9 +122,9 @@ export default function SharingHistoryList(props) {
         setOpenIndexes(isOpen ? openIndexes.filter(id => id !== mid) : [...openIndexes, mid]);
     };
 
-    const handleRead = (message) => {
+    const handleRead = async (message) => {
         if (!message.is_read && props.relationType === "Client") {
-            ReadMessage(message.mid);
+            await ReadMessage(message.mid);
             toggleNotificationFetch();
         }
     };

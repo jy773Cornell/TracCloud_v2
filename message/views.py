@@ -80,9 +80,12 @@ class ReportMessageListGetView(APIView):
         if author_id and recipient_id:
             message_list = Message.objects.filter(author_id=author_id, recipient_id=recipient_id, type__name="Reports") \
                 .order_by("is_read", "-create_time")
-            data = [self.serializer_class(message).data for message in message_list]
-            return Response({'Succeeded': 'Report Message List Fetched.', 'data': data},
-                            status=status.HTTP_200_OK)
+            report_messages = [self.serializer_class(message).data for message in message_list]
+            users = {"author": UserProfile.objects.get(uid=author_id).user.username,
+                     "recipient": UserProfile.objects.get(uid=recipient_id).user.username}
+            return Response(
+                {'Succeeded': 'Report Message List Fetched.', 'report_messages': report_messages, "users": users},
+                status=status.HTTP_200_OK)
 
         return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
 

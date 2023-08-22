@@ -72,7 +72,7 @@ export default function App() {
                         <Route path="chemical" element={<Chemical {...userProps}/>}/>
                         <Route path="purchase" element={<PurchaseRecord {...userProps}/>}/>
                         <Route path="equipment" element={<Equipment {...userProps}/>}/>
-                        <Route path="spray" element={<SprayRecord {...userProps}/>}/>
+                        <Route path="sprayrecord" element={<SprayRecord {...userProps}/>}/>
                         <Route path="spraycard" element={<SprayCard {...userProps}/>}/>
                         <Route path="report" element={<Report {...userProps}/>}/>
                         <Route path="admin" element={<RedirectToURL url={'/admin'}/>}/>

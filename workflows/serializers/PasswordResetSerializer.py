@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from workflows.models import PasswordReset
 from django.contrib.auth.models import User
+from api.models import *
 
 
 class PasswordResetRequestSerializer(serializers.ModelSerializer):
@@ -17,10 +18,14 @@ class PasswordResetRequestSerializer(serializers.ModelSerializer):
 
         try:
             user = User.objects.get(username=username)
-            if user.email != email:
+            user_profile = UserProfile.objects.get(user=user)
+            if user_profile.email != email:
                 raise serializers.ValidationError("The email does not match the user's email.")
 
         except User.DoesNotExist:
+            raise serializers.ValidationError("The user does not exist.")
+
+        except UserProfile.DoesNotExist:
             raise serializers.ValidationError("The user does not exist.")
 
         return {'user': user}

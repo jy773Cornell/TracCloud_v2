@@ -40,11 +40,11 @@ class Registration(models.Model):
 
     @transition(field=state, source='pending', target='approved')
     def approve(self):
-        new_user = User.objects.create_user(self.username, self.password)
+        new_user = User.objects.create_user(username=self.username, password=self.password)
         uid = gen_uuid("UID")
         UserProfile.objects.create(uid=uid, user=new_user, type=self.type, email=self.email)
 
-        privilege = default_privilege(self.type_id, self.type.relation_type_id)
+        privilege = default_privilege(self.type.name, self.type.relation_type.name)
         UserPrivilege.objects.create(uroid=gen_uuid("UROID"), user_id=uid, **privilege)
 
         send_mail(
@@ -98,12 +98,12 @@ class PasswordReset(models.Model):
     def send_email(self):
         reset_link = os.getenv("TRACLOUD_URL") + reverse('workflow:password_reset_confirm',
                                                          kwargs={'token': self.prpid})
-
+        user_profile = UserProfile.objects.get(user=self.user)
         send_mail(
             'Password Reset Requested',
             f'You requested a password reset. \nVisit this link to update your password: {reset_link}',
             os.getenv("EMAIL_HOST_USER"),
-            [self.user.email],
+            [user_profile.email],
             fail_silently=False,
         )
 
@@ -112,11 +112,12 @@ class PasswordReset(models.Model):
         self.user.set_password(new_password)
         self.user.save()
 
+        user_profile = UserProfile.objects.get(user=self.user)
         send_mail(
             'Password Reset Completed',
             f'Dear {self.user.username}, \n    Your password has been reset. \n    Link to Trac Cloud: {os.getenv("TRACLOUD_URL")}',
             os.getenv("EMAIL_HOST_USER"),
-            [self.user.email],
+            [user_profile.email],
             fail_silently=False,
         )
 
@@ -303,4 +304,3 @@ class Connection(models.Model):
     @transition(field=state, source='pending', target='archived')
     def archive(self):
         self.is_active = False
-

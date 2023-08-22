@@ -122,7 +122,7 @@ export default function LayoutDrawer(props) {
             <ListItem disablePadding>
                 <ListItemButton
                     onClick={() => handleMenuButtonPressed('/spray')}
-                    selected={location.pathname.startsWith("/spray")}>
+                    selected={location.pathname.startsWith("/sprayrecord")}>
                     <ListItemIcon>
                         <WaterfallChartIcon/>
                     </ListItemIcon>
