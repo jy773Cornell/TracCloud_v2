@@ -155,7 +155,7 @@ export default function ReportSharingWindow(props) {
 
     const OwnerEmployeeWindowRender = () => {
         return (
-            <Paper style={{height: 'calc(3/4 * 100vh)', width: 'calc(2/3 * 100vw)'}}>
+            <Paper style={{height: 'calc(3/4 * 100vh)', width: 'calc(4/5 * 100vw)'}}>
                 <Grid container justifyContent="center" spacing={2}>
                     <Grid item xs={8}>
                         <ReportFileList {...dataGridProps}/>
@@ -172,7 +172,7 @@ export default function ReportSharingWindow(props) {
 
     const ClientWindowRender = () => {
         return (
-            <Paper style={{height: 'calc(3/4 * 100vh)', width: 'calc(2/3 * 2/3 * 100vw)'}}>
+            <Paper style={{height: 'calc(3/4 * 100vh)', width: 'calc(4/5 * 2/3 * 100vw)'}}>
                 <Grid container justifyContent="center" spacing={2}>
                     <Grid item xs={12}>
                         <SharingHistoryList {...historyProps}/>
