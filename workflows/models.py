@@ -276,7 +276,7 @@ class Connection(models.Model):
     )
     state = FSMField(default='initiated', choices=STATE_CHOICES)
 
-    relation = models.ForeignKey(UserRelation, verbose_name="Connection Request", on_delete=models.CASCADE)
+    relation = models.ForeignKey(UserRelation, verbose_name="Relation", on_delete=models.CASCADE)
     is_active = models.BooleanField(verbose_name="Is Active", default=True)
     update_time = models.DateTimeField(verbose_name="Update Time", auto_now=True)
     create_time = models.DateTimeField(verbose_name="Create Time", auto_now_add=True)

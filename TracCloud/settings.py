@@ -178,13 +178,3 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
-# CHANNEL SETTING
-
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [f'rediss://:{os.getenv("REDISPASS")}@{os.getenv("REDISHOST")}:6380/0'],
-        },
-    },
-}

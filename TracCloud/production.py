@@ -38,14 +38,3 @@ CACHES = {
         },
     },
 }
-
-# CHANNEL SETTING
-
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [f'rediss://:{redis_conn_str_params["password"]}@{redis_conn_str_params["host"]}:6380/0'],
-        },
-    },
-}
