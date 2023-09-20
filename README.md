@@ -39,9 +39,9 @@
 cd TracCloud_v2
 </code></pre>
 <h2 id="set-up-a-virtual-environment-and-activate-it">Set up a virtual environment and activate it</h2>
-<pre><code>python3 -m venv venv 
+<pre><code>python3 -m venv .\venv\ 
 source venv/bin/activate # Mac
-venv\Scripts\activate # Windows
+.\venv\Scripts\Activate.ps1 # Windows
 </code></pre>
 <h2 id="install-required-packages">Install required packages</h2>
 <pre><code>pip install -r requirements.txt
@@ -49,7 +49,7 @@ venv\Scripts\activate # Windows
 <h2 id="environment-variables-setting">Environment variables setting</h2>
 <p>All the necessary environment variables have been set up in <em><strong>/TracCloud_v2/.env</strong></em> and on the <em><strong>Azure Web App pannal</strong></em>. The environment variables mainly are Azure services connection strings.  Be careful to modify those variables and always make sure they are all matched between the .env file and Azure pannal so that the project could be successfully launched both locally and on the service.</p>
 <h2 id="launch-django-project-locally">Launch Django project locally</h2>
-<pre><code>python manage.py runserver
+<pre><code>python .\manage.py runserver
 </code></pre>
 <h1 id="cloud-deployment">Cloud Deployment</h1>
 <p>The deployment on Azure Web App has been set to continuous deployment from a GitHub repository. So every time there is a new commit pushed into the repo, the deployment will be re-run automatically. Please refer to the deployment pannal on Azure Web App page for more details.</p>
