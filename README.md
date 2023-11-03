@@ -39,7 +39,7 @@
 cd TracCloud_v2
 </code></pre>
 <h2 id="set-up-a-virtual-environment-and-activate-it">Set up a virtual environment and activate it</h2>
-<pre><code>python3 -m venv .\venv\ 
+<pre><code>python -m venv .\venv\ 
 source venv/bin/activate # Mac
 .\venv\Scripts\Activate.ps1 # Windows
 </code></pre>
