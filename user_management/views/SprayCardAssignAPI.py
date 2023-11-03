@@ -16,23 +16,31 @@ class AssigneeGetView(APIView):
         if uid and employer_id:
             privilege = UserPrivilege.objects.get(user_id=uid)
             if privilege:
-                unique_ids = [uid]
+                unique_ids = [uid, employer_id]
                 if privilege.spraycard_a:
                     requester_ids = UserRelation.objects.filter(
                         requester_id=employer_id,
-                        provider__type__relation_type__name='Employee').values_list('provider', flat=True)
+                        provider__type__relation_type__name="Employee",
+                    ).values_list("provider", flat=True)
                     provider_ids = UserRelation.objects.filter(
                         provider_id=employer_id,
-                        requester__type__relation_type__name='Employee').values_list('requester', flat=True)
+                        requester__type__relation_type__name="Employee",
+                    ).values_list("requester", flat=True)
 
                     unique_ids += list(set(requester_ids).union(set(provider_ids)))
 
                 user_profiles = UserProfile.objects.filter(uid__in=unique_ids)
-                assignees = [self.serializer_class(profile).data for profile in user_profiles]
+                assignees = [
+                    self.serializer_class(profile).data for profile in user_profiles
+                ]
 
-                return Response({'Succeeded': 'Assignee List Fetched.', 'data': assignees},
-                                status=status.HTTP_200_OK)
+                return Response(
+                    {"Succeeded": "Assignee List Fetched.", "data": assignees},
+                    status=status.HTTP_200_OK,
+                )
 
-            return Response({'Failed': 'Invalid uid'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"Failed": "Invalid uid"}, status=status.HTTP_404_NOT_FOUND)
 
-        return Response({'Bad Request': 'Invalid GET parameter'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"Bad Request": "Invalid GET parameter"}, status=status.HTTP_400_BAD_REQUEST
+        )
