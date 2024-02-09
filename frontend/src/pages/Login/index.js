@@ -126,7 +126,7 @@ export default function Login() {
                             style={{width: '80px', height: '80px'}}
                             alt="Log"
                         />
-                        <h1 style={{margin: "0"}}>Trac Cloud</h1>
+                        <h1 style={{margin: "0"}}>Trac Crops</h1>
                     </Grid>
                     <TextField label='Username' placeholder='Enter username'
                                variant="standard" fullWidth required
@@ -158,7 +158,7 @@ export default function Login() {
                     >
                         <Grid item xs={12}>
                             <Button sx={{marginTop: "8px"}} onClick={(event) => setAnchorEl(event.currentTarget)}>
-                                Obtain the Trac Cloud mobile App
+                                Obtain the Trac Crops mobile App
                             </Button>
                             {QRCodes()}
                             <Typography>

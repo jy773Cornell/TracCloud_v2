@@ -169,7 +169,7 @@ export default function LayoutDrawer(props) {
         >
             <div>
                 <DrawerHeader>
-                    Trac Cloud
+                    Trac Crops
                 </DrawerHeader>
                 <Divider/>
                 {props.relationType === "Client" ? ClientDrawerList() : OwnerEmployeeDrawerList()}
