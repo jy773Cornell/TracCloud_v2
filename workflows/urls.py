@@ -25,6 +25,9 @@ urlpatterns = [
     path('spraycard/assign/', SprayCardAssignView.as_view()),
     path('spraycard/return/', SprayCardReturnView.as_view()),
     path('spraycard/withdraw/', SprayCardWithdrawView.as_view()),
+    path('spraycard/start/', SprayCardStartView.as_view()),
+    path('spraycard/pause/', SprayCardPauseView.as_view()),
+    path('spraycard/resume/', SprayCardResumeView.as_view()),
     path('spraycard/complete/', SprayCardCompleteView.as_view()),
     path('spraycard/assignees/get/', AssigneeGetView.as_view()),
 
