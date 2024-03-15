@@ -141,6 +141,8 @@ class SprayCard(models.Model):
     STATE_CHOICES = (
         ('initiated', 'Initiated'),
         ('assigned', 'Assigned'),
+        ('in_progress', 'In Progress'),
+        ('paused', 'Paused'),
         ('archived', 'Archived'),
     )
     state = FSMField(default='initiated', choices=STATE_CHOICES)
@@ -218,6 +220,21 @@ class SprayCard(models.Model):
             self.spray_record.save()
         else:
             self.state = "assigned"
+            
+    @transition(field=state, source='assigned', target='start')
+    def start(self):
+        self.spray_record.state = 'in_progress'
+        self.spray_record.save()
+        
+    @transition(field=state, source='in_progress', target='paused')
+    def pause(self):
+        self.spray_record.state = 'paused'
+        self.spray_record.save()
+        
+    @transition(field=state, source='paused', target='in_progress')
+    def resume(self):
+        self.spray_record.state = 'in_progress'
+        self.spray_record.save()
 
     @transition(field=state, source=['initiated', 'assigned'], target='archived')
     def withdraw(self):

@@ -277,6 +277,84 @@ class SprayCarWithdrawSerializer(serializers.ModelSerializer):
         return {'spray_card_process': spray_card_process}
 
 
+class SprayCardStartSerializer(serializers.ModelSerializer):
+    holder_id = serializers.CharField(required=True)
+    spray_card_id = serializers.CharField(required=True)
+
+    class Meta:
+        model = SprayCard
+        fields = ('holder_id', 'spray_card_id',)
+
+    def validate(self, data):
+        holder_id = data.get('holder_id')
+        scpid = data.get('spray_card_id')
+
+        try:
+            holder = UserProfile.objects.get(uid=holder_id, is_active=True)
+        except UserProfile.DoesNotExist:
+            raise serializers.ValidationError("The holder does not exist.")
+
+        try:
+            spray_card_process = SprayCard.objects.get(scpid=scpid, is_active=True)
+            if spray_card_process.holder != holder:
+                raise serializers.ValidationError("Wrong holder for this spray card record.")
+        except SprayCard.DoesNotExist:
+            raise serializers.ValidationError("The spray card record does not exist.")
+
+        return {'spray_card_process': spray_card_process}
+    
+class SprayCardPauseSerializer(serializers.ModelSerializer):
+    holder_id = serializers.CharField(required=True)
+    spray_card_id = serializers.CharField(required=True)
+
+    class Meta:
+        model = SprayCard
+        fields = ('holder_id', 'spray_card_id',)
+
+    def validate(self, data):
+        holder_id = data.get('holder_id')
+        scpid = data.get('spray_card_id')
+
+        try:
+            holder = UserProfile.objects.get(uid=holder_id, is_active=True)
+        except UserProfile.DoesNotExist:
+            raise serializers.ValidationError("The holder does not exist.")
+
+        try:
+            spray_card_process = SprayCard.objects.get(scpid=scpid, is_active=True)
+            if spray_card_process.holder != holder:
+                raise serializers.ValidationError("Wrong holder for this spray card record.")
+        except SprayCard.DoesNotExist:
+            raise serializers.ValidationError("The spray card record does not exist.")
+
+        return {'spray_card_process': spray_card_process}
+    
+class SprayCardResumeSerializer(serializers.ModelSerializer):
+    holder_id = serializers.CharField(required=True)
+    spray_card_id = serializers.CharField(required=True)
+
+    class Meta:
+        model = SprayCard
+        fields = ('holder_id', 'spray_card_id',)
+
+    def validate(self, data):
+        holder_id = data.get('holder_id')
+        scpid = data.get('spray_card_id')
+
+        try:
+            holder = UserProfile.objects.get(uid=holder_id, is_active=True)
+        except UserProfile.DoesNotExist:
+            raise serializers.ValidationError("The holder does not exist.")
+
+        try:
+            spray_card_process = SprayCard.objects.get(scpid=scpid, is_active=True)
+            if spray_card_process.holder != holder:
+                raise serializers.ValidationError("Wrong holder for this spray card record.")
+        except SprayCard.DoesNotExist:
+            raise serializers.ValidationError("The spray card record does not exist.")
+
+        return {'spray_card_process': spray_card_process}
+
 class SprayCardCompleteSerializer(serializers.ModelSerializer):
     holder_id = serializers.CharField(required=True)
     spray_card_id = serializers.CharField(required=True)

@@ -1,7 +1,7 @@
 import * as React from 'react';
-import {lazy, useEffect, useState} from 'react';
-import {Autocomplete, Button, Grid, InputAdornment, TextField} from "@mui/material";
-import {getCookie} from "../../../utils";
+import { lazy, useEffect, useState } from 'react';
+import { Autocomplete, Button, Grid, InputAdornment, TextField } from "@mui/material";
+import { getCookie } from "../../../utils";
 
 const OperationSnackbars = lazy(() => import('../../../components/Snackbars'))
 const ConfirmPopover = lazy(() => import('../ConfirmPopover'))
@@ -9,15 +9,15 @@ const SprayCardEdit = lazy(() => import('../SprayCardEdit'))
 const SprayCardComplete = lazy(() => import('../SprayCardComplete'))
 
 export default function sprayCardContent({
-                                             uid,
-                                             sprayData,
-                                             sprayCardSelected,
-                                             sprayOptions,
-                                             setAssignSprayCard,
-                                             refreshRecord,
-                                             setRefreshRecord,
-                                             privilege
-                                         }) {
+    uid,
+    sprayData,
+    sprayCardSelected,
+    sprayOptions,
+    setAssignSprayCard,
+    refreshRecord,
+    setRefreshRecord,
+    privilege
+}) {
     const [sprayCardContents, setSprayCardContents] = React.useState([]);
     const [responsiblePerson, setResponsiblePerson] = React.useState([]);
     const [gallonsWaterRate, setGallonsWaterRate] = React.useState([]);
@@ -38,7 +38,7 @@ export default function sprayCardContent({
 
     async function SprayCardContentGet(scpid) {
         const requestOptions = {
-            method: "GET", headers: {"Content-Type": "application/json"},
+            method: "GET", headers: { "Content-Type": "application/json" },
         };
         await fetch("/workflow/spraycard/content/get/" + "?scpid=" + scpid, requestOptions)
             .then((response) => {
@@ -51,7 +51,7 @@ export default function sprayCardContent({
     }
 
     async function SprayCardReturn(spray_card_id, holder_id) {
-        const apiData = {"spray_card_id": spray_card_id, "holder_id": holder_id};
+        const apiData = { "spray_card_id": spray_card_id, "holder_id": holder_id };
         console.log(apiData);
         const csrftoken = getCookie('csrftoken');
         const requestOptions = {
@@ -72,7 +72,7 @@ export default function sprayCardContent({
     }
 
     async function SprayCardWithdraw(spray_card_id, owner_id) {
-        const apiData = {"spray_card_id": spray_card_id, "owner_id": owner_id};
+        const apiData = { "spray_card_id": spray_card_id, "owner_id": owner_id };
         console.log(apiData);
         const csrftoken = getCookie('csrftoken');
         const requestOptions = {
@@ -91,6 +91,93 @@ export default function sprayCardContent({
                 }
             })
     }
+
+    async function SprayCardStart(spray_card_id, holder_id) {
+        const apiData = { spray_card_id, holder_id };
+        console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
+        const requestOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify(apiData),
+        };
+        await fetch("/workflow/spraycard/start/", requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    setRefreshRecord(~refreshRecord);
+                } else {
+                    // Handle error
+                }
+            })
+            .catch((error) => {
+                // Handle error
+            });
+    }
+
+    async function SprayCardPause(spray_card_id, holder_id) {
+        const apiData = { spray_card_id, holder_id };
+        console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
+        const requestOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify(apiData),
+        };
+        await fetch("/workflow/spraycard/pause/", requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    setRefreshRecord(~refreshRecord);
+                } else {
+                    // Handle error
+                }
+            })
+            .catch((error) => {
+                // Handle error
+            });
+    }
+
+    async function SprayCardResume(spray_card_id, holder_id) {
+        const apiData = { spray_card_id, holder_id };
+        console.log(apiData);
+        const csrftoken = getCookie('csrftoken');
+        const requestOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify(apiData),
+        };
+        await fetch("/workflow/spraycard/resume/", requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    setRefreshRecord(~refreshRecord);
+                } else {
+                    // Handle error
+                }
+            })
+            .catch((error) => {
+                // Handle error
+            });
+    }
+
+    const handleStartButtonClicked = () => {
+        SprayCardStart(sprayCardSelected.scpid, uid);
+    };
+
+    const handlePauseButtonClicked = () => {
+        SprayCardPause(sprayCardSelected.scpid, uid);
+    };
+
+    const handleResumeButtonClicked = () => {
+        SprayCardResume(sprayCardSelected.scpid, uid);
+    };
 
     const handleCompleteButtonClicked = () => {
         setCompleteSprayCard(true);
@@ -399,6 +486,24 @@ export default function sprayCardContent({
                 </Grid>
                 <Grid item xs={2.4}>
                     <Button
+                        onClick={() => handleStartButtonClicked()}>
+                        Start
+                    </Button>
+                </Grid>
+                <Grid item xs={2.4}>
+                    <Button
+                        onClick={() => handlePauseButtonClicked()}>
+                        Pause
+                    </Button>
+                </Grid>
+                <Grid item xs={2.4}>
+                    <Button
+                        onClick={() => handleResumeButtonClicked()}>
+                        Resume
+                    </Button>
+                </Grid>
+                <Grid item xs={2.4}>
+                    <Button
                         disabled={!completeCondition()}
                         onClick={() => handleCompleteButtonClicked()}>
                         Complete
@@ -488,10 +593,10 @@ export default function sprayCardContent({
                 {cropContentRender()}
                 {siteContentRender()}
             </Grid>
-            <SprayCardEdit {...SprayCardEditProps}/>
-            <SprayCardComplete {...SprayCardCompleteProps}/>
-            <OperationSnackbars  {...returnSuccessProps}/>
-            <OperationSnackbars  {...withdrawSuccessProps}/>
+            <SprayCardEdit {...SprayCardEditProps} />
+            <SprayCardComplete {...SprayCardCompleteProps} />
+            <OperationSnackbars  {...returnSuccessProps} />
+            <OperationSnackbars  {...withdrawSuccessProps} />
         </>
     );
 }

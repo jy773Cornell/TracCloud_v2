@@ -202,6 +202,50 @@ class SprayCardWithdrawView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class SprayCardStartView(APIView):
+    serializer_class = SprayCardStartSerializer
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            data = serializer.validated_data
+            with transaction.atomic():
+                data["spray_card_process"].start()
+                data["spray_card_process"].save()
+            return Response({'Succeeded': 'Process Has Been Started.'}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class SprayCardPauseView(APIView):
+    serializer_class = SprayCardPauseSerializer
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            data = serializer.validated_data
+            with transaction.atomic():
+                data["spray_card_process"].pause()
+                data["spray_card_process"].save()
+            return Response({'Succeeded': 'Process Has Been Paused.'}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class SprayCardResumeView(APIView):
+    serializer_class = SprayCardResumeSerializer
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            data = serializer.validated_data
+            with transaction.atomic():
+                data["spray_card_process"].resume()
+                data["spray_card_process"].save()
+            return Response({'Succeeded': 'Process Has Been Resumed.'}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class SprayCardCompleteView(APIView):
     serializer_class = SprayCardCompleteSerializer
