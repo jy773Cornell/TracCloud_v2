@@ -98,7 +98,18 @@ DATABASES = {
         "OPTIONS": {
             "sslmode": "require",
         },
-    }
+    }, 
+    "development": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("DEV_DBNAME"),
+        "USER": os.environ.get("DEV_DBUSER"),
+        "PASSWORD": os.environ.get("DEV_DBPASS"),
+        "HOST": os.environ.get("DEV_DBHOST"),
+        "PORT": "5432",
+        "OPTIONS": {
+            "sslmode": "require",
+        },
+    },
 }
 
 # Password validation

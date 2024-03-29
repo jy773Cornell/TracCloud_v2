@@ -24,7 +24,6 @@ DATABASES = {
 }
 
 # CACHES SETTING
-
 redis_conn_str = os.environ['AZURE_REDIS_CONNECTIONSTRING']
 redis_conn_str_params = {pair.split(':')[0]: pair.split(':')[1] for pair in redis_conn_str.split(' ')}
 CACHES = {
