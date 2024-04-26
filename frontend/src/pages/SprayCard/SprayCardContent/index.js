@@ -93,7 +93,7 @@ export default function sprayCardContent({
     }
 
     async function SprayCardStart(spray_card_id, holder_id) {
-        const apiData = { spray_card_id, holder_id };
+        const apiData = { "spray_card_id": spray_card_id, "holder_id": holder_id };
         console.log(apiData);
         const csrftoken = getCookie('csrftoken');
         const requestOptions = {
@@ -118,7 +118,7 @@ export default function sprayCardContent({
     }
 
     async function SprayCardPause(spray_card_id, holder_id) {
-        const apiData = { spray_card_id, holder_id };
+        const apiData = { "spray_card_id": spray_card_id, "holder_id": holder_id };
         console.log(apiData);
         const csrftoken = getCookie('csrftoken');
         const requestOptions = {
@@ -143,7 +143,7 @@ export default function sprayCardContent({
     }
 
     async function SprayCardResume(spray_card_id, holder_id) {
-        const apiData = { spray_card_id, holder_id };
+        const apiData = { "spray_card_id": spray_card_id, "holder_id": holder_id };
         console.log(apiData);
         const csrftoken = getCookie('csrftoken');
         const requestOptions = {
@@ -432,16 +432,12 @@ export default function sprayCardContent({
         )
     };
 
-    const completeCondition = () => {
-        return (
-            sprayCardSelected?.holder_id === uid
-        );
-    };
-
     const returnCondition = () => {
         return (
             sprayCardSelected?.holder_id === uid &&
-            sprayCardSelected?.holder_id !== sprayCardSelected?.owner_id);
+            sprayCardSelected?.holder_id !== sprayCardSelected?.owner_id && 
+            sprayCardSelected?.state === 'assigned'
+        );
     };
 
     const editCondition = () => {
@@ -454,6 +450,35 @@ export default function sprayCardContent({
         return (
             sprayCardSelected?.owner_id === uid
             && sprayCardSelected?.state !== 'archived'
+        );
+    };
+
+    const startCondition = () => {
+        console.log('running'); 
+        return (
+            sprayCardSelected?.holder_id === uid &&
+            sprayCardSelected?.state === 'assigned'
+        ); 
+    }; 
+
+    const pauseCondition = () => {
+        return (
+            sprayCardSelected?.holder_id === uid &&
+            sprayCardSelected?.state === 'in progress'
+        );
+    }
+
+    const resumeCondition = () => {
+        return (
+            sprayCardSelected?.holder_id === uid &&
+            sprayCardSelected?.state === 'paused'
+        );
+    }
+
+    const completeCondition = () => {
+        return (
+            sprayCardSelected?.holder_id === uid &&
+            sprayCardSelected?.state === 'in progress'
         );
     };
 
@@ -486,18 +511,21 @@ export default function sprayCardContent({
                 </Grid>
                 <Grid item xs={2.4}>
                     <Button
+                        disabled={!startCondition()}
                         onClick={() => handleStartButtonClicked()}>
                         Start
                     </Button>
                 </Grid>
                 <Grid item xs={2.4}>
                     <Button
+                        disabled={!pauseCondition()}
                         onClick={() => handlePauseButtonClicked()}>
                         Pause
                     </Button>
                 </Grid>
                 <Grid item xs={2.4}>
                     <Button
+                        disabled={!resumeCondition()}
                         onClick={() => handleResumeButtonClicked()}>
                         Resume
                     </Button>
