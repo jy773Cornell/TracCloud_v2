@@ -221,19 +221,19 @@ class SprayCard(models.Model):
         else:
             self.state = "assigned"
             
-    @transition(field=state, source='assigned', target='start')
+    @transition(field=state, source='assigned', target='in progress')
     def start(self):
-        self.spray_record.state = 'in_progress'
+        self.spray_record.state = 'in progress'
         self.spray_record.save()
         
-    @transition(field=state, source='in_progress', target='paused')
+    @transition(field=state, source='in progress', target='paused')
     def pause(self):
         self.spray_record.state = 'paused'
         self.spray_record.save()
         
-    @transition(field=state, source='paused', target='in_progress')
+    @transition(field=state, source='paused', target='in progress')
     def resume(self):
-        self.spray_record.state = 'in_progress'
+        self.spray_record.state = 'in progress'
         self.spray_record.save()
 
     @transition(field=state, source=['initiated', 'assigned'], target='archived')
@@ -244,7 +244,7 @@ class SprayCard(models.Model):
 
         self.is_active = False
 
-    @transition(field=state, source=['initiated', 'assigned'], target='archived')
+    @transition(field=state, source='in progress', target='archived')
     def complete(self):
         self.spray_record.state = 'completed'
         self.spray_record.save()
